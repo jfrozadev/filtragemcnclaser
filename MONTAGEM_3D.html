@@ -160,7 +160,7 @@
             <tr><td class="label">MDF:</td><td class="val">3mm</td></tr>
             <tr><td class="label">Dentes:</td><td class="val">25mm largura</td></tr>
             <tr><td class="label">Slots:</td><td class="val">4×40mm</td></tr>
-            <tr><td class="label">Wega:</td><td class="val highlight">220×160mm ✓</td></tr>
+            <tr><td class="label">HEPA:</td><td class="val highlight">130×240mm ✓</td></tr>
         </table>
     </div>
 
@@ -221,21 +221,21 @@
                 camera: { pos: [4, 2.5, 2], look: [1.25, 1.3, 1.25] }
             },
             {
-                num: 6, title: "Divisórias", desc: "Insira as 3 divisórias de cima para baixo",
-                encaixe: "⚠️ ABAS LARANJAS (5mm) das divisórias passam pelos SLOTS VERDES (40mm) das laterais!",
-                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divJeans', 'divGM', 'divWega'],
+                num: 6, title: "Divisórias", desc: "Insira as 4 divisórias de cima para baixo",
+                encaixe: "⚠️ ABAS LARANJAS (5mm) das divisórias passam pelos SLOTS VERDES (40mm) das laterais! Ordem: Manta G3 → GM → Wega → HEPA",
+                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
                 camera: { pos: [3, 3.5, 3], look: [1.25, 1.3, 1.25] }
             },
             {
                 num: 7, title: "Compartimento Carvão", desc: "Cole o compartimento de carvão na traseira",
                 encaixe: "Compartimento 244×35×45mm COLADO junto à traseira, sobre a base. Fundo perfurado. ~500g carvão ativado.",
-                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divJeans', 'divGM', 'divWega', 'gaveta'],
+                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta'],
                 camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
             },
             {
                 num: 8, title: "Tampa", desc: "Feche com a tampa",
                 encaixe: "✅ COMPLETO! Tampa 250×250mm apoia sobre as laterais. Fixe com 4 parafusos nos cantos.",
-                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divJeans', 'divGM', 'divWega', 'gaveta', 'tampa'],
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
                 camera: { pos: [4, 3.5, 4], look: [1.25, 1.3, 1.25] }
             }
         ];
@@ -411,14 +411,17 @@
             parts.traseira = createTraseira();
             scene.add(parts.traseira);
             
-            parts.divJeans = createDivisoria(0.4, 'jeans');
-            scene.add(parts.divJeans);
+            parts.divMantaG3 = createDivisoria(0.25, 'mantag3');
+            scene.add(parts.divMantaG3);
             
-            parts.divGM = createDivisoria(0.9, 'gm');
+            parts.divGM = createDivisoria(0.50, 'gm');
             scene.add(parts.divGM);
             
-            parts.divWega = createDivisoria(1.5, 'wega');
+            parts.divWega = createDivisoria(0.95, 'wega');
             scene.add(parts.divWega);
+            
+            parts.divHepa = createDivisoria(1.50, 'hepa');
+            scene.add(parts.divHepa);
             
             parts.gaveta = createGaveta();
             scene.add(parts.gaveta);
@@ -480,9 +483,9 @@
                 }
             }
             
-            // SLOTS para divisórias (verde)
+            // SLOTS para divisórias (verde) - 4 divisórias
             const divSlotMat = new THREE.MeshPhongMaterial({ color: COLORS.divSlots, transparent: true, opacity: 0.9 });
-            [0.4, 0.9, 1.5].forEach(x => {
+            [0.25, 0.50, 0.95, 1.50].forEach(x => {
                 const slotL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
                 slotL.position.set(x, T + 0.35, zPos);
                 group.add(slotL);
@@ -635,12 +638,14 @@
             
             // Furo do filtro (indicador colorido)
             let fW, fH, fColor, filterLabel;
-            if (type === 'jeans') {
-                fW = 2.0; fH = 2.0; fColor = 0x1abc9c; filterLabel = 'Jeans';
+            if (type === 'mantag3') {
+                fW = 2.0; fH = 2.0; fColor = 0x1abc9c; filterLabel = 'Manta G3';
             } else if (type === 'gm') {
                 fW = 2.05; fH = 2.2; fColor = 0xf1c40f; filterLabel = 'GM 205×220';
-            } else {
+            } else if (type === 'wega') {
                 fW = 2.2; fH = 1.6; fColor = 0x2ecc71; filterLabel = 'Wega 220×160';
+            } else {
+                fW = 1.3; fH = 2.4; fColor = 0x3498db; filterLabel = 'HEPA 130×240';
             }
             
             const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.4 });
@@ -650,9 +655,10 @@
             
             // Marcação interna - identificação da divisória
             let labelText;
-            if (type === 'jeans') labelText = 'DIV. JEANS';
+            if (type === 'mantag3') labelText = 'MANTA G3';
             else if (type === 'gm') labelText = 'DIV. GM';
-            else labelText = 'DIV. WEGA';
+            else if (type === 'wega') labelText = 'DIV. WEGA';
+            else labelText = 'HEPA H13';
             
             const divLabel = createLabel(labelText, 0.1);
             divLabel.rotation.y = Math.PI/2; // Texto voltado para entrada
@@ -817,9 +823,10 @@
             if (parts.latDir) parts.latDir.position.z = offset;
             if (parts.frontal) parts.frontal.position.x = -offset;
             if (parts.traseira) parts.traseira.position.x = offset;
-            if (parts.divJeans) parts.divJeans.position.y = offset * 0.3;
-            if (parts.divGM) parts.divGM.position.y = offset * 0.2;
-            if (parts.divWega) parts.divWega.position.y = offset * 0.1;
+            if (parts.divMantaG3) parts.divMantaG3.position.y = offset * 0.4;
+            if (parts.divGM) parts.divGM.position.y = offset * 0.3;
+            if (parts.divWega) parts.divWega.position.y = offset * 0.2;
+            if (parts.divHepa) parts.divHepa.position.y = offset * 0.1;
         }
         
         function toggleWireframe() {
