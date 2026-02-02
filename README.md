@@ -62,9 +62,9 @@
 | Peça | Corpo | Furo do Filtro | Espessura Filtro |
 |------|-------|----------------|------------------|
 | Manta G3 | 244×244mm | 200×200mm | ~15mm |
-| GM | 244×244mm | 205×220mm | 20mm |
-| Wega | 244×244mm | 220×160mm | 45mm |
-| **HEPA EFH13W** | 244×244mm | **130×240mm** | **45mm** |
+| GM Cabine Bosch | 244×244mm | 205×220mm | **20mm** |
+| Wega Motor | 244×244mm | 220×160mm | **50mm** |
+| **FILTRO HEPA EFH13W** | 244×244mm | **130×240mm** | **45mm** |
 
 ### Gaveta de Carvão:
 | Peça | Dimensão |
@@ -152,10 +152,10 @@ Abra `MONTAGEM_3D.html` no navegador para:
 
 | Divisória | Posição X | Filtro | Função |
 |-----------|-----------|--------|--------|
-| Manta G3 | 25mm | 200×200mm, 15mm esp. | Pré-filtro (partículas grandes) |
-| GM | 50mm | 205×220mm, 20mm esp. | Filtro cabine (partículas médias) |
-| Wega | 95mm | 220×160mm, 45mm esp. | Filtro motor (partículas finas) |
-| **HEPA** | **150mm** | **130×240mm, 45mm esp.** | **H13 - 99.95% partículas** |
+| Manta G3 | 25mm | 200×200mm, **15mm** esp. | Pré-filtro (partículas grandes) |
+| GM Cabine Bosch | 50mm | 205×220mm, **20mm** esp. | Filtro cabine (partículas médias) |
+| Wega Motor | 95mm | 220×160mm, **50mm** esp. | Filtro motor (partículas finas) |
+| **FILTRO HEPA** | **150mm** | **130×240mm, 45mm** esp. | **H13 - 99.95% partículas** |
 | Gaveta | 205mm | Carvão ativado | Gases e VOCs |
 
 ---
@@ -163,9 +163,9 @@ Abra `MONTAGEM_3D.html` no navegador para:
 ## 📋 MATERIAIS
 
 - MDF 3mm: ~14 chapas 300×300mm
-- Manta G3 (pré-filtro)
-- Filtro GM cabine
-- Filtro Wega motor
+- Manta G3 (pré-filtro) ~15mm
+- Filtro GM Cabine Bosch 20mm
+- Filtro Wega Motor 50mm
 - **Filtro HEPA Electrolux EFH13W** (130×250×45mm)
 - Carvão ativado ~1.5kg
 - Cola PVA + Silicone

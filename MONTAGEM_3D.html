@@ -102,7 +102,7 @@
         </div>
         
         <div class="progress-bar">
-            <div class="progress-fill" id="progressFill" style="width: 12.5%"></div>
+            <div class="progress-fill" id="progressFill" style="width: 9%"></div>
         </div>
         
         <div class="nav-buttons">
@@ -221,19 +221,37 @@
                 camera: { pos: [4, 2.5, 2], look: [1.25, 1.3, 1.25] }
             },
             {
-                num: 6, title: "Divisórias", desc: "Insira as 4 divisórias de cima para baixo",
-                encaixe: "⚠️ ABAS LARANJAS (5mm) das divisórias passam pelos SLOTS VERDES (40mm) das laterais! Ordem: Manta G3 → GM → Wega → HEPA",
-                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
-                camera: { pos: [3, 3.5, 3], look: [1.25, 1.3, 1.25] }
+                num: 6, title: "Divisória Manta G3", desc: "Insira a divisória MANTA G3 (pré-filtro)",
+                encaixe: "🔵 MANTA G3 - Pré-filtro ~15mm espessura. Posição X=25mm. Filtra partículas grandes.",
+                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3'],
+                camera: { pos: [1, 2.5, 3.5], look: [0.25, 1.3, 1.25] }
             },
             {
-                num: 7, title: "Compartimento Carvão", desc: "Cole o compartimento de carvão na traseira",
-                encaixe: "Compartimento 244×35×45mm COLADO junto à traseira, sobre a base. Fundo perfurado. ~500g carvão ativado.",
+                num: 7, title: "Divisória GM Bosch", desc: "Insira a divisória GM CABINE BOSCH",
+                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=50mm. Filtra partículas médias.",
+                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM'],
+                camera: { pos: [1.5, 2.5, 3.5], look: [0.50, 1.3, 1.25] }
+            },
+            {
+                num: 8, title: "Divisória Wega", desc: "Insira a divisória WEGA (filtro motor)",
+                encaixe: "🟢 WEGA MOTOR - Filtro motor 50mm espessura. Posição X=95mm. Filtra partículas finas.",
+                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega'],
+                camera: { pos: [2, 2.5, 3.5], look: [0.95, 1.3, 1.25] }
+            },
+            {
+                num: 9, title: "Divisória HEPA", desc: "Insira a divisória FILTRO HEPA H13",
+                encaixe: "🔷 FILTRO HEPA EFH13W - Filtro H13 45mm espessura. Posição X=150mm. Remove 99,95% partículas!",
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
+                camera: { pos: [2.5, 2.5, 3.5], look: [1.50, 1.3, 1.25] }
+            },
+            {
+                num: 10, title: "Compartimento Carvão", desc: "Cole o compartimento de carvão na traseira",
+                encaixe: "⬛ CARVÃO ATIVADO - Compartimento 244×35×45mm COLADO junto à traseira. ~500g carvão. Remove gases/VOCs.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta'],
                 camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
             },
             {
-                num: 8, title: "Tampa", desc: "Feche com a tampa",
+                num: 11, title: "Tampa", desc: "Feche com a tampa",
                 encaixe: "✅ COMPLETO! Tampa 250×250mm apoia sobre as laterais. Fixe com 4 parafusos nos cantos.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
                 camera: { pos: [4, 3.5, 4], look: [1.25, 1.3, 1.25] }
@@ -636,29 +654,36 @@
                 group.add(aba);
             });
             
-            // Furo do filtro (indicador colorido)
-            let fW, fH, fColor, filterLabel;
+            // Furo do filtro com ESPESSURA CORRETA
+            let fW, fH, fDepth, fColor, filterLabel;
             if (type === 'mantag3') {
-                fW = 2.0; fH = 2.0; fColor = 0x1abc9c; filterLabel = 'Manta G3';
+                fW = 2.0; fH = 2.0; fDepth = 0.15; fColor = 0x1abc9c; filterLabel = 'Manta G3 15mm';
             } else if (type === 'gm') {
-                fW = 2.05; fH = 2.2; fColor = 0xf1c40f; filterLabel = 'GM 205×220';
+                fW = 2.05; fH = 2.2; fDepth = 0.20; fColor = 0xf1c40f; filterLabel = 'GM Bosch 20mm';
             } else if (type === 'wega') {
-                fW = 2.2; fH = 1.6; fColor = 0x2ecc71; filterLabel = 'Wega 220×160';
+                fW = 2.2; fH = 1.6; fDepth = 0.50; fColor = 0x2ecc71; filterLabel = 'Wega 50mm';
             } else {
-                fW = 1.3; fH = 2.4; fColor = 0x3498db; filterLabel = 'HEPA 130×240';
+                fW = 1.3; fH = 2.4; fDepth = 0.45; fColor = 0x3498db; filterLabel = 'HEPA 45mm';
             }
             
-            const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.4 });
-            const filter = new THREE.Mesh(new THREE.BoxGeometry(T*3, fH, fW), filterMat);
-            filter.position.set(posX, T + S/2, S/2);
+            const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.5 });
+            const filter = new THREE.Mesh(new THREE.BoxGeometry(fDepth, fH, fW), filterMat);
+            filter.position.set(posX + fDepth/2, T + S/2, S/2);
             group.add(filter);
+            
+            // Borda do filtro para destacar espessura
+            const edgeMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.8 });
+            const edgeGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(fDepth, fH, fW));
+            const edges = new THREE.LineSegments(edgeGeom, new THREE.LineBasicMaterial({ color: fColor }));
+            edges.position.set(posX + fDepth/2, T + S/2, S/2);
+            group.add(edges);
             
             // Marcação interna - identificação da divisória
             let labelText;
             if (type === 'mantag3') labelText = 'MANTA G3';
-            else if (type === 'gm') labelText = 'DIV. GM';
-            else if (type === 'wega') labelText = 'DIV. WEGA';
-            else labelText = 'HEPA H13';
+            else if (type === 'gm') labelText = 'GM BOSCH';
+            else if (type === 'wega') labelText = 'WEGA';
+            else labelText = 'FILTRO HEPA';
             
             const divLabel = createLabel(labelText, 0.1);
             divLabel.rotation.y = Math.PI/2; // Texto voltado para entrada
