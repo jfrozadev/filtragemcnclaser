@@ -1,9 +1,9 @@
 ; ==========================================
-; DIVISÓRIA JEANS 244x244mm
+; DIVISÓRIA MANTA G3 244x244mm
 ; CNC: Two Trees TTS-10 | MDF 3mm
 ; ==========================================
 ; CORTE: S1000 | F150 | 3 PASSAGENS
-; 2 placas sanduíche com abas
+; 2 placas sanduíche com abas (pré-filtro)
 ; CORRIGIDO: Abas dentro da área de corte
 ; ==========================================
 

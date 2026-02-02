@@ -61,7 +61,7 @@
 ### Divisórias (com abas de 5mm para encaixe):
 | Peça | Corpo | Furo do Filtro |
 |------|-------|----------------|
-| Jeans | 244×244mm | 200×200mm (para tecido) |
+| Manta G3 | 244×244mm | 200×200mm (pré-filtro) |
 | GM | 244×244mm | 205×220mm |
 | **Wega** | 244×244mm | **220×160mm** |
 
@@ -85,7 +85,7 @@
 | 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm |
 | 5 | `05_TAMPA.nc` | 250×250mm com 4 furos fixação |
 | 6 | `06_BASE.nc` | 250×250mm com 4 furos para pés |
-| 7 | `07_DIVISORIA_JEANS.nc` | 2× placas sanduíche com abas |
+| 7 | `07_DIVISORIA_MANTA_G3.nc` | 2× placas sanduíche com abas |
 | 8 | `08_DIVISORIA_GM.nc` | 244×244mm + furo 205×220mm |
 | 9 | `09_DIVISORIA_WEGA.nc` | 244×244mm + furo 220×160mm |
 | 10 | `10_GAVETA.nc` | 5 peças da gaveta |
@@ -150,7 +150,7 @@ Abra `MONTAGEM_3D.html` no navegador para:
 
 | Divisória | Posição X | Filtro |
 |-----------|-----------|--------|
-| Jeans | 40mm | Tecido (pré-filtro) |
+| Manta G3 | 40mm | Manta G3 (pré-filtro) |
 | GM | 90mm | 205×220mm, 20mm esp. |
 | Wega | 150mm | 220×160mm, 45mm esp. |
 | Gaveta | 195mm | Carvão ativado |
@@ -162,7 +162,7 @@ Abra `MONTAGEM_3D.html` no navegador para:
 - MDF 3mm: ~12 chapas 300×300mm
 - Filtro GM cabine
 - Filtro Wega motor
-- Tecido jeans
+- Manta G3 (pré-filtro)
 - Carvão ativado ~1.5kg
 - Cola PVA + Silicone
 - Parafusos M3
