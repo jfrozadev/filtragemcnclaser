@@ -1,0 +1,15 @@
+# Arquivos temporários
+*.tmp
+*.bak
+*.backup
+*~
+
+# Arquivos de sistema
+Thumbs.db
+.DS_Store
+
+# Arquivos de log
+*.log
+
+# Arquivos de simulação/preview temporários
+*.stl.tmp

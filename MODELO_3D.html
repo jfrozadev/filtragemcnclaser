@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixa Filtragem - CORRIGIDA</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); overflow: hidden; }
+        #container { width: 100vw; height: 100vh; }
+        
+        #panel {
+            position: absolute; top: 10px; left: 10px;
+            background: rgba(255,255,255,0.95); padding: 14px;
+            border-radius: 10px; max-width: 260px; font-size: 0.7rem;
+        }
+        h1 { font-size: 0.95rem; margin-bottom: 3px; }
+        .tag { background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.55rem; }
+        .section { margin: 10px 0; padding-top: 8px; border-top: 1px solid #eee; }
+        .section-title { font-weight: 600; margin-bottom: 6px; color: #333; }
+        .btn-row { display: flex; flex-wrap: wrap; gap: 4px; }
+        button { padding: 5px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.65rem; }
+        .btn-blue { background: #3498db; color: white; }
+        .btn-red { background: #e74c3c; color: white; }
+        .btn-green { background: #27ae60; color: white; }
+        .btn-gray { background: #ecf0f1; color: #333; }
+        .btn-gray.active { background: #3498db; color: white; }
+        
+        .specs { margin-top: 10px; font-size: 0.6rem; background: #f8f9fa; padding: 8px; border-radius: 6px; }
+        .specs-title { font-weight: 600; margin-bottom: 4px; }
+        .specs table { width: 100%; }
+        .specs td { padding: 2px 4px; }
+        .specs .label { color: #666; }
+        .specs .val { font-weight: 500; text-align: right; }
+        .specs .corrected { color: #27ae60; font-weight: 600; }
+        
+        #info { position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.9); padding: 6px 10px; border-radius: 4px; font-size: 0.6rem; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="panel">
+        <h1>🔧 Caixa de Filtragem <span class="tag">CORRIGIDA</span></h1>
+        <div style="font-size:0.55rem;color:#666;margin-bottom:8px;">250×250×250mm | MDF 3mm | S1000 F150 3×</div>
+        
+        <div class="section">
+            <div class="section-title">📐 Visualização</div>
+            <div class="btn-row">
+                <button class="btn-blue" onclick="resetView()">Reset</button>
+                <button class="btn-blue" onclick="explode()">Explodir</button>
+                <button class="btn-blue" onclick="cutaway()">Corte</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🔽 Animar Divisórias</div>
+            <div class="btn-row">
+                <button class="btn-red" onclick="animDiv('jeans')">Jeans</button>
+                <button class="btn-red" onclick="animDiv('gm')">GM</button>
+                <button class="btn-red" onclick="animDiv('wega')">Wega</button>
+                <button class="btn-green" onclick="animAll()">Todas</button>
+                <button class="btn-gray" onclick="resetDiv()">Reset</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">👁️ Mostrar/Ocultar</div>
+            <div class="btn-row">
+                <button class="btn-gray active" id="t-box" onclick="toggle('box')">Caixa</button>
+                <button class="btn-gray active" id="t-div" onclick="toggle('div')">Divisórias</button>
+                <button class="btn-gray active" id="t-filt" onclick="toggle('filt')">Filtros</button>
+            </div>
+        </div>
+        
+        <div class="specs">
+            <div class="specs-title">📋 Dimensões dos Filtros:</div>
+            <table>
+                <tr><td class="label">GM Cabine:</td><td class="val">205×220mm, 20mm esp.</td></tr>
+                <tr><td class="label">Wega Motor:</td><td class="val corrected">220×160mm, 45mm esp. ✓</td></tr>
+            </table>
+        </div>
+    </div>
+    
+    <div id="info">🖱️ Arrastar=Girar | Scroll=Zoom</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer;
+        let boxGrp, divGrp, filtGrp;
+        let isExploded = false, isCut = false;
+        
+        const S = 2.5, T = 0.03;
+        const divs = {
+            jeans: { g: null, in: true, x: 0.4 },
+            gm: { g: null, in: true, x: 0.9 },
+            wega: { g: null, in: true, x: 1.5 }
+        };
+
+        init(); animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 100);
+            camera.position.set(4, 3, 4.5);
+            camera.lookAt(1.25, 1.25, 1.25);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(innerWidth, innerHeight);
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const light = new THREE.DirectionalLight(0xffffff, 0.7);
+            light.position.set(5, 10, 5);
+            scene.add(light);
+            scene.add(new THREE.GridHelper(6, 6, 0x444, 0x333));
+            
+            boxGrp = new THREE.Group();
+            divGrp = new THREE.Group();
+            filtGrp = new THREE.Group();
+            scene.add(boxGrp, divGrp, filtGrp);
+            
+            createBox();
+            createDivisorias();
+            createFiltros();
+            
+            setupMouse();
+            onresize = () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); };
+        }
+        
+        function createBox() {
+            const mat = new THREE.MeshPhongMaterial({ color: 0x8B4513, transparent: true, opacity: 0.4, side: 2 });
+            
+            // Base, Tampa
+            [T/2, S-T/2].forEach((y, i) => {
+                const m = new THREE.Mesh(new THREE.BoxGeometry(S, T, S), mat.clone());
+                m.position.set(S/2, y, S/2);
+                m.name = i ? 'tampa' : 'base';
+                boxGrp.add(m);
+            });
+            
+            // Laterais
+            [T/2, S-T/2].forEach((z, i) => {
+                const m = new THREE.Mesh(new THREE.BoxGeometry(S, S, T), mat.clone());
+                m.position.set(S/2, S/2, z);
+                m.name = i ? 'lat-dir' : 'lat-esq';
+                boxGrp.add(m);
+            });
+            
+            // Frontal (244mm = 2.44)
+            const fMat = mat.clone();
+            const front = new THREE.Mesh(new THREE.BoxGeometry(T, S, S-2*T), fMat);
+            front.position.set(T/2, S/2, S/2);
+            boxGrp.add(front);
+            
+            // Traseira
+            const back = new THREE.Mesh(new THREE.BoxGeometry(T, S, S-2*T), mat.clone());
+            back.position.set(S-T/2, S/2, S/2);
+            boxGrp.add(back);
+            
+            // Furos
+            const hMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            const hIn = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, T*2, 32), hMat);
+            hIn.rotation.z = Math.PI/2;
+            hIn.position.set(0, S/2, S/2);
+            boxGrp.add(hIn);
+            
+            const hOut = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, T*2, 32), hMat);
+            hOut.rotation.z = Math.PI/2;
+            hOut.position.set(S, S/2, S/2);
+            boxGrp.add(hOut);
+        }
+        
+        function createDivisorias() {
+            const mat = new THREE.MeshPhongMaterial({ color: 0xA0522D, transparent: true, opacity: 0.7 });
+            const abaMat = new THREE.MeshPhongMaterial({ color: 0x3498db });
+            
+            Object.keys(divs).forEach(k => {
+                const d = divs[k];
+                const g = new THREE.Group();
+                
+                // Corpo 244x244mm
+                const corpo = new THREE.Mesh(new THREE.BoxGeometry(T, S*0.976, S*0.976), mat.clone());
+                corpo.position.set(0, S/2, S/2);
+                g.add(corpo);
+                
+                // Abas
+                [[0.15, T/2], [S-0.15, T/2], [0.15, S-T/2], [S-0.15, S-T/2]].forEach(([y, z]) => {
+                    const aba = new THREE.Mesh(new THREE.BoxGeometry(T, 0.4, 0.05), abaMat.clone());
+                    aba.position.set(0, y, z < S/2 ? -0.025 : S + 0.025);
+                    g.add(aba);
+                });
+                
+                g.position.x = d.x;
+                d.g = g;
+                divGrp.add(g);
+            });
+        }
+        
+        function createFiltros() {
+            // Jeans
+            const jeans = new THREE.Mesh(
+                new THREE.BoxGeometry(0.01, S*0.8, S*0.8),
+                new THREE.MeshPhongMaterial({ color: 0x1abc9c, transparent: true, opacity: 0.6 })
+            );
+            jeans.position.set(divs.jeans.x, S/2, S/2);
+            jeans.name = 'f-jeans';
+            filtGrp.add(jeans);
+            
+            // GM 205x220mm, 20mm
+            const gm = new THREE.Mesh(
+                new THREE.BoxGeometry(0.2, 2.2, 2.05),
+                new THREE.MeshPhongMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.8 })
+            );
+            gm.position.set(divs.gm.x, S/2, S/2);
+            gm.name = 'f-gm';
+            filtGrp.add(gm);
+            
+            // Wega 220x160mm, 45mm - CORRIGIDO
+            const wega = new THREE.Mesh(
+                new THREE.BoxGeometry(0.45, 1.6, 2.2),  // 45mm esp, 160mm alt, 220mm larg
+                new THREE.MeshPhongMaterial({ color: 0x2ecc71, transparent: true, opacity: 0.8 })
+            );
+            wega.position.set(divs.wega.x, S/2, S/2);
+            wega.name = 'f-wega';
+            filtGrp.add(wega);
+            
+            // Carvão
+            const carv = new THREE.Mesh(
+                new THREE.BoxGeometry(0.4, 0.4, 2),
+                new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+            );
+            carv.position.set(2.15, 0.4, S/2);
+            filtGrp.add(carv);
+        }
+        
+        function animDiv(k) {
+            const d = divs[k];
+            if (!d) return;
+            const from = d.in ? 0 : 1.2;
+            const to = d.in ? 1.2 : 0;
+            d.in = !d.in;
+            tween(d.g.position, 'y', from, to, 400);
+            
+            const f = filtGrp.children.find(c => c.name === 'f-' + k);
+            if (f) tween(f.position, 'y', d.in ? S/2 : S/2 + 1.2, d.in ? S/2 + 1.2 : S/2, 400);
+        }
+        
+        function animAll() {
+            let dl = 0;
+            ['jeans', 'gm', 'wega'].forEach(k => { setTimeout(() => animDiv(k), dl); dl += 250; });
+        }
+        
+        function resetDiv() {
+            Object.keys(divs).forEach(k => {
+                divs[k].in = true;
+                divs[k].g.position.y = 0;
+                const f = filtGrp.children.find(c => c.name === 'f-' + k);
+                if (f) f.position.y = S/2;
+            });
+        }
+        
+        function tween(o, p, from, to, ms) {
+            const t0 = Date.now();
+            (function run() {
+                const t = Math.min((Date.now() - t0) / ms, 1);
+                o[p] = from + (to - from) * (1 - Math.pow(1 - t, 3));
+                if (t < 1) requestAnimationFrame(run);
+            })();
+        }
+        
+        function explode() {
+            isExploded = !isExploded;
+            const off = isExploded ? 0.4 : 0;
+            tween(divs.jeans.g.position, 'x', divs.jeans.g.position.x, 0.4 - off, 300);
+            tween(divs.wega.g.position, 'x', divs.wega.g.position.x, 1.5 + off, 300);
+        }
+        
+        function cutaway() {
+            isCut = !isCut;
+            boxGrp.children.forEach(c => {
+                if (c.name === 'lat-dir' || c.name === 'tampa') c.visible = !isCut;
+            });
+        }
+        
+        function toggle(t) {
+            const g = { box: boxGrp, div: divGrp, filt: filtGrp }[t];
+            if (g) { g.visible = !g.visible; document.getElementById('t-' + t).classList.toggle('active'); }
+        }
+        
+        function resetView() {
+            camera.position.set(4, 3, 4.5);
+            camera.lookAt(1.25, 1.25, 1.25);
+        }
+        
+        function setupMouse() {
+            let drag = false, px = 0, py = 0;
+            const piv = new THREE.Vector3(1.25, 1.25, 1.25);
+            
+            renderer.domElement.onmousedown = e => { drag = true; px = e.clientX; py = e.clientY; };
+            renderer.domElement.onmousemove = e => {
+                if (!drag) return;
+                const dx = e.clientX - px, dy = e.clientY - py;
+                camera.position.sub(piv);
+                const sph = new THREE.Spherical().setFromVector3(camera.position);
+                sph.theta -= dx * 0.005;
+                sph.phi = Math.max(0.1, Math.min(Math.PI - 0.1, sph.phi - dy * 0.005));
+                camera.position.setFromSpherical(sph).add(piv);
+                camera.lookAt(piv);
+                px = e.clientX; py = e.clientY;
+            };
+            renderer.domElement.onmouseup = () => drag = false;
+            renderer.domElement.onmouseleave = () => drag = false;
+            renderer.domElement.onwheel = e => {
+                e.preventDefault();
+                const dir = new THREE.Vector3();
+                camera.getWorldDirection(dir);
+                camera.position.addScaledVector(dir, -e.deltaY * 0.002);
+            };
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>

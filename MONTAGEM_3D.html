@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montagem Passo a Passo - Caixa de Filtragem</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; overflow: hidden; }
+        #container { width: 100vw; height: 100vh; }
+        
+        #panel {
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(255,255,255,0.97); padding: 18px;
+            border-radius: 12px; max-width: 320px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        
+        h1 { font-size: 1.1rem; color: #2c3e50; margin-bottom: 5px; }
+        .subtitle { font-size: 0.65rem; color: #7f8c8d; margin-bottom: 12px; }
+        
+        .step-indicator {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 12px;
+        }
+        .step-num { font-size: 2rem; font-weight: bold; color: #3498db; }
+        .step-title { font-size: 0.85rem; font-weight: 600; color: #2c3e50; }
+        .step-desc { font-size: 0.7rem; color: #7f8c8d; margin-top: 2px; }
+        
+        .nav-buttons { display: flex; gap: 8px; margin-bottom: 15px; }
+        .nav-buttons button {
+            flex: 1; padding: 10px; border: none; border-radius: 6px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-prev { background: #ecf0f1; color: #2c3e50; }
+        .btn-next { background: #3498db; color: white; }
+        .btn-prev:hover { background: #d5dbdb; }
+        .btn-next:hover { background: #2980b9; }
+        .btn-disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .progress-bar {
+            height: 6px; background: #ecf0f1; border-radius: 3px; margin-bottom: 15px; overflow: hidden;
+        }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3498db, #2ecc71); transition: width 0.3s; }
+        
+        .section { margin-bottom: 12px; padding-top: 12px; border-top: 1px solid #eee; }
+        .section-title { font-size: 0.7rem; font-weight: 600; color: #555; margin-bottom: 8px; }
+        
+        .encaixe-info {
+            background: #e8f6ff; padding: 10px; border-radius: 6px;
+            border-left: 3px solid #3498db; font-size: 0.68rem;
+        }
+        .encaixe-info.warning { background: #fff3e0; border-color: #f39c12; }
+        .encaixe-info.success { background: #e8f5e9; border-color: #27ae60; }
+        .encaixe-title { font-weight: 600; margin-bottom: 4px; }
+        
+        .view-buttons { display: flex; flex-wrap: wrap; gap: 4px; }
+        .view-buttons button {
+            padding: 6px 10px; border: none; border-radius: 4px;
+            font-size: 0.65rem; cursor: pointer; background: #ecf0f1; color: #2c3e50;
+        }
+        .view-buttons button:hover { background: #3498db; color: white; }
+        .view-buttons button.active { background: #3498db; color: white; }
+        
+        .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 10px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.6rem; }
+        .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+        
+        #info {
+            position: absolute; bottom: 15px; left: 15px;
+            background: rgba(255,255,255,0.9); padding: 8px 14px;
+            border-radius: 6px; font-size: 0.7rem;
+        }
+        
+        #dimensions {
+            position: absolute; bottom: 15px; right: 15px;
+            background: rgba(255,255,255,0.95); padding: 12px;
+            border-radius: 8px; font-size: 0.65rem;
+        }
+        #dimensions table { border-collapse: collapse; }
+        #dimensions td { padding: 3px 8px; }
+        #dimensions .label { color: #666; }
+        #dimensions .val { font-weight: 600; text-align: right; }
+        #dimensions .highlight { color: #27ae60; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="panel">
+        <h1>🔧 Montagem Passo a Passo</h1>
+        <div class="subtitle">Caixa de Filtragem 250×250×250mm - Validação de Encaixes</div>
+        
+        <div class="step-indicator">
+            <div>
+                <div class="step-num" id="stepNum">1</div>
+            </div>
+            <div style="flex:1; margin-left: 15px;">
+                <div class="step-title" id="stepTitle">Base</div>
+                <div class="step-desc" id="stepDesc">Posicione a base na mesa</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 12.5%"></div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="btn-prev" id="btnPrev" onclick="prevStep()">← Anterior</button>
+            <button class="btn-next" id="btnNext" onclick="nextStep()">Próximo →</button>
+        </div>
+        
+        <div class="encaixe-info" id="encaixeInfo">
+            <div class="encaixe-title">📐 Encaixe:</div>
+            <div id="encaixeDesc">Base 250×250mm - superfície plana</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">👁️ Visualização</div>
+            <div class="view-buttons">
+                <button onclick="resetView()">Reset</button>
+                <button onclick="viewFront()">Frente</button>
+                <button onclick="viewBack()">Trás</button>
+                <button onclick="viewSide()">Lado</button>
+                <button onclick="viewTop()">Topo</button>
+                <button onclick="viewInside()">Dentro</button>
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <label style="font-size: 0.65rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" id="chkExplode" onchange="toggleExplode()"> Explodir peças
+                </label>
+                <label style="font-size: 0.65rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" id="chkWireframe" onchange="toggleWireframe()"> Wireframe
+                </label>
+                <label style="font-size: 0.65rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" id="chkAutoRotate" onchange="toggleAutoRotate()"> Auto-girar
+                </label>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎨 Legenda</div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background:#8B4513"></div>MDF 3mm</div>
+                <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>Dentes (macho)</div>
+                <div class="legend-item"><div class="legend-color" style="background:#3498db"></div>Ranhuras (fêmea)</div>
+                <div class="legend-item"><div class="legend-color" style="background:#2ecc71"></div>Slots divisórias</div>
+                <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div>Abas divisórias</div>
+                <div class="legend-item"><div class="legend-color" style="background:#4a4a4a"></div>Comp. carvão</div>
+                <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Peça atual</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info">🖱️ Arrastar = Girar | Scroll = Zoom | Shift+Arrastar = Pan | Setas ← → = Passos</div>
+    
+    <div id="dimensions">
+        <table>
+            <tr><td class="label">Caixa:</td><td class="val">250×250×250mm</td></tr>
+            <tr><td class="label">MDF:</td><td class="val">3mm</td></tr>
+            <tr><td class="label">Dentes:</td><td class="val">25mm largura</td></tr>
+            <tr><td class="label">Slots:</td><td class="val">4×40mm</td></tr>
+            <tr><td class="label">Wega:</td><td class="val highlight">220×160mm ✓</td></tr>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, controls;
+        let parts = {};
+        let currentStep = 0;
+        let explodeMode = false;
+        let wireframeMode = false;
+        let autoRotate = false;
+        
+        const S = 2.5;  // 250mm
+        const T = 0.03; // 3mm
+        const TOOTH = 0.25; // 25mm
+        
+        const COLORS = {
+            mdf: 0xCD853F,      // Mais claro
+            mdfLight: 0xDEB887, // Bege
+            teeth: 0xe74c3c,
+            slots: 0x3498db,
+            divSlots: 0x2ecc71,
+            abas: 0xf39c12,
+            current: 0x9b59b6,
+            ghost: 0xcccccc,
+            highlight: 0xff6b6b
+        };
+        
+        const steps = [
+            {
+                num: 1, title: "Base", desc: "Posicione a base na mesa de trabalho",
+                encaixe: "Base 250×250mm - superfície plana. 4 furos para pés de borracha nos cantos.",
+                type: "info", parts: ['base'],
+                camera: { pos: [4, 2, 4], look: [1.25, 0.1, 1.25] }
+            },
+            {
+                num: 2, title: "Lateral Esquerda", desc: "Encaixe a lateral esquerda sobre a base",
+                encaixe: "A lateral (250×250mm) fica EM PÉ sobre a base. Fixe com cola PVA na borda.",
+                type: "warning", parts: ['base', 'latEsq'],
+                camera: { pos: [3, 2.5, 4], look: [1.25, 1.3, 0.5] }
+            },
+            {
+                num: 3, title: "Lateral Direita", desc: "Encaixe a lateral direita sobre a base",
+                encaixe: "Paralela à esquerda. Distância interna: 244mm (espaço para frontal/traseira).",
+                type: "info", parts: ['base', 'latEsq', 'latDir'],
+                camera: { pos: [4, 2.5, 3], look: [1.25, 1.3, 1.25] }
+            },
+            {
+                num: 4, title: "Frontal (Entrada)", desc: "Encaixe o frontal entre as laterais",
+                encaixe: "⚠️ CRÍTICO: Os DENTES VERMELHOS do frontal entram nas RANHURAS AZUIS das laterais! Furo 70mm.",
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal'],
+                camera: { pos: [0, 2, 4], look: [0.3, 1.3, 1.25] }
+            },
+            {
+                num: 5, title: "Traseira (Saída)", desc: "Encaixe a traseira entre as laterais",
+                encaixe: "Igual ao frontal. DENTES entram nas RANHURAS das laterais. Furo de saída 150mm.",
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira'],
+                camera: { pos: [4, 2.5, 2], look: [1.25, 1.3, 1.25] }
+            },
+            {
+                num: 6, title: "Divisórias", desc: "Insira as 3 divisórias de cima para baixo",
+                encaixe: "⚠️ ABAS LARANJAS (5mm) das divisórias passam pelos SLOTS VERDES (40mm) das laterais!",
+                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divJeans', 'divGM', 'divWega'],
+                camera: { pos: [3, 3.5, 3], look: [1.25, 1.3, 1.25] }
+            },
+            {
+                num: 7, title: "Compartimento Carvão", desc: "Cole o compartimento de carvão na traseira",
+                encaixe: "Compartimento 244×35×45mm COLADO junto à traseira, sobre a base. Fundo perfurado. ~500g carvão ativado.",
+                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divJeans', 'divGM', 'divWega', 'gaveta'],
+                camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
+            },
+            {
+                num: 8, title: "Tampa", desc: "Feche com a tampa",
+                encaixe: "✅ COMPLETO! Tampa 250×250mm apoia sobre as laterais. Fixe com 4 parafusos nos cantos.",
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divJeans', 'divGM', 'divWega', 'gaveta', 'tampa'],
+                camera: { pos: [4, 3.5, 4], look: [1.25, 1.3, 1.25] }
+            }
+        ];
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x2c3e50);
+            
+            camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
+            camera.position.set(5, 4, 5);
+            camera.lookAt(1.25, 1, 1.25);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Iluminação melhorada
+            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+            
+            const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            mainLight.position.set(5, 10, 5);
+            mainLight.castShadow = true;
+            scene.add(mainLight);
+            
+            const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+            fillLight.position.set(-5, 5, -5);
+            scene.add(fillLight);
+            
+            const backLight = new THREE.DirectionalLight(0x8ecae6, 0.2);
+            backLight.position.set(0, -5, 0);
+            scene.add(backLight);
+            
+            // Grid mais visível
+            const grid = new THREE.GridHelper(8, 16, 0x6c757d, 0x495057);
+            grid.position.y = -0.01;
+            scene.add(grid);
+            
+            // Eixos de referência
+            const axesHelper = new THREE.AxesHelper(0.5);
+            axesHelper.position.set(-0.3, 0, -0.3);
+            scene.add(axesHelper);
+            
+            // Carregar fonte para textos de identificação
+            const fontLoader = new THREE.FontLoader();
+            fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+                window.loadedFont = font;
+                // Recriar peças com fonte carregada
+                createAllParts();
+                updateStep();
+            }, undefined, function() {
+                // Erro ao carregar fonte - usar fallback com sprites
+                console.log('Usando labels com sprites (fallback)');
+            });
+            
+            // Criar peças inicialmente (com sprites como fallback)
+            setTimeout(() => {
+                if (Object.keys(parts).length === 0) {
+                    createAllParts();
+                    updateStep();
+                }
+            }, 100);
+            
+            setupMouse();
+            
+            window.onresize = () => {
+                camera.aspect = innerWidth / innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(innerWidth, innerHeight);
+            };
+        }
+        
+        // Função para criar texto de identificação (marcação grifada)
+        function createLabel(text, size = 0.12) {
+            const group = new THREE.Group();
+            
+            if (window.loadedFont) {
+                // Criar geometria do texto
+                const textGeometry = new THREE.TextGeometry(text, {
+                    font: window.loadedFont,
+                    size: size,
+                    height: 0.005,
+                    curveSegments: 4,
+                    bevelEnabled: false
+                });
+                textGeometry.center();
+                
+                // Material do texto - cor escura para parecer grifado/marcado
+                const textMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0x1a1a1a,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                group.add(textMesh);
+                
+                // Adicionar sublinhado (grifo)
+                const underlineGeom = new THREE.PlaneGeometry(text.length * size * 0.55, size * 0.08);
+                const underlineMat = new THREE.MeshBasicMaterial({ 
+                    color: 0x1a1a1a, 
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const underline = new THREE.Mesh(underlineGeom, underlineMat);
+                underline.position.y = -size * 0.6;
+                group.add(underline);
+            } else {
+                // Fallback: usar sprite com canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 256;
+                canvas.height = 64;
+                
+                // Fundo transparente
+                ctx.fillStyle = 'rgba(0,0,0,0)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Texto grifado
+                ctx.font = 'bold 28px Arial';
+                ctx.fillStyle = '#1a1a1a';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(text, canvas.width/2, canvas.height/2 - 5);
+                
+                // Sublinhado (grifo)
+                const textWidth = ctx.measureText(text).width;
+                ctx.strokeStyle = '#1a1a1a';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo((canvas.width - textWidth)/2, canvas.height/2 + 12);
+                ctx.lineTo((canvas.width + textWidth)/2, canvas.height/2 + 12);
+                ctx.stroke();
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.needsUpdate = true;
+                
+                const spriteMaterial = new THREE.SpriteMaterial({ 
+                    map: texture,
+                    transparent: true
+                });
+                const sprite = new THREE.Sprite(spriteMaterial);
+                sprite.scale.set(size * 4, size, 1);
+                group.add(sprite);
+            }
+            
+            return group;
+        }
+        
+        function createAllParts() {
+            // Limpar partes existentes
+            Object.values(parts).forEach(p => {
+                if (p && p.parent) scene.remove(p);
+            });
+            
+            parts.base = createBase();
+            scene.add(parts.base);
+            
+            parts.latEsq = createLateral('esq');
+            scene.add(parts.latEsq);
+            
+            parts.latDir = createLateral('dir');
+            scene.add(parts.latDir);
+            
+            parts.frontal = createFrontal();
+            scene.add(parts.frontal);
+            
+            parts.traseira = createTraseira();
+            scene.add(parts.traseira);
+            
+            parts.divJeans = createDivisoria(0.4, 'jeans');
+            scene.add(parts.divJeans);
+            
+            parts.divGM = createDivisoria(0.9, 'gm');
+            scene.add(parts.divGM);
+            
+            parts.divWega = createDivisoria(1.5, 'wega');
+            scene.add(parts.divWega);
+            
+            parts.gaveta = createGaveta();
+            scene.add(parts.gaveta);
+            
+            parts.tampa = createTampa();
+            scene.add(parts.tampa);
+            
+            Object.values(parts).forEach(p => p.visible = false);
+        }
+        
+        function createBase() {
+            const group = new THREE.Group();
+            const mat = new THREE.MeshPhongMaterial({ color: COLORS.mdf, side: THREE.DoubleSide });
+            const base = new THREE.Mesh(new THREE.BoxGeometry(S, T, S), mat);
+            base.position.set(S/2, T/2, S/2);
+            group.add(base);
+            
+            const holeMat = new THREE.MeshPhongMaterial({ color: 0x333333 });
+            [[0.2, 0.2], [S-0.2, 0.2], [0.2, S-0.2], [S-0.2, S-0.2]].forEach(([x, z]) => {
+                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, T*2, 16), holeMat);
+                hole.position.set(x, T/2, z);
+                group.add(hole);
+            });
+            
+            // Marcação interna - "BASE" no topo (lado interno)
+            const label = createLabel('BASE', 0.15);
+            label.rotation.x = -Math.PI/2;
+            label.position.set(S/2, T + 0.01, S/2);
+            group.add(label);
+            
+            return group;
+        }
+        
+        function createLateral(side) {
+            const group = new THREE.Group();
+            const isLeft = side === 'esq';
+            // Laterais ficam nas bordas: Z=T/2 (esquerda dentro) e Z=S-T/2 (direita dentro)
+            const zPos = isLeft ? T/2 : S - T/2;
+            
+            const mat = new THREE.MeshPhongMaterial({ color: COLORS.mdf, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+            // Lateral tem altura S (250mm) e largura S (250mm)
+            const plate = new THREE.Mesh(new THREE.BoxGeometry(S, S, T), mat);
+            plate.position.set(S/2, T + S/2, zPos);
+            group.add(plate);
+            
+            // RANHURAS nas bordas X=0 e X=S (para frontal/traseira)
+            const slotMat = new THREE.MeshPhongMaterial({ color: COLORS.slots, transparent: true, opacity: 0.8 });
+            for (let i = 0; i < 10; i++) {
+                if (i % 2 === 1) {
+                    // Ranhura frontal (X próximo a 0)
+                    const slotF = new THREE.Mesh(new THREE.BoxGeometry(T*2, TOOTH*0.9, T*2), slotMat);
+                    slotF.position.set(T, T + TOOTH/2 + i * TOOTH, zPos);
+                    group.add(slotF);
+                    
+                    // Ranhura traseira (X próximo a S)
+                    const slotB = new THREE.Mesh(new THREE.BoxGeometry(T*2, TOOTH*0.9, T*2), slotMat);
+                    slotB.position.set(S - T, T + TOOTH/2 + i * TOOTH, zPos);
+                    group.add(slotB);
+                }
+            }
+            
+            // SLOTS para divisórias (verde)
+            const divSlotMat = new THREE.MeshPhongMaterial({ color: COLORS.divSlots, transparent: true, opacity: 0.9 });
+            [0.4, 0.9, 1.5].forEach(x => {
+                const slotL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
+                slotL.position.set(x, T + 0.35, zPos);
+                group.add(slotL);
+                
+                const slotU = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
+                slotU.position.set(x, T + S - 0.35, zPos);
+                group.add(slotU);
+            });
+            
+            // Marcação interna - identificação da lateral
+            const labelText = isLeft ? 'LAT. ESQ' : 'LAT. DIR';
+            const label = createLabel(labelText, 0.12);
+            label.rotation.y = isLeft ? 0 : Math.PI; // Texto voltado para dentro
+            label.position.set(S/2, T + S/2, isLeft ? zPos + 0.02 : zPos - 0.02);
+            group.add(label);
+            
+            return group;
+        }
+        
+        function createFrontal() {
+            const group = new THREE.Group();
+            const W = S - 2*T; // 244mm (largura interna entre as laterais)
+            
+            const mat = new THREE.MeshPhongMaterial({ color: COLORS.mdf, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+            // Frontal fica em X=T/2, altura S, largura W (entre as laterais)
+            const plate = new THREE.Mesh(new THREE.BoxGeometry(T, S, W), mat);
+            plate.position.set(T/2, T + S/2, S/2);
+            group.add(plate);
+            
+            // DENTES nas laterais (vermelho) - encaixam nas ranhuras azuis das laterais
+            const toothMat = new THREE.MeshPhongMaterial({ color: COLORS.teeth });
+            for (let i = 0; i < 10; i++) {
+                if (i % 2 === 1) {
+                    // Dente esquerdo (encaixa na lateral esquerda)
+                    const toothL = new THREE.Mesh(new THREE.BoxGeometry(T, TOOTH*0.85, T*1.5), toothMat);
+                    toothL.position.set(T/2, T + TOOTH/2 + i * TOOTH, T);
+                    group.add(toothL);
+                    
+                    // Dente direito (encaixa na lateral direita)
+                    const toothR = new THREE.Mesh(new THREE.BoxGeometry(T, TOOTH*0.85, T*1.5), toothMat);
+                    toothR.position.set(T/2, T + TOOTH/2 + i * TOOTH, S - T);
+                    group.add(toothR);
+                }
+            }
+            
+            // Furo 70mm de entrada
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, T*3, 32), holeMat);
+            hole.rotation.z = Math.PI/2;
+            hole.position.set(T/2, T + S/2, S/2);
+            group.add(hole);
+            
+            // Anel verde indicador (entrada)
+            const ringMat = new THREE.MeshPhongMaterial({ color: 0x27ae60 });
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.015, 8, 32), ringMat);
+            ring.rotation.y = Math.PI/2;
+            ring.position.set(-0.01, T + S/2, S/2);
+            group.add(ring);
+            
+            // Marcação interna - "FRONTAL" (lado de dentro da caixa)
+            const label = createLabel('FRONTAL', 0.1);
+            label.rotation.y = Math.PI/2; // Texto voltado para dentro
+            label.position.set(T + 0.02, T + S - 0.3, S/2);
+            group.add(label);
+            
+            // Indicador de entrada
+            const labelEntrada = createLabel('ENTRADA', 0.08);
+            labelEntrada.rotation.y = -Math.PI/2; // Texto voltado para fora
+            labelEntrada.position.set(-0.02, T + S - 0.3, S/2);
+            group.add(labelEntrada);
+            
+            return group;
+        }
+        
+        function createTraseira() {
+            const group = new THREE.Group();
+            const W = S - 2*T; // 244mm
+            
+            const mat = new THREE.MeshPhongMaterial({ color: COLORS.mdf, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+            // Traseira fica em X=S-T/2, altura S, largura W (entre as laterais)
+            const plate = new THREE.Mesh(new THREE.BoxGeometry(T, S, W), mat);
+            plate.position.set(S - T/2, T + S/2, S/2);
+            group.add(plate);
+            
+            const toothMat = new THREE.MeshPhongMaterial({ color: COLORS.teeth });
+            for (let i = 0; i < 10; i++) {
+                if (i % 2 === 1) {
+                    // Dente esquerdo
+                    const toothL = new THREE.Mesh(new THREE.BoxGeometry(T, TOOTH*0.85, T*1.5), toothMat);
+                    toothL.position.set(S - T/2, T + TOOTH/2 + i * TOOTH, T);
+                    group.add(toothL);
+                    
+                    // Dente direito
+                    const toothR = new THREE.Mesh(new THREE.BoxGeometry(T, TOOTH*0.85, T*1.5), toothMat);
+                    toothR.position.set(S - T/2, T + TOOTH/2 + i * TOOTH, S - T);
+                    group.add(toothR);
+                }
+            }
+            
+            // Furo 150mm de saída
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, T*3, 32), holeMat);
+            hole.rotation.z = Math.PI/2;
+            hole.position.set(S - T/2, T + S/2, S/2);
+            group.add(hole);
+            
+            // Anel vermelho indicador (saída)
+            const ringMat = new THREE.MeshPhongMaterial({ color: 0xe74c3c });
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.76, 0.02, 8, 32), ringMat);
+            ring.rotation.y = Math.PI/2;
+            ring.position.set(S + 0.01, T + S/2, S/2);
+            group.add(ring);
+            
+            // Marcação interna - "TRASEIRA" (lado de dentro da caixa)
+            const label = createLabel('TRASEIRA', 0.1);
+            label.rotation.y = -Math.PI/2; // Texto voltado para dentro
+            label.position.set(S - T - 0.02, T + S - 0.3, S/2);
+            group.add(label);
+            
+            // Indicador de saída
+            const labelSaida = createLabel('SAÍDA', 0.08);
+            labelSaida.rotation.y = Math.PI/2; // Texto voltado para fora
+            labelSaida.position.set(S + 0.02, T + S - 0.3, S/2);
+            group.add(labelSaida);
+            
+            return group;
+        }
+        
+        function createDivisoria(posX, type) {
+            const group = new THREE.Group();
+            const W = S - 2*T; // 244mm (cabe entre as laterais)
+            
+            const mat = new THREE.MeshPhongMaterial({ color: COLORS.mdfLight, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
+            const plate = new THREE.Mesh(new THREE.BoxGeometry(T, W, W), mat);
+            plate.position.set(posX, T + S/2, S/2);
+            group.add(plate);
+            
+            // ABAS (laranja) - passam pelos slots das laterais
+            const abaMat = new THREE.MeshPhongMaterial({ color: COLORS.abas });
+            [
+                [T + 0.35, T/2 - 0.025],      // Inferior esquerda
+                [T + S - 0.35, T/2 - 0.025],  // Superior esquerda
+                [T + 0.35, S - T/2 + 0.025],  // Inferior direita
+                [T + S - 0.35, S - T/2 + 0.025] // Superior direita
+            ].forEach(([y, z]) => {
+                const aba = new THREE.Mesh(new THREE.BoxGeometry(T*1.2, 0.38, 0.05), abaMat);
+                aba.position.set(posX, y, z);
+                group.add(aba);
+            });
+            
+            // Furo do filtro (indicador colorido)
+            let fW, fH, fColor, filterLabel;
+            if (type === 'jeans') {
+                fW = 2.0; fH = 2.0; fColor = 0x1abc9c; filterLabel = 'Jeans';
+            } else if (type === 'gm') {
+                fW = 2.05; fH = 2.2; fColor = 0xf1c40f; filterLabel = 'GM 205×220';
+            } else {
+                fW = 2.2; fH = 1.6; fColor = 0x2ecc71; filterLabel = 'Wega 220×160';
+            }
+            
+            const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.4 });
+            const filter = new THREE.Mesh(new THREE.BoxGeometry(T*3, fH, fW), filterMat);
+            filter.position.set(posX, T + S/2, S/2);
+            group.add(filter);
+            
+            // Marcação interna - identificação da divisória
+            let labelText;
+            if (type === 'jeans') labelText = 'DIV. JEANS';
+            else if (type === 'gm') labelText = 'DIV. GM';
+            else labelText = 'DIV. WEGA';
+            
+            const divLabel = createLabel(labelText, 0.1);
+            divLabel.rotation.y = Math.PI/2; // Texto voltado para entrada
+            divLabel.position.set(posX - 0.02, T + S - 0.25, S/2);
+            group.add(divLabel);
+            
+            return group;
+        }
+        
+        function createTampa() {
+            const group = new THREE.Group();
+            
+            const mat = new THREE.MeshPhongMaterial({ color: COLORS.mdf, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+            // Tampa fica no topo: base(T) + laterais(S) = T + S
+            const tampa = new THREE.Mesh(new THREE.BoxGeometry(S, T, S), mat);
+            tampa.position.set(S/2, T + S + T/2, S/2);
+            group.add(tampa);
+            
+            const holeMat = new THREE.MeshPhongMaterial({ color: 0x555555 });
+            [[0.15, 0.15], [S-0.15, 0.15], [0.15, S-0.15], [S-0.15, S-0.15]].forEach(([x, z]) => {
+                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, T*2, 16), holeMat);
+                hole.position.set(x, T + S + T/2, z);
+                group.add(hole);
+            });
+            
+            // Marcação interna - "TAMPA" no lado de baixo (lado interno)
+            const label = createLabel('TAMPA', 0.15);
+            label.rotation.x = Math.PI/2;
+            label.position.set(S/2, T + S - 0.01, S/2);
+            group.add(label);
+            
+            return group;
+        }
+        
+        function createGaveta() {
+            const group = new THREE.Group();
+            const baseY = T + 0.03; // Logo acima da base
+            const gH = 0.35; // Altura do compartimento (35mm)
+            const gW = S - 2*T; // Largura interna (~244mm) - entre as laterais
+            const gD = 0.45; // Profundidade (45mm) - junto à traseira
+            
+            // Corpo do compartimento de carvão (fixo) - colado na traseira
+            const gX = S - T - gD/2; // Posição X (junto à traseira)
+            const mat = new THREE.MeshPhongMaterial({ color: 0x4a4a4a, transparent: true, opacity: 0.9 });
+            
+            // Fundo perfurado
+            const fundo = new THREE.Mesh(new THREE.BoxGeometry(gD, T, gW), mat);
+            fundo.position.set(gX, baseY + T/2, S/2);
+            group.add(fundo);
+            
+            // Frente do compartimento (dentro da caixa)
+            const frente = new THREE.Mesh(new THREE.BoxGeometry(T, gH, gW), mat);
+            frente.position.set(gX - gD/2 + T/2, baseY + gH/2, S/2);
+            group.add(frente);
+            
+            // Laterais do compartimento (encostam nas laterais da caixa)
+            const latMat = new THREE.MeshPhongMaterial({ color: 0x5a5a5a, transparent: true, opacity: 0.9 });
+            const latE = new THREE.Mesh(new THREE.BoxGeometry(gD, gH, T), latMat);
+            latE.position.set(gX, baseY + gH/2, T + T/2);
+            group.add(latE);
+            
+            const latD = new THREE.Mesh(new THREE.BoxGeometry(gD, gH, T), latMat);
+            latD.position.set(gX, baseY + gH/2, S - T - T/2);
+            group.add(latD);
+            
+            // Carvão ativado (visualização)
+            const carvaoMat = new THREE.MeshPhongMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.8 });
+            const carvao = new THREE.Mesh(new THREE.BoxGeometry(gD - 2*T, gH - 2*T, gW - 2*T), carvaoMat);
+            carvao.position.set(gX, baseY + T + (gH-2*T)/2, S/2);
+            group.add(carvao);
+            
+            // Furos no fundo (indicação visual)
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            for (let i = 0; i < 2; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 8), holeMat);
+                    hole.position.set(gX - 0.1 + i * 0.2, baseY + T/2, 0.3 + j * 0.27);
+                    group.add(hole);
+                }
+            }
+            
+            // Marcação interna - "CARVÃO" na frente
+            const label = createLabel('CARVÃO', 0.08);
+            label.rotation.y = -Math.PI/2;
+            label.position.set(gX - gD/2 - 0.02, baseY + gH * 0.5, S/2);
+            group.add(label);
+            
+            return group;
+        }
+        
+        function updateStep() {
+            const step = steps[currentStep];
+            
+            document.getElementById('stepNum').textContent = step.num;
+            document.getElementById('stepTitle').textContent = step.title;
+            document.getElementById('stepDesc').textContent = step.desc;
+            document.getElementById('progressFill').style.width = ((currentStep + 1) / steps.length * 100) + '%';
+            
+            const encaixeInfo = document.getElementById('encaixeInfo');
+            encaixeInfo.className = 'encaixe-info ' + step.type;
+            document.getElementById('encaixeDesc').textContent = step.encaixe;
+            
+            document.getElementById('btnPrev').classList.toggle('btn-disabled', currentStep === 0);
+            document.getElementById('btnNext').textContent = currentStep === steps.length - 1 ? '✓ Completo' : 'Próximo →';
+            
+            Object.keys(parts).forEach(key => {
+                parts[key].visible = step.parts.includes(key);
+            });
+            
+            animateCamera(step.camera.pos, step.camera.look);
+        }
+        
+        function animateCamera(pos, look) {
+            const startPos = camera.position.clone();
+            const endPos = new THREE.Vector3(...pos);
+            const endLook = new THREE.Vector3(...look);
+            const duration = 500;
+            const startTime = Date.now();
+            
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const t = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - t, 3);
+                
+                camera.position.lerpVectors(startPos, endPos, eased);
+                camera.lookAt(endLook);
+                
+                if (t < 1) requestAnimationFrame(update);
+            }
+            update();
+        }
+        
+        function nextStep() {
+            if (currentStep < steps.length - 1) { currentStep++; updateStep(); }
+        }
+        
+        function prevStep() {
+            if (currentStep > 0) { currentStep--; updateStep(); }
+        }
+        
+        function resetView() {
+            const step = steps[currentStep];
+            animateCamera(step.camera.pos, step.camera.look);
+        }
+        
+        function viewFront() { animateCamera([-3, 1.5, 1.25], [1.25, 1.3, 1.25]); }
+        function viewBack() { animateCamera([5.5, 1.5, 1.25], [1.25, 1.3, 1.25]); }
+        function viewSide() { animateCamera([1.25, 1.5, -2.5], [1.25, 1.3, 1.25]); }
+        function viewTop() { animateCamera([1.25, 6, 1.25], [1.25, 0.5, 1.25]); }
+        function viewInside() { animateCamera([1.25, 1.3, 1.25], [1.25, 1.3, 2.5]); }
+        
+        function toggleExplode() {
+            explodeMode = document.getElementById('chkExplode').checked;
+            updateExplosion();
+        }
+        
+        function updateExplosion() {
+            const offset = explodeMode ? 0.4 : 0;
+            if (parts.base) parts.base.position.y = -offset;
+            if (parts.tampa) parts.tampa.position.y = offset;
+            if (parts.latEsq) parts.latEsq.position.z = -offset;
+            if (parts.latDir) parts.latDir.position.z = offset;
+            if (parts.frontal) parts.frontal.position.x = -offset;
+            if (parts.traseira) parts.traseira.position.x = offset;
+            if (parts.divJeans) parts.divJeans.position.y = offset * 0.3;
+            if (parts.divGM) parts.divGM.position.y = offset * 0.2;
+            if (parts.divWega) parts.divWega.position.y = offset * 0.1;
+        }
+        
+        function toggleWireframe() {
+            wireframeMode = document.getElementById('chkWireframe').checked;
+            Object.values(parts).forEach(group => {
+                group.traverse(child => {
+                    if (child.material) {
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(m => m.wireframe = wireframeMode);
+                        } else {
+                            child.material.wireframe = wireframeMode;
+                        }
+                    }
+                });
+            });
+        }
+        
+        function toggleAutoRotate() {
+            autoRotate = document.getElementById('chkAutoRotate').checked;
+        }
+        
+        function viewDetail() {
+            if (currentStep === 3 || currentStep === 4) {
+                animateCamera([0.15, 1.5, 0.8], [0.05, 1.3, 0.3]);
+            } else if (currentStep === 5) {
+                animateCamera([0.6, 1.2, 0.2], [0.4, 0.8, 0.1]);
+            } else if (currentStep === 6) {
+                animateCamera([2.5, 0.6, 0.5], [2.1, 0.25, 1.25]);
+            } else {
+                animateCamera([2.5, 1.8, 2.5], [1.25, 1.3, 1.25]);
+            }
+        }
+        
+        function setupMouse() {
+            let dragging = false;
+            let prevX = 0, prevY = 0;
+            let shiftKey = false;
+            
+            renderer.domElement.onmousedown = e => { 
+                dragging = true; 
+                prevX = e.clientX; 
+                prevY = e.clientY; 
+                shiftKey = e.shiftKey;
+            };
+            
+            renderer.domElement.onmousemove = e => {
+                if (!dragging) return;
+                const dx = e.clientX - prevX;
+                const dy = e.clientY - prevY;
+                
+                if (e.shiftKey || shiftKey) {
+                    // Pan (mover câmera lateralmente)
+                    const right = new THREE.Vector3();
+                    const up = new THREE.Vector3();
+                    camera.getWorldDirection(up);
+                    right.crossVectors(up, camera.up).normalize();
+                    up.crossVectors(right, camera.getWorldDirection(new THREE.Vector3())).normalize();
+                    
+                    camera.position.addScaledVector(right, -dx * 0.005);
+                    camera.position.addScaledVector(up, dy * 0.005);
+                } else {
+                    // Rotação orbital
+                    const pivot = new THREE.Vector3(1.25, 1.3, 1.25);
+                    camera.position.sub(pivot);
+                    const spherical = new THREE.Spherical().setFromVector3(camera.position);
+                    spherical.theta -= dx * 0.005;
+                    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi - dy * 0.005));
+                    camera.position.setFromSpherical(spherical).add(pivot);
+                    camera.lookAt(pivot);
+                }
+                
+                prevX = e.clientX; prevY = e.clientY;
+            };
+            
+            renderer.domElement.onmouseup = () => { dragging = false; shiftKey = false; };
+            renderer.domElement.onmouseleave = () => { dragging = false; shiftKey = false; };
+            
+            renderer.domElement.onwheel = e => {
+                e.preventDefault();
+                const dir = new THREE.Vector3();
+                camera.getWorldDirection(dir);
+                const zoomSpeed = e.deltaY * 0.003;
+                camera.position.addScaledVector(dir, -zoomSpeed);
+            };
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Auto-rotação
+            if (autoRotate) {
+                const pivot = new THREE.Vector3(1.25, 1.3, 1.25);
+                camera.position.sub(pivot);
+                const spherical = new THREE.Spherical().setFromVector3(camera.position);
+                spherical.theta += 0.003;
+                camera.position.setFromSpherical(spherical).add(pivot);
+                camera.lookAt(pivot);
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        document.onkeydown = e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextStep();
+            if (e.key === 'ArrowLeft') prevStep();
+            if (e.key === 'd' || e.key === 'D') viewDetail();
+        };
+    </script>
+</body>
+</html>
