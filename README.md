@@ -152,10 +152,10 @@ Abra `MONTAGEM_3D.html` no navegador para:
 
 | Divisória | Posição X | Filtro | Função |
 |-----------|-----------|--------|--------|
-| Manta G3 | 25mm | 200×200mm, **15mm** esp. | Pré-filtro (partículas grandes) |
-| GM Cabine Bosch | 50mm | 205×220mm, **20mm** esp. | Filtro cabine (partículas médias) |
-| Wega Motor | 95mm | 220×160mm, **50mm** esp. | Filtro motor (partículas finas) |
-| **FILTRO HEPA** | **150mm** | **130×240mm, 45mm** esp. | **H13 - 99.95% partículas** |
+| Manta G3 | **15mm** | 200×200mm, **15mm** esp. | Pré-filtro (partículas grandes) |
+| GM Cabine Bosch | **45mm** | 205×220mm, **20mm** esp. | Filtro cabine (partículas médias) |
+| Wega Motor | **80mm** | 220×160mm, **50mm** esp. | Filtro motor (partículas finas) |
+| **FILTRO HEPA** | **145mm** | **130×240mm, 45mm** esp. | **H13 - 99.95% partículas** |
 | Gaveta | 205mm | Carvão ativado | Gases e VOCs |
 
 ---

@@ -222,27 +222,27 @@
             },
             {
                 num: 6, title: "Divisória Manta G3", desc: "Insira a divisória MANTA G3 (pré-filtro)",
-                encaixe: "🔵 MANTA G3 - Pré-filtro ~15mm espessura. Posição X=25mm. Filtra partículas grandes.",
+                encaixe: "🔵 MANTA G3 - Pré-filtro ~15mm espessura. Posição X=15mm. Filtra partículas grandes.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3'],
-                camera: { pos: [1, 2.5, 3.5], look: [0.25, 1.3, 1.25] }
+                camera: { pos: [0.8, 2.5, 3.5], look: [0.15, 1.3, 1.25] }
             },
             {
                 num: 7, title: "Divisória GM Bosch", desc: "Insira a divisória GM CABINE BOSCH",
-                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=50mm. Filtra partículas médias.",
+                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=45mm. Filtra partículas médias.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM'],
-                camera: { pos: [1.5, 2.5, 3.5], look: [0.50, 1.3, 1.25] }
+                camera: { pos: [1.2, 2.5, 3.5], look: [0.45, 1.3, 1.25] }
             },
             {
                 num: 8, title: "Divisória Wega", desc: "Insira a divisória WEGA (filtro motor)",
-                encaixe: "🟢 WEGA MOTOR - Filtro motor 50mm espessura. Posição X=95mm. Filtra partículas finas.",
+                encaixe: "🟢 WEGA MOTOR - Filtro motor 50mm espessura. Posição X=80mm. Filtra partículas finas.",
                 type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega'],
-                camera: { pos: [2, 2.5, 3.5], look: [0.95, 1.3, 1.25] }
+                camera: { pos: [1.6, 2.5, 3.5], look: [0.80, 1.3, 1.25] }
             },
             {
                 num: 9, title: "Divisória HEPA", desc: "Insira a divisória FILTRO HEPA H13",
-                encaixe: "🔷 FILTRO HEPA EFH13W - Filtro H13 45mm espessura. Posição X=150mm. Remove 99,95% partículas!",
+                encaixe: "🔷 FILTRO HEPA EFH13W - Filtro H13 45mm espessura. Posição X=145mm. Remove 99,95% partículas!",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
-                camera: { pos: [2.5, 2.5, 3.5], look: [1.50, 1.3, 1.25] }
+                camera: { pos: [2.2, 2.5, 3.5], look: [1.45, 1.3, 1.25] }
             },
             {
                 num: 10, title: "Compartimento Carvão", desc: "Cole o compartimento de carvão na traseira",
@@ -429,16 +429,16 @@
             parts.traseira = createTraseira();
             scene.add(parts.traseira);
             
-            parts.divMantaG3 = createDivisoria(0.25, 'mantag3');
+            parts.divMantaG3 = createDivisoria(0.15, 'mantag3');
             scene.add(parts.divMantaG3);
             
-            parts.divGM = createDivisoria(0.50, 'gm');
+            parts.divGM = createDivisoria(0.45, 'gm');
             scene.add(parts.divGM);
             
-            parts.divWega = createDivisoria(0.95, 'wega');
+            parts.divWega = createDivisoria(0.80, 'wega');
             scene.add(parts.divWega);
             
-            parts.divHepa = createDivisoria(1.50, 'hepa');
+            parts.divHepa = createDivisoria(1.45, 'hepa');
             scene.add(parts.divHepa);
             
             parts.gaveta = createGaveta();
@@ -503,7 +503,7 @@
             
             // SLOTS para divisórias (verde) - 4 divisórias
             const divSlotMat = new THREE.MeshPhongMaterial({ color: COLORS.divSlots, transparent: true, opacity: 0.9 });
-            [0.25, 0.50, 0.95, 1.50].forEach(x => {
+            [0.15, 0.45, 0.80, 1.45].forEach(x => {
                 const slotL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
                 slotL.position.set(x, T + 0.35, zPos);
                 group.add(slotL);
