@@ -59,11 +59,12 @@
 | Base | 250×250mm | 3mm | 1 |
 
 ### Divisórias (com abas de 5mm para encaixe):
-| Peça | Corpo | Furo do Filtro |
-|------|-------|----------------|
-| Manta G3 | 244×244mm | 200×200mm (pré-filtro) |
-| GM | 244×244mm | 205×220mm |
-| **Wega** | 244×244mm | **220×160mm** |
+| Peça | Corpo | Furo do Filtro | Espessura Filtro |
+|------|-------|----------------|------------------|
+| Manta G3 | 244×244mm | 200×200mm | ~15mm |
+| GM | 244×244mm | 205×220mm | 20mm |
+| Wega | 244×244mm | 220×160mm | 45mm |
+| **HEPA EFH13W** | 244×244mm | **130×240mm** | **45mm** |
 
 ### Gaveta de Carvão:
 | Peça | Dimensão |
@@ -75,7 +76,7 @@
 
 ---
 
-## 📁 ARQUIVOS DE CORTE (11 total)
+## 📁 ARQUIVOS DE CORTE (12 total)
 
 | # | Arquivo | Descrição |
 |---|---------|-----------|
@@ -88,8 +89,9 @@
 | 7 | `07_DIVISORIA_MANTA_G3.nc` | 2× placas sanduíche com abas |
 | 8 | `08_DIVISORIA_GM.nc` | 244×244mm + furo 205×220mm |
 | 9 | `09_DIVISORIA_WEGA.nc` | 244×244mm + furo 220×160mm |
-| 10 | `10_GAVETA.nc` | 5 peças da gaveta |
-| 11 | `11_FLANGES.nc` | Entrada 70mm + Saída 150mm |
+| 10 | `10_DIVISORIA_HEPA.nc` | 244×244mm + furo 130×240mm (HEPA H13) |
+| 11 | `11_GAVETA.nc` | 5 peças da gaveta |
+| 12 | `12_FLANGES.nc` | Entrada 70mm + Saída 150mm |
 
 ---
 
@@ -148,21 +150,23 @@ Abra `MONTAGEM_3D.html` no navegador para:
 - Verificar encaixes visuais
 - Rotacionar e dar zoom no modelo
 
-| Divisória | Posição X | Filtro |
-|-----------|-----------|--------|
-| Manta G3 | 40mm | Manta G3 (pré-filtro) |
-| GM | 90mm | 205×220mm, 20mm esp. |
-| Wega | 150mm | 220×160mm, 45mm esp. |
-| Gaveta | 195mm | Carvão ativado |
+| Divisória | Posição X | Filtro | Função |
+|-----------|-----------|--------|--------|
+| Manta G3 | 25mm | 200×200mm, 15mm esp. | Pré-filtro (partículas grandes) |
+| GM | 50mm | 205×220mm, 20mm esp. | Filtro cabine (partículas médias) |
+| Wega | 95mm | 220×160mm, 45mm esp. | Filtro motor (partículas finas) |
+| **HEPA** | **150mm** | **130×240mm, 45mm esp.** | **H13 - 99.95% partículas** |
+| Gaveta | 205mm | Carvão ativado | Gases e VOCs |
 
 ---
 
 ## 📋 MATERIAIS
 
-- MDF 3mm: ~12 chapas 300×300mm
+- MDF 3mm: ~14 chapas 300×300mm
+- Manta G3 (pré-filtro)
 - Filtro GM cabine
 - Filtro Wega motor
-- Manta G3 (pré-filtro)
+- **Filtro HEPA Electrolux EFH13W** (130×250×45mm)
 - Carvão ativado ~1.5kg
 - Cola PVA + Silicone
 - Parafusos M3
