@@ -211,7 +211,7 @@ Posições: Y=220mm (topo) e Y=30mm (base)
 3. **Lateral Direita** → Paralela, a 244mm de distância
 4. **Frontal** → Dentes nos slots das laterais
 5. **Traseira** → Igual ao frontal
-6. **Trilhos 3D** → Fixar nas laterais com cola CA + parafuso M2×8mm (furos Ø2.5mm pré-cortados, 12/lateral)
+6. **Trilhos 3D** → Fixar nas laterais com cola CA + parafuso Allen M2×5mm (furos Ø2.5mm pré-cortados, 12/lateral)
 7. **Divisórias filtro** → Deslizar de cima pelos trilhos
 8. **Telas carvão (×2)** → Deslizar nos trilhos X=190 e X=230
 9. **Caixa carvão** → Encaixar 4 tiras + preencher com carvão
@@ -257,7 +257,7 @@ Abra `TRILHO_3D.html` para:
 - 16× Clips snap-fit impressos em PLA/PETG (SNAP_TAMPA.scad)
 - 24× Trilhos deslizantes impressos em PLA/PETG (TRILHO_FILTRO.scad)
 - 6× Puxadores + 6× Travas impressos (TRILHO_FILTRO.scad)
-- 24× Parafuso M2×8mm + porca M2 (fixação trilhos, 12 por lateral)
+- 24× Parafuso Allen M2×5mm (fixação trilhos, 12 por lateral — rosca no PLA, sem porca)
 - Filamento PLA/PETG ~120g
 
 ---

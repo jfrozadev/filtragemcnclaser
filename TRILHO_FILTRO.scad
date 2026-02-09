@@ -33,7 +33,7 @@
 //   Layer 0.2mm | Infill 40% | Walls 3
 //
 // FIXAÇÃO NAS LATERAIS:
-//   - Cola CA (cianoacrilato) + parafuso M2×8mm (fixação obrigatória)
+//   - Cola CA (cianoacrilato) + parafuso Allen M2×5mm (fixação obrigatória)
 //   - 3 furos Ø2.2mm por metade no fundo do trilho (furos Ø2.5mm no MDF)
 //
 // ENDER 3: 200×200mm bed
