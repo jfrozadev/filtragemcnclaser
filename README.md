@@ -98,6 +98,7 @@
 | 11 | `11_GAVETA.nc` | 2× tela carvão 244×244mm (abertura 200×200, M3 + 8 slots quadro) |
 | 12 | `12_FLANGES.nc` | Entrada 70mm + Saída 150mm |
 | 13 | `13_CAIXA_CARVAO.nc` | 4× bordas MDF quadro carvão (ao redor abertura, c/ abas tela) |
+| 14 | `TRILHO_FILTRO.scad` | Trilhos deslizantes 3D (filtros removíveis, Ender 3) |
 
 ---
 
@@ -155,6 +156,42 @@ Tela alumínio (mosquiteira) parafusada c/ M3+arruela
 Encaixam nos slots laterais como as outras divisórias
 ```
 
+### Trilhos Deslizantes (Filtros Removíveis por Cima):
+```
+VISTA LATERAL (corte da lateral esquerda):
+   TAMPA (remove snap-fit)
+   │                    │
+   │  ↑ filtro sobe ↑   │
+   │  ┌───────────┐  │
+   │╣█╣ divisória  ╣█╣│  ← trilho U impresso 3D
+   │╣█╣ MDF 3mm   ╣█╣│    colado na lateral
+   │╣█╣           ╣█╣│
+   │  └───────────┘  │
+   │   └─ trava ─┘   │  ← clipe de retenção (evita cair)
+   └──────────────────┘
+   BASE
+
+PERFIL DO TRILHO (seção transversal):
+   ┌─┐   ┌─┐
+   │ │   │ │  ← abas guiam o MDF
+   │ ╠═══╣ │  ← canal (esp. filtro + 0.4mm)
+   └─┴───┴─┘  ← base (cola no MDF lateral)
+
+2 METADES com dovetail (122mm + 122mm = 244mm):
+   Cabe na Ender 3 (200×200mm)
+   Encaixe macho/fêmea no centro
+```
+
+| Filtro | Pos X | Canal | Peças (2×metade A + 2×metade B) |
+|--------|-------|-------|-------------------------------|
+| Manta G3 | 15mm | 12mm | 4 |
+| GM Cabine | 40mm | 21mm | 4 |
+| Wega Motor | 90mm | 46mm | 4 |
+| HEPA | 120mm | 26mm | 4 |
+| Tela Carvão 1 | 165mm | 3.4mm | 4 |
+| Tela Carvão 2 | 210mm | 3.4mm | 4 |
+| **TOTAL** | | | **24 + 6 puxadores + 6 travas = 36** |
+
 ### Snap-Fit (Tampa + Base):
 ```
 16 clips impressos em PLA/PETG (8 topo + 8 base)
@@ -209,9 +246,11 @@ Abra `MONTAGEM_3D.html` no navegador para:
 - 32× Parafuso M3 + arruela (16 por tela)
 - Cola PVA + Silicone
 - 16× Clips snap-fit impressos em PLA/PETG (SNAP_TAMPA.scad)
-- Filamento PLA/PETG ~50g
+- 24× Trilhos deslizantes impressos em PLA/PETG (TRILHO_FILTRO.scad)
+- 6× Puxadores + 6× Travas impressos (TRILHO_FILTRO.scad)
+- Filamento PLA/PETG ~120g
 
 ---
 
-**Versão:** 6.0 — Caixa carvão 4 lados + snap-fit 16 clips  
-**Data:** Fevereiro 2025
+**Versão:** 7.0 — Trilhos deslizantes para filtros removíveis  
+**Data:** Fevereiro 2026
