@@ -120,7 +120,7 @@ M5
 
 ; Furo central 110x140mm (centralizado)
 ; X: (244-110)/2 = 67mm cada lado -> X de 67 a 177
-; Y: (244-140)/2 = 52mm cada lado -> Y de 52 a 192
+; Y: (240-140)/2 = 50mm cada lado -> Y de 50 a 190
 G0 X67.00 Y50.00
 M4 S1000
 G1 X177.00 Y50.00 F150

@@ -26,7 +26,7 @@ M5
 
 ; Furo central 220x160mm (centralizado)
 ; X: (244-220)/2 = 12mm -> X de 12 a 232
-; Y: (244-160)/2 = 42mm -> Y de 42 a 202
+; Y: (240-160)/2 = 40mm -> Y de 40 a 200
 G0 X12.00 Y40.00
 M4 S1000
 G1 X232.00 Y40.00 F150
