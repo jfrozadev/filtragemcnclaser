@@ -7,7 +7,7 @@
 
 ### 🔧 PROBLEMAS ORIGINAIS:
 1. Os arquivos originais tinham **dentes e ranhuras nas mesmas posições Y**
-2. Os **slots das divisórias** estavam desalinhados com as **abas**
+2. Os **slots das divisórias** nas laterais foram removidos (trilhos 3D substituem)
 
 ### ✅ CORREÇÕES APLICADAS:
 
@@ -25,9 +25,9 @@
    ░ = Recuo/Dente (25mm)
    ```
 
-**3. Slots das Divisórias CORRIGIDOS:**
-   - Antes: Slots em Y=15-55 e Y=195-235 (desalinhados!)
-   - Agora: Slots em Y=**12-52** e Y=**192-232** (alinhados com abas)
+**3. Slots das Divisórias REMOVIDOS:**
+   - Divisórias agora deslizam nos trilhos 3D impressos
+   - Sem abas nas divisórias, sem slots nas laterais
 
 **4. Lateral Direita ESPELHADA:**
    - Slots espelhados para encaixar corretamente quando montada
@@ -58,7 +58,7 @@
 | Tampa | 250×250mm | 3mm | 1 |
 | Base | 250×250mm | 3mm | 1 |
 
-### Divisórias (com abas de 5mm para encaixe):
+### Divisórias (retângulos simples 244×244mm, deslizam nos trilhos):
 | Peça | Corpo | Furo do Filtro | Espessura Filtro |
 |------|-------|----------------|------------------|
 | Manta G3 | 244×244mm | 200×200mm | **10mm** |
@@ -85,7 +85,7 @@
 
 | # | Arquivo | Descrição |
 |---|---------|-----------|
-| 1 | `01_LATERAL_ESQ.nc` | 250×250mm com ranhuras + slots divisórias + snap-fit + furos M2 trilhos |
+| 1 | `01_LATERAL_ESQ.nc` | 250×250mm com ranhuras + snap-fit + furos M2 trilhos |
 | 2 | `02_LATERAL_DIR.nc` | Idêntica (espelhada) + snap-fit + furos M2 trilhos |
 | 3 | `03_FRONTAL.nc` | 244×250mm com dentes + furo 70mm + snap-fit |
 | 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm + snap-fit |
@@ -117,14 +117,17 @@ Os DENTES do frontal/traseira entram
 nas RANHURAS das laterais!
 ```
 
-### Divisórias (Slots nas Laterais):
+### Divisórias (Deslizam nos Trilhos 3D):
 ```
 LATERAL:               DIVISÓRIA:
-   │ ▭ │ ← slot 4×40mm    ─┬─
-   │   │                    │├── aba 5mm
-   │   │                   ─┴─
+   │     │                244×244mm
+   │ ███ │ ← trilho 3D    ──────
+   │ ││  │                │ MDF │  ← desliza no U
+   │ ███ │ ← trilho 3D    ──────
+   │     │
    
-As ABAS (5mm) passam pelos SLOTS (4×40mm)
+Trilhos em U fixados com cola CA + Allen M2×5mm
+Divisórias deslizam de cima, sem abas/slots
 ```
 
 ### Compartimento Carvão (Quadro ao Redor da Abertura):
@@ -155,7 +158,7 @@ VISTA LATERAL (corte mostrando encaixe):
 Encaixes juntam Tela 1 + Quadro + Tela 2
 Tela alumínio (mosquiteira) parafusada c/ M3+arruela
 16 furos 3.5mm por placa (4 por lado)
-Encaixam nos slots laterais como as outras divisórias
+Encaixam nos trilhos laterais como as outras divisórias
 ```
 
 ### Trilhos Deslizantes (Filtros Removíveis por Cima):
@@ -262,5 +265,5 @@ Abra `TRILHO_3D.html` para:
 
 ---
 
-**Versão:** 9.1 — Redução furos M2 (36→12/lateral), cola CA primária + parafusos reforço  
+**Versão:** 9.2 — Divisórias sem abas, slots removidos (trilhos 3D substituem)  
 **Data:** Fevereiro 2026

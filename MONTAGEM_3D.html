@@ -144,8 +144,7 @@
                 <div class="legend-item"><div class="legend-color" style="background:#8B4513"></div>MDF 3mm</div>
                 <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>Dentes (macho)</div>
                 <div class="legend-item"><div class="legend-color" style="background:#3498db"></div>Ranhuras (fêmea)</div>
-                <div class="legend-item"><div class="legend-color" style="background:#2ecc71"></div>Slots divisórias</div>
-                <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div>Abas/Encaixes</div>
+                <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilhos 3D</div>
                 <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Snap-fit clips</div>
                 <div class="legend-item"><div class="legend-color" style="background:#A0522D"></div>Caixa carvão</div>
                 <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilhos 3D</div>
@@ -652,17 +651,7 @@
                 }
             }
             
-            // SLOTS para divisórias (verde) - 6 posições (4 filtros + 2 telas carvão)
-            const divSlotMat = new THREE.MeshPhongMaterial({ color: COLORS.divSlots, transparent: true, opacity: 0.9 });
-            [0.50, 0.75, 1.25, 1.55, 1.90, 2.30].forEach(x => {
-                const slotL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
-                slotL.position.set(x, T + 0.35, zPos);
-                group.add(slotL);
-                
-                const slotU = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
-                slotU.position.set(x, T + S - 0.35, zPos);
-                group.add(slotU);
-            });
+            // SLOTS divisórias REMOVIDOS — divisórias deslizam nos trilhos 3D
             
             // SLOTS SNAP-FIT (ciano) - 22×2mm para clips snap-fit
             const snapSlotMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
@@ -822,18 +811,7 @@
             plate.position.set(posX, T + S/2, S/2);
             group.add(plate);
             
-            // ABAS (laranja) - passam pelos slots das laterais
-            const abaMat = new THREE.MeshPhongMaterial({ color: COLORS.abas });
-            [
-                [T + 0.35, T/2 - 0.025],      // Inferior esquerda
-                [T + S - 0.35, T/2 - 0.025],  // Superior esquerda
-                [T + 0.35, S - T/2 + 0.025],  // Inferior direita
-                [T + S - 0.35, S - T/2 + 0.025] // Superior direita
-            ].forEach(([y, z]) => {
-                const aba = new THREE.Mesh(new THREE.BoxGeometry(T*1.2, 0.38, 0.05), abaMat);
-                aba.position.set(posX, y, z);
-                group.add(aba);
-            });
+            // ABAS REMOVIDAS — divisórias deslizam nos trilhos 3D (sem abas)
             
             // Furo do filtro com ESPESSURA CORRETA
             let fW, fH, fDepth, fColor, filterLabel;
