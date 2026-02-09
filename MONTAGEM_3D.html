@@ -679,14 +679,14 @@
             });
             
             // FUROS M2 para fixação dos trilhos (Ø2.5mm)
-            // 6 posições X × 6 furos Y = 36 furos por lateral
+            // 6 posições X × 2 furos Y = 12 furos por lateral (centro cada metade)
             const furoMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
             const furoRadius = 0.0125; // 1.25mm = Ø2.5mm
             const furoGeom = new THREE.CylinderGeometry(furoRadius, furoRadius, T * 3, 12);
             const furoXpositions = isLeft 
                 ? [0.50, 0.75, 1.25, 1.55, 1.90, 2.30]
                 : [2.00, 1.75, 1.25, 0.95, 0.60, 0.20];
-            const furoYpositions = [0.335, 0.640, 0.945, 1.555, 1.860, 2.165];
+            const furoYpositions = [0.640, 1.860];
             furoXpositions.forEach(fx => {
                 furoYpositions.forEach(fy => {
                     const furo = new THREE.Mesh(furoGeom, furoMat);
