@@ -1041,48 +1041,52 @@
             
             // Volume de carvão ativado entre as 2 telas
             const carvaoMat = new THREE.MeshPhongMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.7 });
-            const carbonDepth = telaPositions[1] - telaPositions[0]; // 0.35 (35mm)
+            const carbonDepth = telaPositions[1] - telaPositions[0]; // 0.45 (45mm centro-a-centro)
             const carbonCenter = (telaPositions[0] + telaPositions[1]) / 2;
-            const carvao = new THREE.Mesh(new THREE.BoxGeometry(carbonDepth - T*2, W * 0.85, W * 0.85), carvaoMat);
+            const frameSize = 2.00; // 200mm — quadro ao redor da abertura (NC: 200×200×42mm)
+            const stripDepth = carbonDepth - T; // 0.42 (42mm = gap entre faces internas das telas)
+            const stripThick = T; // 3mm MDF
+            const innerFrame = frameSize - 2 * stripThick; // 194mm (entre tiras verticais)
+            
+            const carvao = new THREE.Mesh(new THREE.BoxGeometry(stripDepth * 0.85, innerFrame * 0.9, innerFrame * 0.9), carvaoMat);
             carvao.position.set(carbonCenter, T + S/2, S/2);
             group.add(carvao);
             
             // ========================================
             // CAIXA DE CARVÃO - 4 tiras MDF com encaixe
-            // 4 strips formando retângulo 244×244×42mm
+            // 4 strips formando retângulo 200×200×42mm ao redor
+            // da abertura das telas (NC: 13_CAIXA_CARVAO.nc)
             // ========================================
             const stripMat = new THREE.MeshPhongMaterial({ color: 0xA0522D, transparent: true, opacity: 0.85 });
-            const stripDepth = carbonDepth; // 42mm = 0.42 (distância entre telas)
-            const stripThick = T; // 3mm MDF
             
-            // Tiras verticais (esquerda e direita) - 244mm × 42mm
-            const vertStrip = new THREE.BoxGeometry(stripDepth, W, stripThick);
+            // Tiras verticais (esquerda e direita) - 200mm × 42mm × 3mm
+            const vertStrip = new THREE.BoxGeometry(stripDepth, frameSize, stripThick);
             const stripLeft = new THREE.Mesh(vertStrip, stripMat);
-            stripLeft.position.set(carbonCenter, T + S/2, T + stripThick/2);
+            stripLeft.position.set(carbonCenter, T + S/2, S/2 - frameSize/2 + stripThick/2);
             group.add(stripLeft);
             
             const stripRight = new THREE.Mesh(vertStrip.clone(), stripMat);
-            stripRight.position.set(carbonCenter, T + S/2, S - T - stripThick/2);
+            stripRight.position.set(carbonCenter, T + S/2, S/2 + frameSize/2 - stripThick/2);
             group.add(stripRight);
             
-            // Tiras horizontais (superior e inferior) - 238mm corpo × 42mm
-            const horizW = W - 2*T; // 238mm (entre as verticais)
-            const horizStrip = new THREE.BoxGeometry(stripDepth, stripThick, horizW);
+            // Tiras horizontais (superior e inferior) - 194mm corpo × 42mm × 3mm
+            const horizStrip = new THREE.BoxGeometry(stripDepth, stripThick, innerFrame);
             const stripTop = new THREE.Mesh(horizStrip, stripMat);
-            stripTop.position.set(carbonCenter, T + S - stripThick/2, S/2);
+            stripTop.position.set(carbonCenter, T + S/2 + frameSize/2 - stripThick/2, S/2);
             group.add(stripTop);
             
             const stripBottom = new THREE.Mesh(horizStrip.clone(), stripMat);
-            stripBottom.position.set(carbonCenter, T + stripThick/2, S/2);
+            stripBottom.position.set(carbonCenter, T + S/2 - frameSize/2 + stripThick/2, S/2);
             group.add(stripBottom);
             
             // Indicadores de encaixe (tab/slot nos cantos - amarelo)
+            // NC: 2 entalhes 10×3mm por canto, 4 cantos = 8 encaixes
             const tabMat = new THREE.MeshPhongMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.9 });
             const tabSize = new THREE.BoxGeometry(stripDepth * 0.15, stripThick * 0.8, stripThick * 1.2);
             // 4 cantos × 2 tabs = 8 indicadores
             [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([vy, vz]) => {
-                const tabY = T + S/2 + vy * (W/2 - stripThick/2);
-                const tabZ = S/2 + vz * (W/2 - stripThick/2);
+                const tabY = T + S/2 + vy * (frameSize/2 - stripThick/2);
+                const tabZ = S/2 + vz * (frameSize/2 - stripThick/2);
                 [0.08, 0.24].forEach(frac => {
                     const tab = new THREE.Mesh(tabSize, tabMat);
                     tab.position.set(carbonCenter - stripDepth/2 + stripDepth * frac, tabY, tabZ);
@@ -1090,9 +1094,9 @@
                 });
             });
             
-            // Borda do volume de carvão
+            // Borda do quadro de carvão (200×200×42mm)
             const carbonEdges = new THREE.LineSegments(
-                new THREE.EdgesGeometry(new THREE.BoxGeometry(carbonDepth, W, W)),
+                new THREE.EdgesGeometry(new THREE.BoxGeometry(stripDepth, frameSize, frameSize)),
                 new THREE.LineBasicMaterial({ color: 0x555555 })
             );
             carbonEdges.position.set(carbonCenter, T + S/2, S/2);
