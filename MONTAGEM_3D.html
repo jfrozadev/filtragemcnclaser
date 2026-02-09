@@ -561,22 +561,58 @@
             });
             
             // ========================================
-            // SNAP-FIT SLOTS NA BASE (mesmas posições que a tampa)
-            // 8 slots para clips snap-fit na base
+            // SNAP-FIT CLIPS NA BASE (invertidos, pernas para CIMA)
+            // 8 clips idênticos aos da tampa, espelhados verticalmente
+            // Conforme SNAP_TAMPA.scad: ponte + 2 pernas + ganchos
             // ========================================
-            const snapSlotMat = new THREE.MeshPhongMaterial({ color: 0x00838f });
-            // Posições dos slots snap-fit (22×2mm)
+            const clipMat2 = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
+            const hookMat2 = new THREE.MeshPhongMaterial({ color: 0xff5722 });
+            const CW2 = 0.20, PW2 = 0.02, MF2 = T + 0.003;
+            const HEXT2 = 0.30, HINT2 = 0.24, GH2 = 0.012;
+            const BRIDGE2 = MF2 + 2*PW2;
+            
             const baseClipPositions = [
-                [1.00, T*0.5], [1.73, T*0.5],     // Lat.esq
-                [1.00, S-T*0.5], [1.73, S-T*0.5], // Lat.dir
-                [T*0.5, 0.82], [T*0.5, 1.62],     // Frontal
-                [S-T*0.5, 0.82], [S-T*0.5, 1.62]  // Traseira
+                {x: 1.00, z: T*0.5, rotY: 0},
+                {x: 1.73, z: T*0.5, rotY: 0},
+                {x: 1.00, z: S - T*0.5, rotY: Math.PI},
+                {x: 1.73, z: S - T*0.5, rotY: Math.PI},
+                {x: T*0.5, z: 0.82, rotY: Math.PI/2},
+                {x: T*0.5, z: 1.62, rotY: Math.PI/2},
+                {x: S - T*0.5, z: 0.82, rotY: -Math.PI/2},
+                {x: S - T*0.5, z: 1.62, rotY: -Math.PI/2}
             ];
             
-            baseClipPositions.forEach(([x, z]) => {
-                const slot = new THREE.Mesh(new THREE.BoxGeometry(0.02, T*2, 0.22), snapSlotMat);
-                slot.position.set(x, T/2, z);
-                group.add(slot);
+            baseClipPositions.forEach(({x, z, rotY}) => {
+                const clipGroup = new THREE.Group();
+                
+                // Ponte (embaixo da base)
+                const bridge = new THREE.Mesh(new THREE.BoxGeometry(CW2, PW2, BRIDGE2), clipMat2);
+                bridge.position.set(0, -PW2/2, 0);
+                clipGroup.add(bridge);
+                
+                // Perna externa (sobe por fora da caixa)
+                const legE = new THREE.Mesh(new THREE.BoxGeometry(CW2, HEXT2, PW2), clipMat2);
+                legE.position.set(0, HEXT2/2, -(MF2/2 + PW2/2));
+                clipGroup.add(legE);
+                
+                // Perna interna (sobe por dentro da caixa)
+                const legI = new THREE.Mesh(new THREE.BoxGeometry(CW2, HINT2, PW2), clipMat2);
+                legI.position.set(0, HINT2/2, (MF2/2 + PW2/2));
+                clipGroup.add(legI);
+                
+                // Gancho externo
+                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.04, GH2), hookMat2);
+                hookE.position.set(0, HEXT2 - 0.02, -(MF2/2 + PW2 + GH2/2));
+                clipGroup.add(hookE);
+                
+                // Gancho interno
+                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.03, GH2*0.8), hookMat2);
+                hookI.position.set(0, HINT2 - 0.015, (MF2/2 + PW2 + GH2*0.4));
+                clipGroup.add(hookI);
+                
+                clipGroup.rotation.y = rotY;
+                clipGroup.position.set(x, 0, z);
+                group.add(clipGroup);
             });
             
             // Marcação interna - "BASE" no topo (lado interno)
@@ -838,7 +874,6 @@
             // Perna externa 30mm, interna 24mm, gancho 1.2mm
             // ========================================
             const clipMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
-            const slotMat2 = new THREE.MeshPhongMaterial({ color: 0x00838f });
             
             // Posições dos clips no topo (escala: 1u = 100mm)
             // Laterais: X=1.00 e X=1.73 (centro dos painéis), Z=T/2 e Z=S-T/2
@@ -858,24 +893,43 @@
                 {x: S - T*0.5, z: 1.62, rotY: -Math.PI/2}
             ];
             
+            // Dimensões do clip (conforme SNAP_TAMPA.scad)
+            const CW = 0.20;       // largura clip 20mm
+            const PW = 0.02;       // parede 2mm
+            const MF = T + 0.003;  // MDF + folga
+            const HEXT = 0.30;     // perna externa 30mm
+            const HINT = 0.24;     // perna interna 24mm
+            const GH = 0.012;      // gancho 1.2mm
+            const BRIDGE = MF + 2*PW; // ponte total ~7.3mm
+            const hookMat = new THREE.MeshPhongMaterial({ color: 0xff5722 });
+            
             clipPositions.forEach(({x, z, rotY}) => {
-                // Clip body (perna externa visível)
                 const clipGroup = new THREE.Group();
                 
-                // Perna vertical (30mm = 0.30)
-                const leg = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.30, 0.20), clipMat);
-                leg.position.set(0, -0.15, 0);
-                clipGroup.add(leg);
+                // Ponte superior (sobre a borda da tampa)
+                const bridge = new THREE.Mesh(new THREE.BoxGeometry(CW, PW, BRIDGE), clipMat);
+                bridge.position.set(0, PW/2, 0);
+                clipGroup.add(bridge);
                 
-                // Gancho na ponta (1.2mm protrusion)
-                const hook = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.04, 0.20), new THREE.MeshPhongMaterial({ color: 0xff5722 }));
-                hook.position.set(-0.012, -0.30, 0);
-                clipGroup.add(hook);
+                // Perna externa (30mm, desce por fora da caixa)
+                const legE = new THREE.Mesh(new THREE.BoxGeometry(CW, HEXT, PW), clipMat);
+                legE.position.set(0, -HEXT/2, -(MF/2 + PW/2));
+                clipGroup.add(legE);
                 
-                // Topo (apoio sobre tampa)
-                const top = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.02, 0.20), clipMat);
-                top.position.set(0.02, 0.01, 0);
-                clipGroup.add(top);
+                // Perna interna (24mm, desce por dentro da caixa)
+                const legI = new THREE.Mesh(new THREE.BoxGeometry(CW, HINT, PW), clipMat);
+                legI.position.set(0, -HINT/2, (MF/2 + PW/2));
+                clipGroup.add(legI);
+                
+                // Gancho externo (vermelho, encaixa no slot da lateral)
+                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.04, GH), hookMat);
+                hookE.position.set(0, -HEXT + 0.02, -(MF/2 + PW + GH/2));
+                clipGroup.add(hookE);
+                
+                // Gancho interno (menor)
+                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.03, GH*0.8), hookMat);
+                hookI.position.set(0, -HINT + 0.015, (MF/2 + PW + GH*0.4));
+                clipGroup.add(hookI);
                 
                 clipGroup.rotation.y = rotY;
                 clipGroup.position.set(x, T + S + T, z);
