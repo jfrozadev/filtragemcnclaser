@@ -306,33 +306,33 @@
             },
             {
                 num: 7, title: "Divisória Manta G3", desc: "Deslize a divisória MANTA G3 pelos trilhos (de cima)",
-                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura. Posição X=15mm. Desliza nos trilhos 3D. Puxador no topo.",
+                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura. Posição X=50mm. Desliza nos trilhos 3D. Puxador no topo.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3'],
-                camera: { pos: [0.8, 2.5, 3.5], look: [0.15, 1.3, 1.25] }
+                camera: { pos: [1.15, 2.5, 3.5], look: [0.50, 1.3, 1.25] }
             },
             {
                 num: 8, title: "Divisória GM Bosch", desc: "Deslize a divisória GM CABINE BOSCH pelos trilhos",
-                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=40mm. Desliza nos trilhos 3D.",
+                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=75mm. Desliza nos trilhos 3D.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM'],
-                camera: { pos: [1.2, 2.5, 3.5], look: [0.40, 1.3, 1.25] }
+                camera: { pos: [1.55, 2.5, 3.5], look: [0.75, 1.3, 1.25] }
             },
             {
                 num: 9, title: "Divisória Wega", desc: "Deslize a divisória WEGA (filtro motor) pelos trilhos",
-                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=90mm. Trilho mais largo (canal 46mm).",
+                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=125mm. Trilho mais largo (canal 46mm).",
                 type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega'],
-                camera: { pos: [1.6, 2.5, 3.5], look: [0.90, 1.3, 1.25] }
+                camera: { pos: [1.95, 2.5, 3.5], look: [1.25, 1.3, 1.25] }
             },
             {
                 num: 10, title: "Divisória HEPA", desc: "Deslize a divisória FILTRO HEPA pelos trilhos",
-                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=120mm. Canal de 26mm nos trilhos.",
+                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=155mm. Canal de 26mm nos trilhos.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
-                camera: { pos: [2.2, 2.5, 3.5], look: [1.20, 1.3, 1.25] }
+                camera: { pos: [2.55, 2.5, 3.5], look: [1.55, 1.3, 1.25] }
             },
             {
                 num: 11, title: "Telas de Carvão", desc: "Deslize as 2 telas de carvão pelos trilhos",
-                encaixe: "⬛ CARVÃO ATIVADO - 2 telas MDF 244×244mm (abertura 200×200mm) deslizam nos trilhos X=165mm e X=210mm + caixa MDF 4 lados com encaixe (13_CAIXA_CARVAO.nc). Tela alumínio mosquiteira fixada com M3+arruela. ~500g carvão granulado.",
+                encaixe: "⬛ CARVÃO ATIVADO - 2 telas MDF 244×244mm (abertura 200×200mm) deslizam nos trilhos X=190mm e X=230mm + caixa MDF 4 lados com encaixe (13_CAIXA_CARVAO.nc). Tela alumínio mosquiteira fixada com M3+arruela. ~500g carvão granulado.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta'],
-                camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
+                camera: { pos: [4, 1.2, 2], look: [2.10, 0.2, 1.25] }
             },
             {
                 num: 12, title: "Tampa", desc: "Feche com a tampa usando clips snap-fit",
@@ -513,16 +513,16 @@
             parts.traseira = createTraseira();
             scene.add(parts.traseira);
             
-            parts.divMantaG3 = createDivisoria(0.15, 'mantag3');
+            parts.divMantaG3 = createDivisoria(0.50, 'mantag3');
             scene.add(parts.divMantaG3);
             
-            parts.divGM = createDivisoria(0.40, 'gm');
+            parts.divGM = createDivisoria(0.75, 'gm');
             scene.add(parts.divGM);
             
-            parts.divWega = createDivisoria(0.90, 'wega');
+            parts.divWega = createDivisoria(1.25, 'wega');
             scene.add(parts.divWega);
             
-            parts.divHepa = createDivisoria(1.20, 'hepa');
+            parts.divHepa = createDivisoria(1.55, 'hepa');
             scene.add(parts.divHepa);
             
             parts.gaveta = createCarbonCompartment();
@@ -567,8 +567,8 @@
             const snapSlotMat = new THREE.MeshPhongMaterial({ color: 0x00838f });
             // Posições dos slots snap-fit (22×2mm)
             const baseClipPositions = [
-                [1.05, T*0.5], [1.45, T*0.5],     // Lat.esq
-                [1.05, S-T*0.5], [1.45, S-T*0.5], // Lat.dir
+                [1.00, T*0.5], [1.73, T*0.5],     // Lat.esq
+                [1.00, S-T*0.5], [1.73, S-T*0.5], // Lat.dir
                 [T*0.5, 0.82], [T*0.5, 1.62],     // Frontal
                 [S-T*0.5, 0.82], [S-T*0.5, 1.62]  // Traseira
             ];
@@ -618,7 +618,7 @@
             
             // SLOTS para divisórias (verde) - 6 posições (4 filtros + 2 telas carvão)
             const divSlotMat = new THREE.MeshPhongMaterial({ color: COLORS.divSlots, transparent: true, opacity: 0.9 });
-            [0.15, 0.40, 0.90, 1.20, 1.65, 2.10].forEach(x => {
+            [0.50, 0.75, 1.25, 1.55, 1.90, 2.30].forEach(x => {
                 const slotL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
                 slotL.position.set(x, T + 0.35, zPos);
                 group.add(slotL);
@@ -630,7 +630,7 @@
             
             // SLOTS SNAP-FIT (ciano) - 22×2mm para clips snap-fit
             const snapSlotMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
-            [1.05, 1.45].forEach(x => {
+            [1.00, 1.73].forEach(x => {
                 // Slot superior (Y=220mm = 2.20)
                 const snapTop = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.22, T*2), snapSlotMat);
                 snapTop.position.set(x, T + 2.20, zPos);
@@ -841,15 +841,15 @@
             const slotMat2 = new THREE.MeshPhongMaterial({ color: 0x00838f });
             
             // Posições dos clips no topo (escala: 1u = 100mm)
-            // Laterais: X=1.05 e X=1.45 (centro dos painéis), Z=T/2 e Z=S-T/2
+            // Laterais: X=1.00 e X=1.73 (centro dos painéis), Z=T/2 e Z=S-T/2
             // Frontal/Traseira: Z=0.82 e Z=1.62, X=T/2 e X=S-T/2
             const clipPositions = [
                 // Sobre lateral esquerda
-                {x: 1.05, z: T*0.5, rotY: 0},
-                {x: 1.45, z: T*0.5, rotY: 0},
+                {x: 1.00, z: T*0.5, rotY: 0},
+                {x: 1.73, z: T*0.5, rotY: 0},
                 // Sobre lateral direita
-                {x: 1.05, z: S - T*0.5, rotY: Math.PI},
-                {x: 1.45, z: S - T*0.5, rotY: Math.PI},
+                {x: 1.00, z: S - T*0.5, rotY: Math.PI},
+                {x: 1.73, z: S - T*0.5, rotY: Math.PI},
                 // Sobre frontal
                 {x: T*0.5, z: 0.82, rotY: Math.PI/2},
                 {x: T*0.5, z: 1.62, rotY: Math.PI/2},
@@ -900,12 +900,12 @@
             
             // 6 filter positions: [posX (scene units), canal width mm]
             const railPositions = [
-                [0.15, 12],   // Manta G3
-                [0.40, 21],   // GM Cabine
-                [0.90, 46],   // Wega Motor
-                [1.20, 26],   // HEPA
-                [1.65, 3.4],  // Tela Carvão 1
-                [2.10, 3.4]   // Tela Carvão 2
+                [0.50, 12],   // Manta G3
+                [0.75, 21],   // GM Cabine
+                [1.25, 46],   // Wega Motor
+                [1.55, 26],   // HEPA
+                [1.90, 3.4],  // Tela Carvão 1
+                [2.30, 3.4]   // Tela Carvão 2
             ];
             
             const halfLen = 1.22; // 122mm in scene units
@@ -972,7 +972,7 @@
             const W = S - 2*T; // 244mm (entre as laterais)
             
             // Posições das 2 telas de carvão (slots nas laterais)
-            const telaPositions = [1.65, 2.10]; // X=165mm e X=210mm
+            const telaPositions = [1.90, 2.30]; // X=190mm e X=230mm
             
             const plateMat = new THREE.MeshPhongMaterial({ color: COLORS.mdfLight, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
             const abaMat = new THREE.MeshPhongMaterial({ color: COLORS.abas });
@@ -1041,10 +1041,10 @@
             
             // Volume de carvão ativado entre as 2 telas
             const carvaoMat = new THREE.MeshPhongMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.7 });
-            const carbonDepth = telaPositions[1] - telaPositions[0]; // 0.45 (45mm centro-a-centro)
+            const carbonDepth = telaPositions[1] - telaPositions[0]; // 0.40 (40mm centro-a-centro)
             const carbonCenter = (telaPositions[0] + telaPositions[1]) / 2;
-            const frameSize = 2.00; // 200mm — quadro ao redor da abertura (NC: 200×200×42mm)
-            const stripDepth = carbonDepth - T; // 0.42 (42mm = gap entre faces internas das telas)
+            const frameSize = 2.00; // 200mm — quadro ao redor da abertura (NC: 200×200×37mm)
+            const stripDepth = carbonDepth - T; // 0.37 (37mm = gap entre faces internas das telas)
             const stripThick = T; // 3mm MDF
             const innerFrame = frameSize - 2 * stripThick; // 194mm (entre tiras verticais)
             

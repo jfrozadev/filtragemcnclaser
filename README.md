@@ -73,9 +73,9 @@
 | Telas MDF (×2) | 244×244mm com abertura central 200×200mm (11_GAVETA.nc) |
 | Caixa MDF (quadro) | 4 bordas ao redor da abertura com encaixe tela (13_CAIXA_CARVAO.nc) |
 | Tela alumínio | Mosquiteira fixada com 16 paraf. M3+arruela por tela |
-| Posições (slots) | X=165mm (Tela 1) e X=210mm (Tela 2) |
-| Espaço interno | 42mm entre telas → ~500g carvão ativado |
-| Caixa montada | Quadro 200×200×42mm (4 bordas encaixadas ao redor da abertura) |
+| Posições (slots) | X=190mm (Tela 1) e X=230mm (Tela 2) |
+| Espaço interno | 37mm entre telas → ~500g carvão ativado |
+| Caixa montada | Quadro 200×200×37mm (4 bordas encaixadas ao redor da abertura) |
 | Abas conexão tela | 8 abas (10×3mm) encaixam em 8 slots nas telas, juntando 2 MDF |
 | Snap-fit (3D print) | 16 clips (8 topo + 8 base) – SNAP_TAMPA.scad |
 
@@ -130,9 +130,9 @@ As ABAS (5mm) passam pelos SLOTS (4×40mm)
 ### Compartimento Carvão (Quadro ao Redor da Abertura):
 ```
 LATERAL:
-   │ ▭ │ X=165mm  (Tela 1)
-   │   │  ← quadro carvão (42mm) ao redor da abertura
-   │ ▭ │ X=210mm  (Tela 2)
+   │ ▭ │ X=190mm  (Tela 1)
+   │   │  ← quadro carvão (37mm) ao redor da abertura
+   │ ▭ │ X=230mm  (Tela 2)
    
 VISTA FRONTAL (quadro entre as 2 telas):
    ┌────────────────────────┐
@@ -146,7 +146,7 @@ VISTA FRONTAL (quadro entre as 2 telas):
 VISTA LATERAL (corte mostrando encaixe):
    Tela2 ═══╤════════╤═══  ← aba atravessa slot
             │ carvão │
-            │  42mm  │     ← borda MDF 3mm
+            │  37mm  │     ← borda MDF 3mm
             │        │
    Tela1 ═══╧════════╧═══  ← aba atravessa slot
 
@@ -186,12 +186,12 @@ PERFIL DO TRILHO (seção transversal):
 
 | Filtro | Pos X | Canal | Peças (2×metade A + 2×metade B) |
 |--------|-------|-------|-------------------------------|
-| Manta G3 | 15mm | 12mm | 4 |
-| GM Cabine | 40mm | 21mm | 4 |
-| Wega Motor | 90mm | 46mm | 4 |
-| HEPA | 120mm | 26mm | 4 |
-| Tela Carvão 1 | 165mm | 3.4mm | 4 |
-| Tela Carvão 2 | 210mm | 3.4mm | 4 |
+| Manta G3 | 50mm | 12mm | 4 |
+| GM Cabine | 75mm | 21mm | 4 |
+| Wega Motor | 125mm | 46mm | 4 |
+| HEPA | 155mm | 26mm | 4 |
+| Tela Carvão 1 | 190mm | 3.4mm | 4 |
+| Tela Carvão 2 | 230mm | 3.4mm | 4 |
 | **TOTAL** | | | **24 + 6 puxadores + 6 travas = 36** |
 
 ### Snap-Fit (Tampa + Base):
@@ -213,7 +213,7 @@ Posições: Y=220mm (topo) e Y=30mm (base)
 5. **Traseira** → Igual ao frontal
 6. **Trilhos 3D** → Colar nas faces internas das laterais (cola CA + M2×8)
 7. **Divisórias filtro** → Deslizar de cima pelos trilhos
-8. **Telas carvão (×2)** → Deslizar nos trilhos X=165 e X=210
+8. **Telas carvão (×2)** → Deslizar nos trilhos X=190 e X=230
 9. **Caixa carvão** → Encaixar 4 tiras + preencher com carvão
 10. **Tampa** → Encaixar com 16 clips snap-fit (sem parafusos)
 
@@ -233,12 +233,13 @@ Abra `TRILHO_3D.html` para:
 
 | Divisória | Posição X | Espessura | Espaço até próximo | Função |
 |-----------|-----------|-----------|-------------------|--------|
-| Manta G3 | **15mm** | 10mm | 22mm→GM | Pré-filtro (partículas grandes) |
-| GM Cabine Bosch | **40mm** | 20mm | 27mm→Wega | Filtro cabine (partículas médias) |
-| Wega Motor | **90mm** | 45mm | 27mm→HEPA | Filtro motor (partículas finas) |
-| **FILTRO HEPA** | **120mm** | 25mm | 17mm→Tela 1 | **Filtro HEPA** |
-| Tela Carvão 1 | **165mm** | 3mm (MDF) | 42mm→Tela 2 | Retém carvão (lado interno) |
-| Tela Carvão 2 | **210mm** | 3mm (MDF) | 35mm→Traseira | Retém carvão (lado traseira) |
+| *(plenum entrada)* | *3mm* | — | *47mm→G3* | *Expansão do ar (47mm)* |
+| Manta G3 | **50mm** | 10mm | 22mm→GM | Pré-filtro (partículas grandes) |
+| GM Cabine Bosch | **75mm** | 20mm | 47mm→Wega | Filtro cabine (partículas médias) |
+| Wega Motor | **125mm** | 45mm | 27mm→HEPA | Filtro motor (partículas finas) |
+| **FILTRO HEPA** | **155mm** | 25mm | 32mm→Tela 1 | **Filtro HEPA** |
+| Tela Carvão 1 | **190mm** | 3mm (MDF) | 37mm→Tela 2 | Retém carvão (lado interno) |
+| Tela Carvão 2 | **230mm** | 3mm (MDF) | 17mm→Traseira | Retém carvão (lado traseira) |
 
 ---
 

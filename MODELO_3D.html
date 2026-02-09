@@ -78,11 +78,11 @@
         <div class="specs">
             <div class="specs-title">📋 Posições dos Filtros:</div>
             <table>
-                <tr><td class="label">Manta G3:</td><td class="val">X=15mm, 10mm esp.</td></tr>
-                <tr><td class="label">GM Cabine:</td><td class="val">X=40mm, 20mm esp.</td></tr>
-                <tr><td class="label">Wega Motor:</td><td class="val corrected">X=90mm, 45mm esp. ✓</td></tr>
-                <tr><td class="label">HEPA:</td><td class="val corrected">X=120mm, 25mm esp. ✓</td></tr>
-                <tr><td class="label">Tela Carvão:</td><td class="val">X=165/210mm</td></tr>
+                <tr><td class="label">Manta G3:</td><td class="val">X=50mm, 10mm esp.</td></tr>
+                <tr><td class="label">GM Cabine:</td><td class="val">X=75mm, 20mm esp.</td></tr>
+                <tr><td class="label">Wega Motor:</td><td class="val corrected">X=125mm, 45mm esp. ✓</td></tr>
+                <tr><td class="label">HEPA:</td><td class="val corrected">X=155mm, 25mm esp. ✓</td></tr>
+                <tr><td class="label">Tela Carvão:</td><td class="val">X=190/230mm</td></tr>
             </table>
         </div>
     </div>
@@ -97,12 +97,12 @@
         
         const S = 2.5, T = 0.03;
         const divs = {
-            mantag3: { g: null, in: true, x: 0.15 },
-            gm:      { g: null, in: true, x: 0.40 },
-            wega:    { g: null, in: true, x: 0.90 },
-            hepa:    { g: null, in: true, x: 1.20 },
-            tela1:   { g: null, in: true, x: 1.65 },
-            tela2:   { g: null, in: true, x: 2.10 }
+            mantag3: { g: null, in: true, x: 0.50 },
+            gm:      { g: null, in: true, x: 0.75 },
+            wega:    { g: null, in: true, x: 1.25 },
+            hepa:    { g: null, in: true, x: 1.55 },
+            tela1:   { g: null, in: true, x: 1.90 },
+            tela2:   { g: null, in: true, x: 2.30 }
         };
 
         init(); animate();
@@ -248,8 +248,8 @@
             filtGrp.add(hepa);
             
             // Carvão ativado (entre telas 1 e 2)
-            const carbonX = (divs.tela1.x + divs.tela2.x) / 2; // 1.875
-            const carbonDepth = divs.tela2.x - divs.tela1.x;   // 0.45
+            const carbonX = (divs.tela1.x + divs.tela2.x) / 2; // 2.10
+            const carbonDepth = divs.tela2.x - divs.tela1.x;   // 0.40
             const carv = new THREE.Mesh(
                 new THREE.BoxGeometry(carbonDepth * 0.8, 1.8, 1.8),
                 new THREE.MeshPhongMaterial({ color: 0x2c3e50, transparent: true, opacity: 0.8 })
@@ -264,7 +264,7 @@
             
             // Rail positions: [posX scene, canal mm]
             const positions = [
-                [0.15, 12], [0.40, 21], [0.90, 46], [1.20, 26], [1.65, 3.4], [2.10, 3.4]
+                [0.50, 12], [0.75, 21], [1.25, 46], [1.55, 26], [1.90, 3.4], [2.30, 3.4]
             ];
             
             const halfLen = 1.22;

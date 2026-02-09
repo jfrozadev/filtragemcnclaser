@@ -129,12 +129,12 @@
             <div class="section-title">📋 Dimensões dos Trilhos</div>
             <table class="specs">
                 <tr><th>Filtro</th><th>Pos X</th><th>Canal</th><th>Peças</th></tr>
-                <tr><td>Manta G3</td><td class="val">15mm</td><td class="val">12mm</td><td class="val">4</td></tr>
-                <tr><td>GM Cabine</td><td class="val">40mm</td><td class="val">21mm</td><td class="val">4</td></tr>
-                <tr><td>Wega Motor</td><td class="val">90mm</td><td class="val highlight">46mm</td><td class="val">4</td></tr>
-                <tr><td>HEPA</td><td class="val">120mm</td><td class="val">26mm</td><td class="val">4</td></tr>
-                <tr><td>Tela Carvão 1</td><td class="val">165mm</td><td class="val">3.4mm</td><td class="val">4</td></tr>
-                <tr><td>Tela Carvão 2</td><td class="val">210mm</td><td class="val">3.4mm</td><td class="val">4</td></tr>
+                <tr><td>Manta G3</td><td class="val">50mm</td><td class="val">12mm</td><td class="val">4</td></tr>
+                <tr><td>GM Cabine</td><td class="val">75mm</td><td class="val">21mm</td><td class="val">4</td></tr>
+                <tr><td>Wega Motor</td><td class="val">125mm</td><td class="val highlight">46mm</td><td class="val">4</td></tr>
+                <tr><td>HEPA</td><td class="val">155mm</td><td class="val">26mm</td><td class="val">4</td></tr>
+                <tr><td>Tela Carvão 1</td><td class="val">190mm</td><td class="val">3.4mm</td><td class="val">4</td></tr>
+                <tr><td>Tela Carvão 2</td><td class="val">230mm</td><td class="val">3.4mm</td><td class="val">4</td></tr>
                 <tr><th colspan="3">TOTAL</th><th class="val highlight">36</th></tr>
             </table>
             <div class="info-box info-green">
@@ -190,12 +190,12 @@
 
         // Filtros: [posX (escala), canal mm, cor, nome, espessura filtro mm]
         const FILTERS = [
-            { x: 0.15, canal: 12,   color: 0x1abc9c, name: 'Manta G3',  esp: 10,  fw: 2.0, fh: 2.0 },
-            { x: 0.40, canal: 21,   color: 0xf1c40f, name: 'GM Cabine', esp: 20,  fw: 2.23, fh: 2.1 },
-            { x: 0.90, canal: 46,   color: 0x2ecc71, name: 'Wega Motor',esp: 45,  fw: 2.2, fh: 1.6 },
-            { x: 1.20, canal: 26,   color: 0x3498db, name: 'HEPA',      esp: 25,  fw: 1.1, fh: 1.4 },
-            { x: 1.65, canal: 3.4,  color: 0xDEB887, name: 'Tela Carv1',esp: 3,   fw: 2.44, fh: 2.44 },
-            { x: 2.10, canal: 3.4,  color: 0xA0522D, name: 'Tela Carv2',esp: 3,   fw: 2.44, fh: 2.44 }
+            { x: 0.50, canal: 12,   color: 0x1abc9c, name: 'Manta G3',  esp: 10,  fw: 2.0, fh: 2.0 },
+            { x: 0.75, canal: 21,   color: 0xf1c40f, name: 'GM Cabine', esp: 20,  fw: 2.23, fh: 2.1 },
+            { x: 1.25, canal: 46,   color: 0x2ecc71, name: 'Wega Motor',esp: 45,  fw: 2.2, fh: 1.6 },
+            { x: 1.55, canal: 26,   color: 0x3498db, name: 'HEPA',      esp: 25,  fw: 1.1, fh: 1.4 },
+            { x: 1.90, canal: 3.4,  color: 0xDEB887, name: 'Tela Carv1',esp: 3,   fw: 2.44, fh: 2.44 },
+            { x: 2.30, canal: 3.4,  color: 0xA0522D, name: 'Tela Carv2',esp: 3,   fw: 2.44, fh: 2.44 }
         ];
 
         init();
@@ -611,7 +611,7 @@
 
         // Camera views
         function resetView() { animCamera([4, 3.5, 4.5], [1.25, 1.25, 1.25]); }
-        function viewProfile() { animCamera([0.15, 1.5, -1.5], [0.15, 1.3, 1.25]); }
+        function viewProfile() { animCamera([0.50, 1.5, -1.5], [0.50, 1.3, 1.25]); }
         function viewDovetail() { animCamera([0.5, 1.8, -0.5], [0.4, 1.22, 0.1]); }
         function viewInside() { animCamera([1.25, 1.3, 1.25], [1.25, 1.3, 0.03]); }
         function viewTop() { animCamera([1.25, 5.5, 1.25], [1.25, 0.5, 1.25]); }

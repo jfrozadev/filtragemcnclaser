@@ -13,12 +13,12 @@
 //   Montado: 244mm (largura interna da caixa)
 //
 // 6 PARES de trilhos (esq + dir por pos):
-//   1. Manta G3     (X=15mm,  esp=10mm)
-//   2. GM Cabine     (X=40mm,  esp=20mm)
-//   3. Wega Motor    (X=90mm,  esp=45mm)
-//   4. HEPA          (X=120mm, esp=25mm)
-//   5. Tela Carvão 1 (X=165mm, esp=3mm)
-//   6. Tela Carvão 2 (X=210mm, esp=3mm)
+//   1. Manta G3     (X=50mm,  esp=10mm)
+//   2. GM Cabine     (X=75mm,  esp=20mm)
+//   3. Wega Motor    (X=125mm,  esp=45mm)
+//   4. HEPA          (X=155mm, esp=25mm)
+//   5. Tela Carvão 1 (X=190mm, esp=3mm)
+//   6. Tela Carvão 2 (X=230mm, esp=3mm)
 //
 // PEÇAS POR FILTRO:
 //   2× metade A (esq+dir) + 2× metade B (esq+dir) = 4 peças
