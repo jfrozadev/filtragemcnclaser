@@ -32,131 +32,133 @@ bed_x = 200;
 bed_y = 200;
 
 // ============================================================
+// LAYOUT CORRIGIDO: Peças lado a lado em X, comp em Y
+// Cada metade: largura × 122mm comp.  Y=122mm < 200mm ✓
+// ============================================================
+
+// ============================================================
 // BATCH 1: Trilhos finos — Tela Carvão (canal 3.4mm)
-// 8 metades (4×A + 4×B) — todas as telas
-// Peça: ~7.4mm larg × 122mm comp → 8 peças cabem fácil
+// 8 metades (4×A + 4×B) lado a lado em X
+// Peça: ~7.4mm larg × 122mm comp → cabe: 59×122mm
 // Tempo estimado: ~50min
 // ============================================================
 
 module batch_1_tela_carvao() {
     largura = 3.4 + 2*2; // canal + 2× parede = 7.4mm
     
-    // 4× Metade A (com dovetail macho)
+    // 4× Metade A + 4× Metade B — tudo em uma fileira X
     for (i = [0:3]) {
         translate([i * (largura + gap), 0, 0])
             trilho_metade_a(3.4);
     }
-    
-    // 4× Metade B (com dovetail fêmea) — afastadas em Y
     for (i = [0:3]) {
-        translate([i * (largura + gap), 122 + gap + 5, 0])
+        translate([(4 + i) * (largura + gap), 0, 0])
             trilho_metade_b(3.4);
     }
     
-    // Tamanho total: ~42mm × 249mm
-    // Orientação: horizontal na cama (cabe em 200×200 se rotacionado)
-    // NOTA: Se comp > 200mm, rotacionar 90° no slicer
+    // Tamanho total: ~80mm × 122mm ✓
 }
 
 // ============================================================
 // BATCH 2: Trilhos Manta G3 (canal 12mm)
-// 4 metades (2×A + 2×B)
-// Peça: ~16mm larg × 122mm comp
+// 4 metades (2×A + 2×B) lado a lado em X
+// Peça: ~16mm larg × 122mm comp → cabe: 73mm × 122mm
 // Tempo estimado: ~1h
 // ============================================================
 
 module batch_2_manta_g3() {
     largura = 12 + 2*2; // 16mm
     
-    // 2× Metade A
     for (i = [0:1]) {
         translate([i * (largura + gap), 0, 0])
             trilho_metade_a(12);
     }
-    
-    // 2× Metade B
     for (i = [0:1]) {
-        translate([i * (largura + gap), 122 + gap + 5, 0])
+        translate([(2 + i) * (largura + gap), 0, 0])
             trilho_metade_b(12);
     }
     
-    // Tamanho total: ~35mm × 249mm
+    // Tamanho total: ~73mm × 122mm ✓
 }
 
 // ============================================================
 // BATCH 3: Trilhos GM Cabine (canal 21mm)
-// 4 metades (2×A + 2×B)
-// Peça: ~25mm larg × 122mm comp
+// 4 metades (2×A + 2×B) lado a lado em X
+// Peça: ~25mm larg × 122mm comp → cabe: 109mm × 122mm
 // Tempo estimado: ~1h20
 // ============================================================
 
 module batch_3_gm_cabine() {
     largura = 21 + 2*2; // 25mm
     
-    // 2× Metade A
     for (i = [0:1]) {
         translate([i * (largura + gap), 0, 0])
             trilho_metade_a(21);
     }
-    
-    // 2× Metade B
     for (i = [0:1]) {
-        translate([i * (largura + gap), 122 + gap + 5, 0])
+        translate([(2 + i) * (largura + gap), 0, 0])
             trilho_metade_b(21);
     }
     
-    // Tamanho total: ~53mm × 249mm
+    // Tamanho total: ~109mm × 122mm ✓
 }
 
 // ============================================================
 // BATCH 4: Trilhos HEPA (canal 26mm)
-// 4 metades (2×A + 2×B)
-// Peça: ~30mm larg × 122mm comp
+// 4 metades (2×A + 2×B) lado a lado em X
+// Peça: ~30mm larg × 122mm comp → cabe: 129mm × 122mm
 // Tempo estimado: ~1h30
 // ============================================================
 
 module batch_4_hepa() {
     largura = 26 + 2*2; // 30mm
     
-    // 2× Metade A
     for (i = [0:1]) {
         translate([i * (largura + gap), 0, 0])
             trilho_metade_a(26);
     }
-    
-    // 2× Metade B
     for (i = [0:1]) {
-        translate([i * (largura + gap), 122 + gap + 5, 0])
+        translate([(2 + i) * (largura + gap), 0, 0])
             trilho_metade_b(26);
     }
     
-    // Tamanho total: ~63mm × 249mm
+    // Tamanho total: ~129mm × 122mm ✓
 }
 
 // ============================================================
-// BATCH 5: Trilhos Wega Motor (canal 46mm) — O MAIOR
-// 4 metades (2×A + 2×B)
-// Peça: ~50mm larg × 122mm comp
-// Tempo estimado: ~2h
+// BATCH 5A: Trilhos Wega Motor (canal 46mm) — Metades A
+// 2 metades A lado a lado
+// Peça: ~50mm larg × 122mm comp → cabe: 103mm × 122mm
+// Tempo estimado: ~1h
 // ============================================================
 
-module batch_5_wega() {
+module batch_5a_wega() {
     largura = 46 + 2*2; // 50mm
     
-    // 2× Metade A
     for (i = [0:1]) {
         translate([i * (largura + gap), 0, 0])
             trilho_metade_a(46);
     }
     
-    // 2× Metade B
+    // Tamanho total: ~103mm × 122mm ✓
+}
+
+// ============================================================
+// BATCH 5B: Trilhos Wega Motor (canal 46mm) — Metades B
+// 2 metades B lado a lado
+// Peça: ~50mm larg × 122mm comp → cabe: 103mm × 122mm
+// Tempo estimado: ~1h
+// ============================================================
+
+module batch_5b_wega() {
+    largura = 46 + 2*2; // 50mm
+    
     for (i = [0:1]) {
-        translate([i * (largura + gap), 122 + gap + 5, 0])
+        translate([i * (largura + gap), 0, 0])
             trilho_metade_b(46);
     }
     
-    // Tamanho total: ~103mm × 249mm
-    // NOTA: Wega é o mais largo mas ainda cabe na Ender 3
+    // Tamanho total: ~103mm × 122mm ✓
 }
 
 // ============================================================
@@ -166,86 +168,87 @@ module batch_5_wega() {
 // ============================================================
 
 module batch_6_acessorios() {
-    // 6 puxadores (30×7.4×15mm cada)
-    for (i = [0:5]) {
+    // 3 puxadores por fileira (30mm cada + gap)
+    for (i = [0:2]) {
         translate([i * 35, 0, 0])
             puxador();
     }
+    for (i = [0:2]) {
+        translate([i * 35, 25, 0])
+            puxador();
+    }
     
-    // 6 travas (10×1.2×8mm cada)
+    // 6 travas ao lado
     for (i = [0:5]) {
-        translate([i * 15, 25, 0])
+        translate([110 + i * 15, 0, 0])
             trava();
     }
     
-    // Tamanho total: ~210mm × 33mm
-    // NOTA: puxadores podem precisar de 2 fileiras se largos demais
+    // Tamanho total: ~200mm × 33mm ✓
 }
 
 // ============================================================
 // BATCH COMBO: Batches 2+3 juntos (Manta + GM)
-// 8 metades no total — cabem na mesma cama
+// 8 metades no total — lado a lado em X: 185mm × 122mm
 // Tempo estimado: ~2h
 // ============================================================
 
 module batch_combo_manta_gm() {
-    // Manta G3 (larg=16mm)
-    largura_g3 = 12 + 2*2;
+    largura_g3 = 12 + 2*2;  // 16mm
+    largura_gm = 21 + 2*2;  // 25mm
+    
+    // G3: 2A + 2B
     for (i = [0:1]) {
         translate([i * (largura_g3 + gap), 0, 0])
             trilho_metade_a(12);
     }
     for (i = [0:1]) {
-        translate([i * (largura_g3 + gap), 122 + gap + 5, 0])
+        translate([(2 + i) * (largura_g3 + gap), 0, 0])
             trilho_metade_b(12);
     }
     
-    // GM Cabine (larg=25mm) — offset em X
-    offset_x = 2 * (largura_g3 + gap) + 10;
-    largura_gm = 21 + 2*2;
+    // GM: 2A + 2B — offset em X
+    offset_x = 4 * (largura_g3 + gap) + 5;
     for (i = [0:1]) {
         translate([offset_x + i * (largura_gm + gap), 0, 0])
             trilho_metade_a(21);
     }
     for (i = [0:1]) {
-        translate([offset_x + i * (largura_gm + gap), 122 + gap + 5, 0])
+        translate([offset_x + (2 + i) * (largura_gm + gap), 0, 0])
             trilho_metade_b(21);
     }
     
-    // Tamanho total: ~98mm × 249mm
+    // Tamanho total: ~185mm × 122mm ✓
 }
 
 // ============================================================
-// BATCH COMBO: Batches 4+5 juntos (HEPA + Wega)
-// 8 metades no total
-// Tempo estimado: ~3h
+// BATCH COMBO: Batches 4+5A juntos (HEPA + Wega×A)
+// 4 HEPA + 2 Wega A — max 6 peças: ~192mm × 122mm
+// Tempo estimado: ~2h30
 // ============================================================
 
-module batch_combo_hepa_wega() {
-    // HEPA (larg=30mm)
-    largura_hepa = 26 + 2*2;
+module batch_combo_hepa_wega_a() {
+    largura_hepa = 26 + 2*2; // 30mm
+    largura_wega = 46 + 2*2; // 50mm
+    
+    // HEPA: 2A + 2B
     for (i = [0:1]) {
         translate([i * (largura_hepa + gap), 0, 0])
             trilho_metade_a(26);
     }
     for (i = [0:1]) {
-        translate([i * (largura_hepa + gap), 122 + gap + 5, 0])
+        translate([(2 + i) * (largura_hepa + gap), 0, 0])
             trilho_metade_b(26);
     }
     
-    // Wega (larg=50mm) — offset em X
-    offset_x = 2 * (largura_hepa + gap) + 10;
-    largura_wega = 46 + 2*2;
+    // Wega A: 2 peças após HEPA
+    offset_x = 4 * (largura_hepa + gap) + 5;
     for (i = [0:1]) {
         translate([offset_x + i * (largura_wega + gap), 0, 0])
             trilho_metade_a(46);
     }
-    for (i = [0:1]) {
-        translate([offset_x + i * (largura_wega + gap), 122 + gap + 5, 0])
-            trilho_metade_b(46);
-    }
     
-    // Tamanho total: ~176mm × 249mm — apertado mas cabe
+    // Tamanho total: ~192mm × 122mm ✓ (apertado, cabe)
 }
 
 // ============================================================
@@ -257,19 +260,22 @@ module preview_all_batches() {
     color("DodgerBlue") translate([0, 0, 0])
         batch_1_tela_carvao();
     
-    color("LimeGreen") translate([0, 260, 0])
+    color("LimeGreen") translate([0, 135, 0])
         batch_2_manta_g3();
     
-    color("Gold") translate([0, 520, 0])
+    color("Gold") translate([0, 270, 0])
         batch_3_gm_cabine();
     
-    color("DeepSkyBlue") translate([0, 780, 0])
+    color("DeepSkyBlue") translate([0, 405, 0])
         batch_4_hepa();
     
-    color("Tomato") translate([0, 1040, 0])
-        batch_5_wega();
+    color("Tomato") translate([0, 540, 0])
+        batch_5a_wega();
     
-    color("Orange") translate([0, 1300, 0])
+    color("OrangeRed") translate([0, 675, 0])
+        batch_5b_wega();
+    
+    color("Orange") translate([0, 810, 0])
         batch_6_acessorios();
 }
 
@@ -282,12 +288,13 @@ batch_1_tela_carvao();      // 8× trilhos finos (~50min)
 // batch_2_manta_g3();      // 4× trilhos G3 (~1h)
 // batch_3_gm_cabine();     // 4× trilhos GM (~1h20)
 // batch_4_hepa();          // 4× trilhos HEPA (~1h30)
-// batch_5_wega();          // 4× trilhos Wega (~2h)
+// batch_5a_wega();         // 2× trilhos Wega A (~1h)
+// batch_5b_wega();         // 2× trilhos Wega B (~1h)
 // batch_6_acessorios();    // 6× puxadores + 6× travas (~45min)
 
 // Batches combinados (menos impressões):
 // batch_combo_manta_gm();     // G3 + GM juntos (~2h)
-// batch_combo_hepa_wega();    // HEPA + Wega juntos (~3h)
+// batch_combo_hepa_wega_a();  // HEPA + Wega A juntos (~2h30)
 
 // Visualização geral (não para impressão):
 // preview_all_batches();
@@ -296,29 +303,29 @@ batch_1_tela_carvao();      // 8× trilhos finos (~50min)
 // RESUMO DOS BATCHES
 // ============================================================
 //
-// OPÇÃO A — 6 batches individuais (~7h30 total):
+// OPÇÃO A — 7 batches individuais (~7h25 total):
 // | Batch | Filtro     | Peças | Tempo  | Tamanho cama     |
 // |-------|-----------|-------|--------|------------------|
-// | 1     | Tela×2    | 8     | ~50min | 42×249mm         |
-// | 2     | Manta G3  | 4     | ~1h    | 35×249mm         |
-// | 3     | GM Cabine | 4     | ~1h20  | 53×249mm         |
-// | 4     | HEPA      | 4     | ~1h30  | 63×249mm         |
-// | 5     | Wega      | 4     | ~2h    | 103×249mm        |
-// | 6     | Acessórios| 12    | ~45min | 210×33mm         |
+// | 1     | Tela×2    | 8     | ~50min | 80×122mm   ✓    |
+// | 2     | Manta G3  | 4     | ~1h    | 73×122mm   ✓    |
+// | 3     | GM Cabine | 4     | ~1h20  | 109×122mm  ✓    |
+// | 4     | HEPA      | 4     | ~1h30  | 129×122mm  ✓    |
+// | 5A    | Wega (A)  | 2     | ~1h    | 103×122mm  ✓    |
+// | 5B    | Wega (B)  | 2     | ~1h    | 103×122mm  ✓    |
+// | 6     | Acessórios| 12    | ~45min | 200×33mm   ✓    |
 // | TOTAL |           | 36    | ~7h25  |                  |
 //
-// OPÇÃO B — 4 batches combinados (~6h35 total):
+// OPÇÃO B — 4 batches combinados (~6h05 total):
 // | Batch | Filtros        | Peças | Tempo  | Tamanho cama  |
 // |-------|---------------|-------|--------|---------------|
-// | 1     | Tela×2        | 8     | ~50min | 42×249mm      |
-// | 2     | G3 + GM       | 8     | ~2h    | 98×249mm      |
-// | 3     | HEPA + Wega   | 8     | ~3h    | 176×249mm     |
-// | 4     | Acessórios    | 12    | ~45min | 210×33mm      |
-// | TOTAL |               | 36    | ~6h35  |               |
+// | 1     | Tela×2        | 8     | ~50min | 80×122mm  ✓  |
+// | 2     | G3 + GM       | 8     | ~2h    | 185×122mm ✓  |
+// | 3     | HEPA + Wega A | 6     | ~2h30  | 192×122mm ✓  |
+// | 4     | Wega B        | 2     | ~1h    | 103×122mm ✓  |
+// | 5     | Acessórios    | 12    | ~45min | 200×33mm  ✓  |
+// | TOTAL |               | 36    | ~7h05  |               |
 //
-// NOTA: Comprimento 249mm > 200mm da Ender 3
-//   → Rotacionar as peças na diagonal OU
-//   → Imprimir em Y (122mm comp cabe em 200mm)
-//   → No slicer: girar 90° se necessário
+// NOTA: Todas as dimensões agora cabem na Ender 3 (200×200mm)
+//   Peças dispostas lado a lado em X, comp=122mm em Y
 //
 // ============================================================

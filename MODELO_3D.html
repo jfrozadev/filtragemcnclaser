@@ -56,9 +56,10 @@
         <div class="section">
             <div class="section-title">🔽 Animar Divisórias</div>
             <div class="btn-row">
-                <button class="btn-red" onclick="animDiv('jeans')">Jeans</button>
+                <button class="btn-red" onclick="animDiv('mantag3')">G3</button>
                 <button class="btn-red" onclick="animDiv('gm')">GM</button>
                 <button class="btn-red" onclick="animDiv('wega')">Wega</button>
+                <button class="btn-red" onclick="animDiv('hepa')">HEPA</button>
                 <button class="btn-green" onclick="animAll()">Todas</button>
                 <button class="btn-gray" onclick="resetDiv()">Reset</button>
             </div>
@@ -75,10 +76,13 @@
         </div>
         
         <div class="specs">
-            <div class="specs-title">📋 Dimensões dos Filtros:</div>
+            <div class="specs-title">📋 Posições dos Filtros:</div>
             <table>
-                <tr><td class="label">GM Cabine:</td><td class="val">223×210mm, 20mm esp.</td></tr>
-                <tr><td class="label">Wega Motor:</td><td class="val corrected">220×160mm, 45mm esp. ✓</td></tr>
+                <tr><td class="label">Manta G3:</td><td class="val">X=15mm, 10mm esp.</td></tr>
+                <tr><td class="label">GM Cabine:</td><td class="val">X=40mm, 20mm esp.</td></tr>
+                <tr><td class="label">Wega Motor:</td><td class="val corrected">X=90mm, 45mm esp. ✓</td></tr>
+                <tr><td class="label">HEPA:</td><td class="val corrected">X=120mm, 25mm esp. ✓</td></tr>
+                <tr><td class="label">Tela Carvão:</td><td class="val">X=165/210mm</td></tr>
             </table>
         </div>
     </div>
@@ -93,9 +97,12 @@
         
         const S = 2.5, T = 0.03;
         const divs = {
-            jeans: { g: null, in: true, x: 0.4 },
-            gm: { g: null, in: true, x: 0.9 },
-            wega: { g: null, in: true, x: 1.5 }
+            mantag3: { g: null, in: true, x: 0.15 },
+            gm:      { g: null, in: true, x: 0.40 },
+            wega:    { g: null, in: true, x: 0.90 },
+            hepa:    { g: null, in: true, x: 1.20 },
+            tela1:   { g: null, in: true, x: 1.65 },
+            tela2:   { g: null, in: true, x: 2.10 }
         };
 
         init(); animate();
@@ -203,39 +210,51 @@
         }
         
         function createFiltros() {
-            // Manta G3 - 10mm colada + grampos
-            const jeans = new THREE.Mesh(
-                new THREE.BoxGeometry(0.10, S*0.8, S*0.8),
+            // Filtros posicionados UPSTREAM (entre divisoria anterior e atual)
+            // Manta G3 - 10mm
+            const g3 = new THREE.Mesh(
+                new THREE.BoxGeometry(0.10, 2.0, 2.0),
                 new THREE.MeshPhongMaterial({ color: 0x1abc9c, transparent: true, opacity: 0.6 })
             );
-            jeans.position.set(divs.jeans.x, S/2, S/2);
-            jeans.name = 'f-jeans';
-            filtGrp.add(jeans);
+            g3.position.set(divs.mantag3.x - 0.05, S/2, S/2);
+            g3.name = 'f-mantag3';
+            filtGrp.add(g3);
             
             // GM 223x210mm, 20mm
             const gm = new THREE.Mesh(
                 new THREE.BoxGeometry(0.2, 2.1, 2.23),
-                new THREE.MeshPhongMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.8 })
+                new THREE.MeshPhongMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.7 })
             );
-            gm.position.set(divs.gm.x, S/2, S/2);
+            gm.position.set(divs.gm.x - 0.10, S/2, S/2);
             gm.name = 'f-gm';
             filtGrp.add(gm);
             
-            // Wega 220x160mm, 45mm - CORRIGIDO
+            // Wega 220x160mm, 45mm
             const wega = new THREE.Mesh(
-                new THREE.BoxGeometry(0.45, 1.6, 2.2),  // 45mm esp, 160mm alt, 220mm larg
-                new THREE.MeshPhongMaterial({ color: 0x2ecc71, transparent: true, opacity: 0.8 })
+                new THREE.BoxGeometry(0.45, 1.6, 2.2),
+                new THREE.MeshPhongMaterial({ color: 0x2ecc71, transparent: true, opacity: 0.7 })
             );
-            wega.position.set(divs.wega.x, S/2, S/2);
+            wega.position.set(divs.wega.x - 0.225, S/2, S/2);
             wega.name = 'f-wega';
             filtGrp.add(wega);
             
-            // Carvão
-            const carv = new THREE.Mesh(
-                new THREE.BoxGeometry(0.4, 0.4, 2),
-                new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+            // HEPA 110x140mm, 25mm
+            const hepa = new THREE.Mesh(
+                new THREE.BoxGeometry(0.25, 1.4, 1.1),
+                new THREE.MeshPhongMaterial({ color: 0x3498db, transparent: true, opacity: 0.7 })
             );
-            carv.position.set(2.15, 0.4, S/2);
+            hepa.position.set(divs.hepa.x - 0.125, S/2, S/2);
+            hepa.name = 'f-hepa';
+            filtGrp.add(hepa);
+            
+            // Carvão ativado (entre telas 1 e 2)
+            const carbonX = (divs.tela1.x + divs.tela2.x) / 2; // 1.875
+            const carbonDepth = divs.tela2.x - divs.tela1.x;   // 0.45
+            const carv = new THREE.Mesh(
+                new THREE.BoxGeometry(carbonDepth * 0.8, 1.8, 1.8),
+                new THREE.MeshPhongMaterial({ color: 0x2c3e50, transparent: true, opacity: 0.8 })
+            );
+            carv.position.set(carbonX, S/2, S/2);
             filtGrp.add(carv);
         }
         
@@ -289,7 +308,7 @@
         
         function animAll() {
             let dl = 0;
-            ['jeans', 'gm', 'wega'].forEach(k => { setTimeout(() => animDiv(k), dl); dl += 250; });
+            ['mantag3', 'gm', 'wega', 'hepa'].forEach(k => { setTimeout(() => animDiv(k), dl); dl += 250; });
         }
         
         function resetDiv() {
@@ -312,9 +331,13 @@
         
         function explode() {
             isExploded = !isExploded;
-            const off = isExploded ? 0.4 : 0;
-            tween(divs.jeans.g.position, 'x', divs.jeans.g.position.x, 0.4 - off, 300);
-            tween(divs.wega.g.position, 'x', divs.wega.g.position.x, 1.5 + off, 300);
+            const off = isExploded ? 0.3 : 0;
+            // Spread all divisorias outward along X
+            Object.keys(divs).forEach((k, i) => {
+                const d = divs[k];
+                const spread = isExploded ? (i - 2.5) * 0.12 : 0;
+                tween(d.g.position, 'x', d.g.position.x, d.x + spread, 300);
+            });
         }
         
         function cutaway() {

@@ -797,14 +797,14 @@
             
             const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.5 });
             const filter = new THREE.Mesh(new THREE.BoxGeometry(fDepth, fH, fW), filterMat);
-            filter.position.set(posX + fDepth/2, T + S/2, S/2);
+            filter.position.set(posX - fDepth/2, T + S/2, S/2);
             group.add(filter);
             
             // Borda do filtro para destacar espessura
             const edgeMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.8 });
             const edgeGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(fDepth, fH, fW));
             const edges = new THREE.LineSegments(edgeGeom, new THREE.LineBasicMaterial({ color: fColor }));
-            edges.position.set(posX + fDepth/2, T + S/2, S/2);
+            edges.position.set(posX - fDepth/2, T + S/2, S/2);
             group.add(edges);
             
             // Marcação interna - identificação da divisória

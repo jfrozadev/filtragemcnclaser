@@ -399,8 +399,8 @@
                     new THREE.BoxGeometry(espScale, f.fh, f.fw),
                     fMat
                 );
-                filter.position.set(f.x, T + S/2, S/2);
-                filter.userData = { filterIndex: i, homeY: T + S/2, name: f.name };
+                filter.position.set(f.x - espScale/2, T + S/2, S/2);
+                filter.userData = { filterIndex: i, homeY: T + S/2, homeX: f.x - espScale/2, name: f.name };
                 filterGroup.add(filter);
 
                 // Edge outline
@@ -409,7 +409,7 @@
                     new THREE.LineBasicMaterial({ color: f.color })
                 );
                 edges.position.copy(filter.position);
-                edges.userData = { filterIndex: i, homeY: T + S/2 };
+                edges.userData = { filterIndex: i, homeY: T + S/2, homeX: f.x - espScale/2 };
                 filterGroup.add(edges);
             });
         }
@@ -562,7 +562,7 @@
             // Reset filters to home positions
             filterGroup.children.forEach(c => {
                 if (c.userData.homeY !== undefined) c.position.y = c.userData.homeY;
-                if (c.userData.filterIndex !== undefined) c.position.x = FILTERS[c.userData.filterIndex].x;
+                if (c.userData.homeX !== undefined) c.position.x = c.userData.homeX;
             });
             handleGroup.children.forEach(c => {
                 if (c.userData.homeY !== undefined) c.position.y = c.userData.homeY;
