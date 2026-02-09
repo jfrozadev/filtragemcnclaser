@@ -92,9 +92,9 @@ module snap_clip_canto() {
 // === VEDAÇÃO PARA DIVISÓRIAS ===
 // Frame que envolve a borda da divisória e veda contra as laterais
 module vedacao_divisoria() {
-    // Parâmetros da divisória
-    div_size = 244;
-    aba = 5;
+    // Parâmetros da divisória (244×240mm entre bases dos trilhos)
+    div_w = 244;   // largura X
+    div_h = 240;   // altura Y (entre bases dos trilhos)
     
     frame_w = 6;   // Largura do frame
     frame_h = 8;   // Altura (envolve a borda do MDF)
@@ -105,25 +105,25 @@ module vedacao_divisoria() {
         union() {
             // Lado esquerdo
             translate([0, 0, 0])
-                cube([frame_w, div_size, frame_h]);
+                cube([frame_w, div_h, frame_h]);
             // Lado direito
-            translate([div_size - frame_w, 0, 0])
-                cube([frame_w, div_size, frame_h]);
+            translate([div_w - frame_w, 0, 0])
+                cube([frame_w, div_h, frame_h]);
             // Topo
-            translate([0, div_size - frame_w, 0])
-                cube([div_size, frame_w, frame_h]);
+            translate([0, div_h - frame_w, 0])
+                cube([div_w, frame_w, frame_h]);
             // Base (com abertura central para fluxo)
             translate([0, 0, 0])
-                cube([div_size, frame_w, frame_h]);
+                cube([div_w, frame_w, frame_h]);
         }
         
         // Canal para o MDF (centro do frame)
         translate([-0.1, -0.1, (frame_h - canal)/2])
-            cube([div_size + 0.2, div_size + 0.2, canal]);
+            cube([div_w + 0.2, div_h + 0.2, canal]);
         
         // Abertura central (o furo da divisória)
         translate([frame_w + 5, frame_w + 5, -0.1])
-            cube([div_size - 2*frame_w - 10, div_size - 2*frame_w - 10, frame_h + 0.2]);
+            cube([div_w - 2*frame_w - 10, div_h - 2*frame_w - 10, frame_h + 0.2]);
     }
     
     // Lábios de vedação nas faces internas
@@ -131,16 +131,16 @@ module vedacao_divisoria() {
         z_pos = face * (frame_h - labio_esp);
         // Esquerda
         translate([frame_w - labio_esp, frame_w, z_pos])
-            cube([labio_esp, div_size - 2*frame_w, labio_esp]);
+            cube([labio_esp, div_h - 2*frame_w, labio_esp]);
         // Direita
-        translate([div_size - frame_w, frame_w, z_pos])
-            cube([labio_esp, div_size - 2*frame_w, labio_esp]);
+        translate([div_w - frame_w, frame_w, z_pos])
+            cube([labio_esp, div_h - 2*frame_w, labio_esp]);
         // Topo
-        translate([frame_w, div_size - frame_w, z_pos])
-            cube([div_size - 2*frame_w, labio_esp, labio_esp]);
+        translate([frame_w, div_h - frame_w, z_pos])
+            cube([div_w - 2*frame_w, labio_esp, labio_esp]);
         // Base
         translate([frame_w, frame_w - labio_esp, z_pos])
-            cube([div_size - 2*frame_w, labio_esp, labio_esp]);
+            cube([div_w - 2*frame_w, labio_esp, labio_esp]);
     }
 }
 

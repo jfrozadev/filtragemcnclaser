@@ -371,6 +371,9 @@
             group.rotation.y = rotAngle;
             group.position.set(cx, cy, cz);
             
+            // Clips da base são invertidos (pernas para cima)
+            if (side.includes('base')) group.scale.y = -1;
+            
             // Store side info for animation
             group.userData = { side: side, baseY: cy, baseX: cx, baseZ: cz };
             
@@ -533,7 +536,7 @@
                 case 'full':
                     infoBox.innerHTML = '<h3>📦 Visão Geral</h3>' +
                         'Caixa <span class="dim">250×250×250mm</span> com tampa fixada por ' +
-                        '<span class="mat">8 clips snap-fit</span> impressos em PLA/PETG na Ender 3.<br>' +
+                        '<span class="mat">16 clips snap-fit</span> (8 topo + 8 base) em PLA/PETG na Ender 3.<br>' +
                         'Sem parafusos! Pressione a tampa e os ganchos travam automaticamente.';
                     setCam(30, -0.5, 0.4, S/2, MDF + S/2, S/2);
                     tampaOffset = 0;
@@ -604,10 +607,10 @@
                 if (!d) return;
                 const offset = t * 4;
                 switch(d.side) {
-                    case 'z-': clip.position.z = d.baseZ - offset; break;
-                    case 'z+': clip.position.z = d.baseZ + offset; break;
-                    case 'x-': clip.position.x = d.baseX - offset; break;
-                    case 'x+': clip.position.x = d.baseX + offset; break;
+                    case 'z-': case 'z-base': clip.position.z = d.baseZ - offset; break;
+                    case 'z+': case 'z+base': clip.position.z = d.baseZ + offset; break;
+                    case 'x-': case 'x-base': clip.position.x = d.baseX - offset; break;
+                    case 'x+': case 'x+base': clip.position.x = d.baseX + offset; break;
                 }
             });
             document.getElementById('valClips').textContent = val >= 90 ? 'on' : val <= 10 ? 'off' : Math.round(val) + '%';
