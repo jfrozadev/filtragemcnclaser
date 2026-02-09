@@ -988,6 +988,7 @@
             railPositions.forEach(([posX, canalMM]) => {
                 const canalW = canalMM / 100;
                 const totalW = canalW + 2 * railWall;
+                const railY0 = 2 * T; // Trilhos começam na ranhura (3mm do fundo da lateral)
                 
                 // Both sides (left lateral Z=T, right lateral Z=S-T)
                 [T + railBase, S - T - railBase].forEach(zBase => {
@@ -995,38 +996,38 @@
                     
                     // Metade A (bottom)
                     const baseA = new THREE.Mesh(new THREE.BoxGeometry(totalW, halfLen, railBase), railMatA);
-                    baseA.position.set(posX, T + halfLen/2, zBase + (isLeft ? railBase/2 : -railBase/2));
+                    baseA.position.set(posX, railY0 + halfLen/2, zBase + (isLeft ? railBase/2 : -railBase/2));
                     group.add(baseA);
                     
                     // Walls of U for metade A
                     const zWallOffset = isLeft ? railBase + railAba/2 : -railBase - railAba/2;
                     const wallAL = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatA.clone());
-                    wallAL.position.set(posX - totalW/2 + railWall/2, T + halfLen/2, zBase + zWallOffset);
+                    wallAL.position.set(posX - totalW/2 + railWall/2, railY0 + halfLen/2, zBase + zWallOffset);
                     group.add(wallAL);
                     const wallAR = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatA.clone());
-                    wallAR.position.set(posX + totalW/2 - railWall/2, T + halfLen/2, zBase + zWallOffset);
+                    wallAR.position.set(posX + totalW/2 - railWall/2, railY0 + halfLen/2, zBase + zWallOffset);
                     group.add(wallAR);
                     
                     // Metade B (top)
                     const baseB = new THREE.Mesh(new THREE.BoxGeometry(totalW, halfLen, railBase), railMatB);
-                    baseB.position.set(posX, T + halfLen + halfLen/2, zBase + (isLeft ? railBase/2 : -railBase/2));
+                    baseB.position.set(posX, railY0 + halfLen + halfLen/2, zBase + (isLeft ? railBase/2 : -railBase/2));
                     group.add(baseB);
                     
                     const wallBL = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatB.clone());
-                    wallBL.position.set(posX - totalW/2 + railWall/2, T + halfLen + halfLen/2, zBase + zWallOffset);
+                    wallBL.position.set(posX - totalW/2 + railWall/2, railY0 + halfLen + halfLen/2, zBase + zWallOffset);
                     group.add(wallBL);
                     const wallBR = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatB.clone());
-                    wallBR.position.set(posX + totalW/2 - railWall/2, T + halfLen + halfLen/2, zBase + zWallOffset);
+                    wallBR.position.set(posX + totalW/2 - railWall/2, railY0 + halfLen + halfLen/2, zBase + zWallOffset);
                     group.add(wallBR);
                     
                     // Dovetail joint indicator (green dot at junction)
                     const dove = new THREE.Mesh(new THREE.BoxGeometry(totalW * 0.5, 0.025, 0.04), doveMat);
-                    dove.position.set(posX, T + halfLen, zBase + (isLeft ? 0.03 : -0.03));
+                    dove.position.set(posX, railY0 + halfLen, zBase + (isLeft ? 0.03 : -0.03));
                     group.add(dove);
                     
                     // Trava at bottom
                     const trava = new THREE.Mesh(new THREE.BoxGeometry(totalW * 0.4, 0.025, 0.012), travaMat);
-                    trava.position.set(posX, T + 0.02, zBase + (isLeft ? railBase + canalW/200 + railWall : -railBase - canalW/200 - railWall));
+                    trava.position.set(posX, railY0 + 0.02, zBase + (isLeft ? railBase + canalW/200 + railWall : -railBase - canalW/200 - railWall));
                     group.add(trava);
                 });
             });
