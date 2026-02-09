@@ -65,7 +65,7 @@ dove_prof = 4;        // Profundidade (metade da espessura)
 // Furos de fixação
 furo_diam = 2.2;      // Diâmetro para parafuso M2
 furo_dist = 30;       // Distância entre furos (do centro)
-n_furos = 3;          // Furos por metade
+n_furos = 1;          // Furos por metade (centro)
 
 // Puxador (aba no topo do filtro para puxar)
 puxador_larg = 30;    // Largura do puxador
