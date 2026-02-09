@@ -1,16 +1,12 @@
-; ==========================================
+﻿; ==========================================
 ; TAMPA 250x250mm
 ; CNC: Two Trees TTS-10 | MDF 3mm
 ; ==========================================
 ; CORTE: S1000 | F150 | 3 PASSAGENS
 ; 
-; FIXAÇÃO: Tampa sobrepõe a estrutura montada
-; 8 furos para parafusos que rosqueiam nas bordas
-; superiores das laterais/frontal/traseira (3mm)
-;
-; Posição dos furos:
-; - 4 cantos: sobre a borda das LATERAIS (15mm da borda)
-; - 4 laterais: sobre frontal/traseira (centro de cada lado)
+; FIXACAO: Clips snap-fit impressos em 3D (SNAP_TAMPA.scad)
+; 16 clips U-bracket (8 topo + 8 base) abracam as bordas
+; Sem furos necessarios - tampa eh placa lisa 250x250mm
 ; ==========================================
 
 G21
@@ -20,79 +16,13 @@ M5
 
 ; ===== PASSAGEM 1/3 =====
 
-; Perímetro externo
+; Perimetro externo
 G0 X0.00 Y0.00
 M4 S1000
 G1 X250.00 Y0.00 F150
 G1 X250.00 Y250.00 F150
 G1 X0.00 Y250.00 F150
 G1 X0.00 Y0.00 F150
-M5
-
-; FUROS SOBRE LATERAIS (centro do MDF = X=1.5 esquerda, X=248.5 direita)
-; Posições Y correspondem às posições X nas laterais: 15, 125, 235
-
-; Lateral esquerda - furo perto da frontal
-G0 X1.50 Y15.00
-M4 S1000
-G2 X1.50 Y15.00 I-1.50 J0 F150
-M5
-
-; Lateral esquerda - furo no centro
-G0 X1.50 Y125.00
-M4 S1000
-G2 X1.50 Y125.00 I-1.50 J0 F150
-M5
-
-; Lateral esquerda - furo perto da traseira
-G0 X1.50 Y235.00
-M4 S1000
-G2 X1.50 Y235.00 I-1.50 J0 F150
-M5
-
-; Lateral direita - furo perto da frontal
-G0 X248.50 Y15.00
-M4 S1000
-G2 X248.50 Y15.00 I-1.50 J0 F150
-M5
-
-; Lateral direita - furo no centro
-G0 X248.50 Y125.00
-M4 S1000
-G2 X248.50 Y125.00 I-1.50 J0 F150
-M5
-
-; Lateral direita - furo perto da traseira
-G0 X248.50 Y235.00
-M4 S1000
-G2 X248.50 Y235.00 I-1.50 J0 F150
-M5
-
-; FUROS SOBRE FRONTAL E TRASEIRA (centro do MDF = Y=1.5 frontal, Y=248.5 traseira)
-; Posições X correspondem às posições X na frontal/traseira: 77, 167 (ou 80, 170 ajustando offset)
-
-; Furo central frontal esquerdo
-G0 X80.00 Y1.50
-M4 S1000
-G2 X80.00 Y1.50 I-1.50 J0 F150
-M5
-
-; Furo central frontal direito
-G0 X170.00 Y1.50
-M4 S1000
-G2 X170.00 Y1.50 I-1.50 J0 F150
-M5
-
-; Furo central traseiro esquerdo
-G0 X80.00 Y248.50
-M4 S1000
-G2 X80.00 Y248.50 I-1.50 J0 F150
-M5
-
-; Furo central traseiro direito
-G0 X170.00 Y248.50
-M4 S1000
-G2 X170.00 Y248.50 I-1.50 J0 F150
 M5
 
 ; ===== PASSAGEM 2/3 =====
@@ -105,58 +35,6 @@ G1 X0.00 Y250.00 F150
 G1 X0.00 Y0.00 F150
 M5
 
-; Furos sobre laterais
-G0 X1.50 Y15.00
-M4 S1000
-G2 X1.50 Y15.00 I-1.50 J0 F150
-M5
-
-G0 X1.50 Y125.00
-M4 S1000
-G2 X1.50 Y125.00 I-1.50 J0 F150
-M5
-
-G0 X1.50 Y235.00
-M4 S1000
-G2 X1.50 Y235.00 I-1.50 J0 F150
-M5
-
-G0 X248.50 Y15.00
-M4 S1000
-G2 X248.50 Y15.00 I-1.50 J0 F150
-M5
-
-G0 X248.50 Y125.00
-M4 S1000
-G2 X248.50 Y125.00 I-1.50 J0 F150
-M5
-
-G0 X248.50 Y235.00
-M4 S1000
-G2 X248.50 Y235.00 I-1.50 J0 F150
-M5
-
-; Furos sobre frontal/traseira
-G0 X80.00 Y1.50
-M4 S1000
-G2 X80.00 Y1.50 I-1.50 J0 F150
-M5
-
-G0 X170.00 Y1.50
-M4 S1000
-G2 X170.00 Y1.50 I-1.50 J0 F150
-M5
-
-G0 X80.00 Y248.50
-M4 S1000
-G2 X80.00 Y248.50 I-1.50 J0 F150
-M5
-
-G0 X170.00 Y248.50
-M4 S1000
-G2 X170.00 Y248.50 I-1.50 J0 F150
-M5
-
 ; ===== PASSAGEM 3/3 =====
 
 G0 X0.00 Y0.00
@@ -167,61 +45,9 @@ G1 X0.00 Y250.00 F150
 G1 X0.00 Y0.00 F150
 M5
 
-; Furos sobre laterais
-G0 X1.50 Y15.00
-M4 S1000
-G2 X1.50 Y15.00 I-1.50 J0 F150
-M5
-
-G0 X1.50 Y125.00
-M4 S1000
-G2 X1.50 Y125.00 I-1.50 J0 F150
-M5
-
-G0 X1.50 Y235.00
-M4 S1000
-G2 X1.50 Y235.00 I-1.50 J0 F150
-M5
-
-G0 X248.50 Y15.00
-M4 S1000
-G2 X248.50 Y15.00 I-1.50 J0 F150
-M5
-
-G0 X248.50 Y125.00
-M4 S1000
-G2 X248.50 Y125.00 I-1.50 J0 F150
-M5
-
-G0 X248.50 Y235.00
-M4 S1000
-G2 X248.50 Y235.00 I-1.50 J0 F150
-M5
-
-; Furos sobre frontal/traseira
-G0 X80.00 Y1.50
-M4 S1000
-G2 X80.00 Y1.50 I-1.50 J0 F150
-M5
-
-G0 X170.00 Y1.50
-M4 S1000
-G2 X170.00 Y1.50 I-1.50 J0 F150
-M5
-
-G0 X80.00 Y248.50
-M4 S1000
-G2 X80.00 Y248.50 I-1.50 J0 F150
-M5
-
-G0 X170.00 Y248.50
-M4 S1000
-G2 X170.00 Y248.50 I-1.50 J0 F150
-M5
-
-; ===== GRAVAÇÃO IDENTIFICAÇÃO =====
-; Potência reduzida para grifo superficial
-; Texto: TAMPA (centro da peça)
+; ===== GRAVACAO IDENTIFICACAO =====
+; Potencia reduzida para grifo superficial
+; Texto: TAMPA (centro da peca)
 
 G0 X95.00 Y120.00
 M4 S300

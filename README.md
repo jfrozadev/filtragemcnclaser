@@ -89,8 +89,8 @@
 | 2 | `02_LATERAL_DIR.nc` | Idêntica (espelhada) + snap-fit |
 | 3 | `03_FRONTAL.nc` | 244×250mm com dentes + furo 70mm + snap-fit |
 | 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm + snap-fit |
-| 5 | `05_TAMPA.nc` | 250×250mm com 4 furos fixação |
-| 6 | `06_BASE.nc` | 250×250mm com 4 furos para pés |
+| 5 | `05_TAMPA.nc` | 250×250mm placa lisa (fixação por snap-fit) |
+| 6 | `06_BASE.nc` | 250×250mm + 4 furos para pés de borracha |
 | 7 | `07_DIVISORIA_MANTA_G3.nc` | 1× placa + manta colada c/ grampos |
 | 8 | `08_DIVISORIA_GM.nc` | 244×244mm + furo 223×210mm |
 | 9 | `09_DIVISORIA_WEGA.nc` | 244×244mm + furo 220×160mm |
