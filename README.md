@@ -58,19 +58,19 @@
 | Tampa | 250×250mm | 3mm | 1 |
 | Base | 250×250mm | 3mm | 1 |
 
-### Divisórias (retângulos simples 244×244mm, deslizam nos trilhos):
+### Divisórias (retângulos simples 244×240mm, deslizam nos trilhos):
 | Peça | Corpo | Furo do Filtro | Espessura Filtro |
 |------|-------|----------------|------------------|
-| Manta G3 | 244×244mm | 200×200mm | **10mm** |
-| GM Cabine Bosch | 244×244mm | 223×210mm | **20mm** |
-| Wega Motor | 244×244mm | 220×160mm | **45mm** |
-| **FILTRO HEPA** | 244×244mm | **110×140mm** | **25mm** |
-| Tela Carvão (×2) | 244×244mm | Abertura 200×200mm + 16 furos M3 | — |
+| Manta G3 | 244×240mm | 200×200mm | **10mm** |
+| GM Cabine Bosch | 244×240mm | 223×210mm | **20mm** |
+| Wega Motor | 244×240mm | 220×160mm | **45mm** |
+| **FILTRO HEPA** | 244×240mm | **110×140mm** | **25mm** |
+| Tela Carvão (×2) | 244×240mm | Abertura 200×200mm + 16 furos M3 | — |
 
 ### Compartimento de Carvão Ativado:
 | Item | Descrição |
 |------|----------|
-| Telas MDF (×2) | 244×244mm com abertura central 200×200mm (11_GAVETA.nc) |
+| Telas MDF (×2) | 244×240mm com abertura central 200×200mm (11_GAVETA.nc) |
 | Caixa MDF (quadro) | 4 bordas ao redor da abertura com encaixe tela (13_CAIXA_CARVAO.nc) |
 | Tela alumínio | Mosquiteira fixada com 16 paraf. M3+arruela por tela |
 | Posições (slots) | X=190mm (Tela 1) e X=230mm (Tela 2) |
@@ -92,10 +92,10 @@
 | 5 | `05_TAMPA.nc` | 250×250mm placa lisa (fixação por snap-fit) |
 | 6 | `06_BASE.nc` | 250×250mm + 4 furos para pés de borracha |
 | 7 | `07_DIVISORIA_MANTA_G3.nc` | 1× placa + manta colada c/ grampos |
-| 8 | `08_DIVISORIA_GM.nc` | 244×244mm + furo 223×210mm |
-| 9 | `09_DIVISORIA_WEGA.nc` | 244×244mm + furo 220×160mm |
-| 10 | `10_DIVISORIA_HEPA.nc` | 244×244mm + furo 110×140mm (HEPA) |
-| 11 | `11_GAVETA.nc` | 2× tela carvão 244×244mm (abertura 200×200, M3 + 8 slots quadro) |
+| 8 | `08_DIVISORIA_GM.nc` | 244×240mm + furo 223×210mm |
+| 9 | `09_DIVISORIA_WEGA.nc` | 244×240mm + furo 220×160mm |
+| 10 | `10_DIVISORIA_HEPA.nc` | 244×240mm + furo 110×140mm (HEPA) |
+| 11 | `11_GAVETA.nc` | 2× tela carvão 244×240mm (abertura 200×200, M3 + 8 slots quadro) |
 | 12 | `12_FLANGES.nc` | Entrada 70mm + Saída 150mm |
 | 13 | `13_CAIXA_CARVAO.nc` | 4× bordas MDF quadro carvão (ao redor abertura, c/ abas tela) |
 | 14 | `TRILHO_FILTRO.scad` | Trilhos deslizantes 3D (filtros removíveis, Ender 3) |
@@ -120,7 +120,7 @@ nas RANHURAS das laterais!
 ### Divisórias (Deslizam nos Trilhos 3D):
 ```
 LATERAL:               DIVISÓRIA:
-   │     │                244×244mm
+   │     │                244×240mm
    │ ███ │ ← trilho 3D    ──────
    │ ││  │                │ MDF │  ← desliza no U
    │ ███ │ ← trilho 3D    ──────
@@ -265,5 +265,5 @@ Abra `TRILHO_3D.html` para:
 
 ---
 
-**Versão:** 9.2 — Divisórias sem abas, slots removidos (trilhos 3D substituem)  
+**Versão:** 9.3 — Divisórias 244×240mm (entre bases trilhos), sem abas/slots (trilhos substituem)  
 **Data:** Fevereiro 2026

@@ -804,10 +804,11 @@
         
         function createDivisoria(posX, type) {
             const group = new THREE.Group();
-            const W = S - 2*T; // 244mm (cabe entre as laterais)
+            const W = S - 2*T; // 244mm altura
+            const Wz = W - 0.04; // 240mm largura (entre bases dos trilhos, 2mm cada lado)
             
             const mat = new THREE.MeshPhongMaterial({ color: COLORS.mdfLight, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
-            const plate = new THREE.Mesh(new THREE.BoxGeometry(T, W, W), mat);
+            const plate = new THREE.Mesh(new THREE.BoxGeometry(T, W, Wz), mat);
             plate.position.set(posX, T + S/2, S/2);
             group.add(plate);
             
@@ -1018,33 +1019,23 @@
         
         function createCarbonCompartment() {
             const group = new THREE.Group();
-            const W = S - 2*T; // 244mm (entre as laterais)
+            const W = S - 2*T; // 244mm altura
+            const Wz = W - 0.04; // 240mm largura (entre bases dos trilhos)
             
-            // Posições das 2 telas de carvão (slots nas laterais)
+            // Posições das 2 telas de carvão (trilhos nas laterais)
             const telaPositions = [1.90, 2.30]; // X=190mm e X=230mm
             
             const plateMat = new THREE.MeshPhongMaterial({ color: COLORS.mdfLight, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
-            const abaMat = new THREE.MeshPhongMaterial({ color: COLORS.abas });
             const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
             const meshMat = new THREE.MeshPhongMaterial({ color: 0x888888, transparent: true, opacity: 0.3, side: THREE.DoubleSide });
             
             telaPositions.forEach((posX) => {
-                // Placa MDF 244×244mm
-                const plate = new THREE.Mesh(new THREE.BoxGeometry(T, W, W), plateMat);
+                // Placa MDF 244×240mm (altura × largura entre trilhos)
+                const plate = new THREE.Mesh(new THREE.BoxGeometry(T, W, Wz), plateMat);
                 plate.position.set(posX, T + S/2, S/2);
                 group.add(plate);
                 
-                // 4 Abas para encaixe nos slots das laterais
-                [
-                    [T + 0.35, T/2 - 0.025],      // Inferior esquerda
-                    [T + S - 0.35, T/2 - 0.025],  // Superior esquerda
-                    [T + 0.35, S - T/2 + 0.025],  // Inferior direita
-                    [T + S - 0.35, S - T/2 + 0.025] // Superior direita
-                ].forEach(([y, z]) => {
-                    const aba = new THREE.Mesh(new THREE.BoxGeometry(T*1.2, 0.38, 0.05), abaMat);
-                    aba.position.set(posX, y, z);
-                    group.add(aba);
-                });
+                // ABAS REMOVIDAS — telas deslizam nos trilhos 3D
                 
                 // Abertura central 200×200mm (furo único)
                 const openSize = 2.0; // 200mm
@@ -1082,7 +1073,7 @@
                 });
                 
                 // Borda da placa para destaque
-                const edgeGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(T, W, W));
+                const edgeGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(T, W, Wz));
                 const edges = new THREE.LineSegments(edgeGeom, new THREE.LineBasicMaterial({ color: 0x666666 }));
                 edges.position.set(posX, T + S/2, S/2);
                 group.add(edges);
