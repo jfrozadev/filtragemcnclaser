@@ -322,14 +322,14 @@
                 camera: { pos: [2.2, 2.5, 3.5], look: [1.45, 1.3, 1.25] }
             },
             {
-                num: 10, title: "Compartimento Carvão", desc: "Cole o compartimento de carvão na traseira",
-                encaixe: "⬛ CARVÃO ATIVADO - Compartimento 244×35×45mm COLADO junto à traseira. ~500g carvão. Remove gases/VOCs.",
+                num: 10, title: "Telas de Carvão", desc: "Insira as 2 telas de carvão nos slots das laterais",
+                encaixe: "⬛ CARVÃO ATIVADO - 2 placas MDF 244×244mm com abertura 200×200mm nos slots X=180mm e X=215mm. Tela alumínio (mosquiteira) fixada com 16 parafusos M3+arruela. ~500g carvão granulado entre as telas.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta'],
                 camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
             },
             {
-                num: 11, title: "Tampa", desc: "Feche com a tampa e aparafuse",
-                encaixe: "✅ COMPLETO! Tampa 250×250mm fixada com 4 parafusos M3 nos cantos (cabeça Phillips visível).",
+                num: 11, title: "Tampa", desc: "Feche com a tampa usando clips snap-fit",
+                encaixe: "✅ COMPLETO! Tampa 250×250mm fixada com clips snap-fit impressos em 3D (SNAP_TAMPA.scad). Sem parafusos!",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
                 camera: { pos: [4, 3.5, 4], look: [1.25, 1.3, 1.25] }
             }
@@ -518,7 +518,7 @@
             parts.divHepa = createDivisoria(1.45, 'hepa');
             scene.add(parts.divHepa);
             
-            parts.gaveta = createGaveta();
+            parts.gaveta = createCarbonCompartment();
             scene.add(parts.gaveta);
             
             parts.tampa = createTampa();
@@ -882,58 +882,109 @@
             return group;
         }
         
-        function createGaveta() {
+        function createCarbonCompartment() {
             const group = new THREE.Group();
-            const baseY = T + 0.03; // Logo acima da base
-            const gH = 0.35; // Altura do compartimento (35mm)
-            const gW = S - 2*T; // Largura interna (~244mm) - entre as laterais
-            const gD = 0.45; // Profundidade (45mm) - junto à traseira
+            const W = S - 2*T; // 244mm (entre as laterais)
             
-            // Corpo do compartimento de carvão (fixo) - colado na traseira
-            const gX = S - T - gD/2; // Posição X (junto à traseira)
-            const mat = new THREE.MeshPhongMaterial({ color: 0x4a4a4a, transparent: true, opacity: 0.9 });
+            // Posições das 2 telas de carvão (slots nas laterais)
+            const telaPositions = [1.80, 2.15]; // X=180mm e X=215mm
             
-            // Fundo perfurado
-            const fundo = new THREE.Mesh(new THREE.BoxGeometry(gD, T, gW), mat);
-            fundo.position.set(gX, baseY + T/2, S/2);
-            group.add(fundo);
+            const plateMat = new THREE.MeshPhongMaterial({ color: COLORS.mdfLight, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
+            const abaMat = new THREE.MeshPhongMaterial({ color: COLORS.abas });
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            const meshMat = new THREE.MeshPhongMaterial({ color: 0x888888, transparent: true, opacity: 0.3, side: THREE.DoubleSide });
             
-            // Frente do compartimento (dentro da caixa)
-            const frente = new THREE.Mesh(new THREE.BoxGeometry(T, gH, gW), mat);
-            frente.position.set(gX - gD/2 + T/2, baseY + gH/2, S/2);
-            group.add(frente);
+            telaPositions.forEach((posX) => {
+                // Placa MDF 244×244mm
+                const plate = new THREE.Mesh(new THREE.BoxGeometry(T, W, W), plateMat);
+                plate.position.set(posX, T + S/2, S/2);
+                group.add(plate);
+                
+                // 4 Abas para encaixe nos slots das laterais
+                [
+                    [T + 0.35, T/2 - 0.025],      // Inferior esquerda
+                    [T + S - 0.35, T/2 - 0.025],  // Superior esquerda
+                    [T + 0.35, S - T/2 + 0.025],  // Inferior direita
+                    [T + S - 0.35, S - T/2 + 0.025] // Superior direita
+                ].forEach(([y, z]) => {
+                    const aba = new THREE.Mesh(new THREE.BoxGeometry(T*1.2, 0.38, 0.05), abaMat);
+                    aba.position.set(posX, y, z);
+                    group.add(aba);
+                });
+                
+                // Abertura central 200×200mm (furo único)
+                const openSize = 2.0; // 200mm
+                const openHole = new THREE.Mesh(new THREE.BoxGeometry(T*2, openSize, openSize), holeMat);
+                openHole.position.set(posX, T + S/2, S/2);
+                group.add(openHole);
+                
+                // Tela alumínio mosquiteira sobre a abertura (translúcida)
+                const meshScreen = new THREE.Mesh(new THREE.PlaneGeometry(openSize, openSize), meshMat);
+                meshScreen.rotation.y = Math.PI/2;
+                meshScreen.position.set(posX + T*0.6, T + S/2, S/2);
+                group.add(meshScreen);
+                
+                // 16 Furos M3+arruela ao redor da abertura (4 por lado)
+                const screwMat = new THREE.MeshPhongMaterial({ color: 0xaaaaaa });
+                const screwR = 0.02; // 2mm visual radius
+                // Posições dos furos (escala: 1u = 100mm)
+                // Esq X=14→0.14, Dir X=230→2.30, Inf Y=11→0.11, Sup Y=233→2.33
+                // Furos ao longo: Y/Z = 0.62, 1.02, 1.42, 1.82
+                const holePositions = [
+                    // Coluna esquerda (Z=0.14+T)
+                    {y: 0.62, z: 0.14+T}, {y: 1.02, z: 0.14+T}, {y: 1.42, z: 0.14+T}, {y: 1.82, z: 0.14+T},
+                    // Coluna direita (Z=2.30+T)
+                    {y: 0.62, z: 2.30+T}, {y: 1.02, z: 2.30+T}, {y: 1.42, z: 2.30+T}, {y: 1.82, z: 2.30+T},
+                    // Fileira inferior (Y=0.11+T)
+                    {y: 0.11+T, z: 0.62+T}, {y: 0.11+T, z: 1.02+T}, {y: 0.11+T, z: 1.42+T}, {y: 0.11+T, z: 1.82+T},
+                    // Fileira superior (Y=2.33+T)
+                    {y: 2.33+T, z: 0.62+T}, {y: 2.33+T, z: 1.02+T}, {y: 2.33+T, z: 1.42+T}, {y: 2.33+T, z: 1.82+T}
+                ];
+                holePositions.forEach(({y, z}) => {
+                    const screw = new THREE.Mesh(new THREE.CylinderGeometry(screwR, screwR, T*3, 8), screwMat);
+                    screw.rotation.z = Math.PI/2;
+                    screw.position.set(posX, y, z);
+                    group.add(screw);
+                });
+                
+                // Borda da placa para destaque
+                const edgeGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(T, W, W));
+                const edges = new THREE.LineSegments(edgeGeom, new THREE.LineBasicMaterial({ color: 0x666666 }));
+                edges.position.set(posX, T + S/2, S/2);
+                group.add(edges);
+            });
             
-            // Laterais do compartimento (encostam nas laterais da caixa)
-            const latMat = new THREE.MeshPhongMaterial({ color: 0x5a5a5a, transparent: true, opacity: 0.9 });
-            const latE = new THREE.Mesh(new THREE.BoxGeometry(gD, gH, T), latMat);
-            latE.position.set(gX, baseY + gH/2, T + T/2);
-            group.add(latE);
-            
-            const latD = new THREE.Mesh(new THREE.BoxGeometry(gD, gH, T), latMat);
-            latD.position.set(gX, baseY + gH/2, S - T - T/2);
-            group.add(latD);
-            
-            // Carvão ativado (visualização)
-            const carvaoMat = new THREE.MeshPhongMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.8 });
-            const carvao = new THREE.Mesh(new THREE.BoxGeometry(gD - 2*T, gH - 2*T, gW - 2*T), carvaoMat);
-            carvao.position.set(gX, baseY + T + (gH-2*T)/2, S/2);
+            // Volume de carvão ativado entre as 2 telas
+            const carvaoMat = new THREE.MeshPhongMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.7 });
+            const carbonDepth = telaPositions[1] - telaPositions[0]; // 0.35 (35mm)
+            const carbonCenter = (telaPositions[0] + telaPositions[1]) / 2; // 1.975
+            const carvao = new THREE.Mesh(new THREE.BoxGeometry(carbonDepth - T*2, W * 0.85, W * 0.85), carvaoMat);
+            carvao.position.set(carbonCenter, T + S/2, S/2);
             group.add(carvao);
             
-            // Furos no fundo (indicação visual)
-            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
-            for (let i = 0; i < 2; i++) {
-                for (let j = 0; j < 8; j++) {
-                    const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 8), holeMat);
-                    hole.position.set(gX - 0.1 + i * 0.2, baseY + T/2, 0.3 + j * 0.27);
-                    group.add(hole);
-                }
-            }
+            // Borda do volume de carvão
+            const carbonEdges = new THREE.LineSegments(
+                new THREE.EdgesGeometry(new THREE.BoxGeometry(carbonDepth, W, W)),
+                new THREE.LineBasicMaterial({ color: 0x555555 })
+            );
+            carbonEdges.position.set(carbonCenter, T + S/2, S/2);
+            group.add(carbonEdges);
             
-            // Marcação interna - "CARVÃO" na frente
-            const label = createLabel('CARVÃO', 0.08);
-            label.rotation.y = -Math.PI/2;
-            label.position.set(gX - gD/2 - 0.02, baseY + gH * 0.5, S/2);
+            // Labels
+            const label = createLabel('CARVÃO', 0.1);
+            label.rotation.y = Math.PI/2;
+            label.position.set(carbonCenter, T + S - 0.25, S/2);
             group.add(label);
+            
+            const labelT1 = createLabel('TELA 1', 0.06);
+            labelT1.rotation.y = Math.PI/2;
+            labelT1.position.set(telaPositions[0] - 0.05, T + 0.3, S/2);
+            group.add(labelT1);
+            
+            const labelT2 = createLabel('TELA 2', 0.06);
+            labelT2.rotation.y = Math.PI/2;
+            labelT2.position.set(telaPositions[1] + 0.05, T + 0.3, S/2);
+            group.add(labelT2);
             
             return group;
         }
@@ -1016,6 +1067,7 @@
             if (parts.divGM) parts.divGM.position.y = offset * 0.3;
             if (parts.divWega) parts.divWega.position.y = offset * 0.2;
             if (parts.divHepa) parts.divHepa.position.y = offset * 0.1;
+            if (parts.gaveta) parts.gaveta.position.x = offset * 0.3;
         }
         
         function toggleWireframe() {
