@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Snap-Fit - Caixa de Filtragem</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; overflow: hidden; }
+        #container { width: 100vw; height: 100vh; }
+        
+        #panel {
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(255,255,255,0.97); padding: 18px;
+            border-radius: 12px; max-width: 340px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            max-height: calc(100vh - 30px); overflow-y: auto;
+        }
+        
+        h1 { font-size: 1.1rem; color: #2c3e50; margin-bottom: 3px; }
+        .subtitle { font-size: 0.65rem; color: #7f8c8d; margin-bottom: 12px; }
+        
+        .view-selector { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+        .view-selector button {
+            padding: 8px 12px; border: 2px solid #3498db; border-radius: 6px;
+            font-size: 0.72rem; font-weight: 600; cursor: pointer;
+            background: white; color: #3498db; transition: all 0.2s;
+        }
+        .view-selector button:hover { background: #ebf5fb; }
+        .view-selector button.active { background: #3498db; color: white; }
+        
+        .info-box {
+            background: #f0f7ff; padding: 12px; border-radius: 8px;
+            border-left: 4px solid #3498db; font-size: 0.72rem;
+            margin-bottom: 12px; line-height: 1.5;
+        }
+        .info-box h3 { font-size: 0.8rem; margin-bottom: 6px; color: #2c3e50; }
+        .info-box .dim { color: #e74c3c; font-weight: 600; }
+        .info-box .mat { color: #27ae60; font-weight: 600; }
+        
+        .section { margin-bottom: 12px; padding-top: 10px; border-top: 1px solid #eee; }
+        .section-title { font-size: 0.72rem; font-weight: 600; color: #555; margin-bottom: 8px; }
+        
+        .controls { display: flex; flex-wrap: wrap; gap: 4px; }
+        .controls button {
+            padding: 6px 10px; border: none; border-radius: 4px;
+            font-size: 0.65rem; cursor: pointer; background: #ecf0f1; color: #2c3e50;
+        }
+        .controls button:hover { background: #3498db; color: white; }
+        
+        .slider-row {
+            display: flex; align-items: center; gap: 8px; margin: 8px 0;
+            font-size: 0.68rem;
+        }
+        .slider-row input[type=range] { flex: 1; }
+        .slider-row .val { width: 36px; text-align: right; font-weight: 600; }
+        
+        .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.6rem; }
+        .legend-color { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #ddd; }
+        
+        #info-bar {
+            position: absolute; bottom: 15px; left: 15px;
+            background: rgba(255,255,255,0.9); padding: 8px 14px;
+            border-radius: 6px; font-size: 0.7rem;
+        }
+        
+        #dims {
+            position: absolute; bottom: 15px; right: 15px;
+            background: rgba(255,255,255,0.95); padding: 12px;
+            border-radius: 8px; font-size: 0.62rem;
+        }
+        #dims table { border-collapse: collapse; }
+        #dims td { padding: 2px 6px; }
+        #dims .lbl { color: #666; }
+        #dims .v { font-weight: 600; text-align: right; }
+        #dims .hi { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="panel">
+        <h1>🔩 Sistema Snap-Fit</h1>
+        <div class="subtitle">Vedação sem parafusos — Impressão 3D (Ender 3)</div>
+        
+        <div class="view-selector">
+            <button class="active" id="btnFull" onclick="showView('full')">Caixa Completa</button>
+            <button id="btnClip" onclick="showView('clip')">Clip Detalhe</button>
+            <button id="btnSection" onclick="showView('section')">Corte Seção</button>
+            <button id="btnExplode" onclick="showView('explode')">Explodido</button>
+        </div>
+        
+        <div class="info-box" id="infoBox">
+            <h3>📦 Visão Geral</h3>
+            Caixa <span class="dim">250×250×250mm</span> com tampa fixada por
+            <span class="mat">16 clips snap-fit</span> (8 topo + 8 base) impressos em PLA/PETG na Ender 3.
+            Sem parafusos! Pernas de 30mm, ganchos travam automaticamente.
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎮 Controles</div>
+            <div class="controls">
+                <button onclick="resetCam()">Reset</button>
+                <button onclick="viewFront()">Frente</button>
+                <button onclick="viewSide()">Lado</button>
+                <button onclick="viewTop()">Topo</button>
+                <button onclick="viewCorner()">Canto</button>
+            </div>
+            <div class="slider-row">
+                <span>Tampa:</span>
+                <input type="range" id="sldTampa" min="0" max="100" value="100" oninput="animTampa(this.value)">
+                <span class="val" id="valTampa">fechada</span>
+            </div>
+            <div class="slider-row">
+                <span>Clips:</span>
+                <input type="range" id="sldClips" min="0" max="100" value="100" oninput="animClips(this.value)">
+                <span class="val" id="valClips">on</span>
+            </div>
+            <label style="font-size:0.65rem; display:flex; align-items:center; gap:4px; cursor:pointer; margin-top:6px;">
+                <input type="checkbox" id="chkWire" onchange="toggleWire()"> Wireframe
+            </label>
+            <label style="font-size:0.65rem; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                <input type="checkbox" id="chkRotate" onchange="toggleRotate()"> Auto-girar
+            </label>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎨 Legenda</div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background:#CD853F"></div>MDF 3mm</div>
+                <div class="legend-item"><div class="legend-color" style="background:#2ecc71"></div>Clip (PLA)</div>
+                <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>Gancho snap</div>
+                <div class="legend-item"><div class="legend-color" style="background:#3498db"></div>Lábio vedação</div>
+                <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div>Tampa</div>
+                <div class="legend-item"><div class="legend-color" style="background:#1a1a1a"></div>Carvão</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-bar">🖱️ Arrastar = Girar | Scroll = Zoom | Slider Tampa = Abrir/Fechar</div>
+    
+    <div id="dims">
+        <table>
+            <tr><td class="lbl">Clip:</td><td class="v"><span class="hi">20×7.3×30mm</span></td></tr>
+            <tr><td class="lbl">Material:</td><td class="v">PLA / PETG</td></tr>
+            <tr><td class="lbl">Gancho:</td><td class="v">1.2mm prof.</td></tr>
+            <tr><td class="lbl">Folga:</td><td class="v">0.3mm</td></tr>
+            <tr><td class="lbl">Qtd:</td><td class="v">16 clips (8+8)</td></tr>
+            <tr><td class="lbl">Slot MDF:</td><td class="v">22×2mm</td></tr>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer;
+        let mouseDown = false, mouseX = 0, mouseY = 0;
+        let rotX = 0.3, rotY = -0.5, dist = 6;
+        let targetX = 0, targetY = 0, targetZ = 0;
+        let autoRot = false, wireMode = false;
+        let currentView = 'full';
+        
+        // Parâmetros reais (escala 1u = 10mm para melhor visualização dos clips)
+        const MDF = 0.3;   // 3mm
+        const FOLGA = 0.03; // 0.3mm
+        const S = 25;       // 250mm
+        const W_CLIP = 2;   // 20mm
+        const H_EXT = 3.0;  // 30mm
+        const H_INT = 2.4;  // 24mm
+        const PAREDE = 0.2; // 2mm
+        const GANCHO = 0.12; // 1.2mm
+        const LABIO = 0.08; // 0.8mm
+        
+        // Groups
+        let boxGroup, clipsGroup, tampaGroup, crossSection;
+        let tampaOffset = 0; // 0 = fechada
+        let clipOffset = 0;
+        
+        init();
+        animate();
+        
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1e2a3a);
+            
+            camera = new THREE.PerspectiveCamera(40, innerWidth/innerHeight, 0.01, 200);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Lights
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+            dir.position.set(10, 15, 10);
+            scene.add(dir);
+            const fill = new THREE.DirectionalLight(0xffffff, 0.3);
+            fill.position.set(-8, 5, -8);
+            scene.add(fill);
+            
+            // Grid
+            const grid = new THREE.GridHelper(40, 20, 0x4a5568, 0x2d3748);
+            grid.position.y = -0.01;
+            scene.add(grid);
+            
+            buildScene();
+            showView('full');
+            setupMouse();
+            
+            window.onresize = () => {
+                camera.aspect = innerWidth / innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(innerWidth, innerHeight);
+            };
+        }
+        
+        function buildScene() {
+            // === CAIXA (simplificada) ===
+            boxGroup = new THREE.Group();
+            const mdfMat = new THREE.MeshPhongMaterial({ color: 0xCD853F, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
+            const mdfEdgeMat = new THREE.LineBasicMaterial({ color: 0x8B4513 });
+            
+            // Base
+            addBox(boxGroup, S, MDF, S, S/2, MDF/2, S/2, mdfMat, mdfEdgeMat);
+            // Lateral Esq
+            addBox(boxGroup, S, S, MDF, S/2, MDF + S/2, MDF/2, mdfMat, mdfEdgeMat);
+            // Lateral Dir
+            addBox(boxGroup, S, S, MDF, S/2, MDF + S/2, S - MDF/2, mdfMat, mdfEdgeMat);
+            // Frontal
+            addBox(boxGroup, MDF, S, S - 2*MDF, MDF/2, MDF + S/2, S/2, mdfMat, mdfEdgeMat);
+            // Traseira
+            addBox(boxGroup, MDF, S, S - 2*MDF, S - MDF/2, MDF + S/2, S/2, mdfMat, mdfEdgeMat);
+            
+            scene.add(boxGroup);
+            
+            // === TAMPA ===
+            tampaGroup = new THREE.Group();
+            const tampaMat = new THREE.MeshPhongMaterial({ color: 0xf39c12, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+            addBox(tampaGroup, S, MDF, S, S/2, MDF + S + MDF/2, S/2, tampaMat, new THREE.LineBasicMaterial({ color: 0xd68910 }));
+            
+            // Label TAMPA
+            const lbl = makeSprite('TAMPA', 0xd68910);
+            lbl.position.set(S/2, MDF + S + MDF + 0.5, S/2);
+            lbl.scale.set(3, 1.5, 1);
+            tampaGroup.add(lbl);
+            
+            scene.add(tampaGroup);
+            
+            // === CLIPS SNAP-FIT ===
+            clipsGroup = new THREE.Group();
+            
+            // 8 clips: 2 por lado (laterais: centro-frente e centro-trás, frontal/traseira: centro-esq e centro-dir)
+            // Lateral esquerda (Z = 0, clips ao longo X)
+            createClip(clipsGroup, S*0.3, MDF + S + MDF, MDF, 0, 'z-');       // Lat esq, frente
+            createClip(clipsGroup, S*0.7, MDF + S + MDF, MDF, 0, 'z-');       // Lat esq, trás
+            // Lateral direita (Z = S, clips ao longo X)
+            createClip(clipsGroup, S*0.3, MDF + S + MDF, S - MDF, Math.PI, 'z+');  // Lat dir, frente
+            createClip(clipsGroup, S*0.7, MDF + S + MDF, S - MDF, Math.PI, 'z+');  // Lat dir, trás
+            // Frontal (X = 0, clips ao longo Z)
+            createClip(clipsGroup, MDF, MDF + S + MDF, S*0.35, -Math.PI/2, 'x-');  // Frontal esq
+            createClip(clipsGroup, MDF, MDF + S + MDF, S*0.65, -Math.PI/2, 'x-');  // Frontal dir
+            // Traseira (X = S, clips ao longo Z)
+            createClip(clipsGroup, S - MDF, MDF + S + MDF, S*0.35, Math.PI/2, 'x+');  // Traseira esq
+            createClip(clipsGroup, S - MDF, MDF + S + MDF, S*0.65, Math.PI/2, 'x+');  // Traseira dir
+            
+            scene.add(clipsGroup);
+            
+            // === CLIPS SNAP-FIT BASE (8 clips embaixo) ===
+            // Lateral esquerda base
+            createClip(clipsGroup, S*0.3, MDF, MDF, Math.PI, 'z-base');
+            createClip(clipsGroup, S*0.7, MDF, MDF, Math.PI, 'z-base');
+            // Lateral direita base
+            createClip(clipsGroup, S*0.3, MDF, S - MDF, 0, 'z+base');
+            createClip(clipsGroup, S*0.7, MDF, S - MDF, 0, 'z+base');
+            // Frontal base
+            createClip(clipsGroup, MDF, MDF, S*0.35, Math.PI/2, 'x-base');
+            createClip(clipsGroup, MDF, MDF, S*0.65, Math.PI/2, 'x-base');
+            // Traseira base
+            createClip(clipsGroup, S - MDF, MDF, S*0.35, -Math.PI/2, 'x+base');
+            createClip(clipsGroup, S - MDF, MDF, S*0.65, -Math.PI/2, 'x+base');
+            
+            // === SEÇÃO DE CORTE (detalhe do clip) ===
+            crossSection = new THREE.Group();
+            crossSection.visible = false;
+            buildCrossSection();
+            scene.add(crossSection);
+        }
+        
+        function addBox(parent, sx, sy, sz, px, py, pz, mat, edgeMat) {
+            const geo = new THREE.BoxGeometry(sx, sy, sz);
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(px, py, pz);
+            parent.add(mesh);
+            if (edgeMat) {
+                const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat);
+                edges.position.set(px, py, pz);
+                parent.add(edges);
+            }
+            return mesh;
+        }
+        
+        function createClip(parent, cx, cy, cz, rotAngle, side) {
+            const group = new THREE.Group();
+            
+            const clipMat = new THREE.MeshPhongMaterial({ color: 0x2ecc71, transparent: true, opacity: 0.9 });
+            const ganchoMat = new THREE.MeshPhongMaterial({ color: 0xe74c3c });
+            const labioMat = new THREE.MeshPhongMaterial({ color: 0x3498db, transparent: true, opacity: 0.8 });
+            const edgeMat = new THREE.LineBasicMaterial({ color: 0x1a8042 });
+            
+            const canalY = MDF + FOLGA; // espaço para MDF + folga
+            const totalY = canalY + 2 * PAREDE; // altura total do U
+            
+            // Parte superior (ponte sobre a tampa) — virada verticalmente
+            addBox(group, W_CLIP, PAREDE, totalY, 0, 0, 0, clipMat, edgeMat);
+            
+            // Parede externa (desce por fora)
+            addBox(group, W_CLIP, H_EXT, PAREDE, 0, -H_EXT/2, -(canalY/2 + PAREDE/2), clipMat, edgeMat);
+            
+            // Parede interna (desce por dentro)
+            addBox(group, W_CLIP, H_INT, PAREDE, 0, -H_INT/2, (canalY/2 + PAREDE/2), clipMat, edgeMat);
+            
+            // Gancho externo (saliência vermelha)
+            const gGeo = new THREE.BufferGeometry();
+            const gW = W_CLIP, gH = GANCHO, gD = GANCHO;
+            // Rampa + trava
+            const verts = new Float32Array([
+                // Face lateral 1 (triângulo rampa + retângulo trava)
+                -gW/2, -H_EXT, -(canalY/2 + PAREDE),
+                -gW/2, -H_EXT, -(canalY/2 + PAREDE + gD),
+                -gW/2, -H_EXT + gH*1.5, -(canalY/2 + PAREDE),
+                // Trava plana
+                -gW/2, -H_EXT, -(canalY/2 + PAREDE + gD),
+                -gW/2, -H_EXT + gH*0.4, -(canalY/2 + PAREDE + gD),
+                -gW/2, -H_EXT + gH*1.5, -(canalY/2 + PAREDE),
+            ]);
+            // Simplified: just use a box for the hook
+            addBox(group, W_CLIP, gH*0.5, gD, 0, -H_EXT + gH*0.25, -(canalY/2 + PAREDE + gD/2), ganchoMat, null);
+            // Rampa (inclinada)
+            const rampGeo = new THREE.BufferGeometry();
+            const rampVerts = [];
+            const hw = W_CLIP/2;
+            // Rampa triangular
+            rampVerts.push(
+                -hw, -H_EXT + gH*0.5, -(canalY/2 + PAREDE),
+                 hw, -H_EXT + gH*0.5, -(canalY/2 + PAREDE),
+                -hw, -H_EXT + gH*1.8, -(canalY/2 + PAREDE),
+                 hw, -H_EXT + gH*1.8, -(canalY/2 + PAREDE),
+                -hw, -H_EXT + gH*0.5, -(canalY/2 + PAREDE + gD),
+                 hw, -H_EXT + gH*0.5, -(canalY/2 + PAREDE + gD),
+            );
+            rampGeo.setAttribute('position', new THREE.Float32BufferAttribute(rampVerts, 3));
+            rampGeo.setIndex([0,1,2, 2,1,3, 4,5,1, 4,1,0, 2,3,5, 2,5,4]);
+            rampGeo.computeVertexNormals();
+            const rampMesh = new THREE.Mesh(rampGeo, ganchoMat);
+            group.add(rampMesh);
+            
+            // Gancho interno (menor)
+            addBox(group, W_CLIP, gH*0.4, gD*0.7, 0, -H_INT + gH*0.2, (canalY/2 + PAREDE + gD*0.35), ganchoMat, null);
+            
+            // Lábio de vedação (azul, dentro do canal)
+            addBox(group, W_CLIP, LABIO*2, canalY, 0, -LABIO, 0, labioMat, null);
+            
+            // Label
+            const label = makeSprite('CLIP', 0x2ecc71);
+            label.position.set(0, 1.0, 0);
+            label.scale.set(1.5, 0.75, 1);
+            group.add(label);
+            
+            // Position and orient
+            group.rotation.y = rotAngle;
+            group.position.set(cx, cy, cz);
+            
+            // Store side info for animation
+            group.userData = { side: side, baseY: cy, baseX: cx, baseZ: cz };
+            
+            parent.add(group);
+            return group;
+        }
+        
+        function buildCrossSection() {
+            // Large-scale cross-section showing how clip grabs MDF edges
+            const scale = 5; // 5x zoom for detail
+            const oX = 0, oY = 8, oZ = 0;
+            
+            const mdfMat = new THREE.MeshPhongMaterial({ color: 0xCD853F, side: THREE.DoubleSide });
+            const tampColor = new THREE.MeshPhongMaterial({ color: 0xf39c12, side: THREE.DoubleSide });
+            const clipColor = new THREE.MeshPhongMaterial({ color: 0x2ecc71, transparent: true, opacity: 0.9 });
+            const hookColor = new THREE.MeshPhongMaterial({ color: 0xe74c3c });
+            const labioColor = new THREE.MeshPhongMaterial({ color: 0x3498db, transparent: true, opacity: 0.8 });
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x333333 });
+            
+            const m = MDF * scale;   // 1.5
+            const p = PAREDE * scale; // 1.0
+            const f = FOLGA * scale;  // 0.15
+            const w = 4;              // profile depth (arbitrary for 2D section)
+            const he = H_EXT * scale; // 15.0
+            const hi = H_INT * scale; // 12.0
+            const g = GANCHO * scale; // 0.6
+            const lb = LABIO * scale; // 0.4
+            
+            // MDF lateral (parede da caixa, vertical)
+            addBox(crossSection, w, S*0.6, m, oX, oY, oZ, mdfMat, lineMat);
+            
+            // MDF tampa (horizontal, em cima)
+            const tampaY = oY + S*0.3 + m/2;
+            addBox(crossSection, w, m, m + f + 2*p + 2, oX, tampaY, oZ, tampColor, lineMat);
+            
+            // Clip - parte superior (ponte)
+            const canalCenter = oZ; // center of MDF wall
+            const clipTop = tampaY + m/2 + p/2;
+            addBox(crossSection, w, p, m + f + 2*p, oX, clipTop, canalCenter, clipColor, lineMat);
+            
+            // Clip - parede externa
+            const extZ = canalCenter - (m + f)/2 - p/2;
+            const extY = clipTop - p/2 - he/2;
+            addBox(crossSection, w, he, p, oX, extY, extZ, clipColor, lineMat);
+            
+            // Clip - parede interna
+            const intZ = canalCenter + (m + f)/2 + p/2;
+            const intY = clipTop - p/2 - hi/2;
+            addBox(crossSection, w, hi, p, oX, intY, intZ, clipColor, lineMat);
+            
+            // Gancho externo (vermelho)
+            addBox(crossSection, w, g*0.5, g, oX, extY - he/2 + g*0.25, extZ - p/2 - g/2, hookColor, lineMat);
+            // Rampa do gancho
+            const rampGeo = new THREE.BufferGeometry();
+            const hw = w/2;
+            const rampBase = extY - he/2 + g*0.5;
+            const rampTop = rampBase + g*2;
+            const rampZ1 = extZ - p/2;
+            const rampZ2 = extZ - p/2 - g;
+            rampGeo.setAttribute('position', new THREE.Float32BufferAttribute([
+                -hw, rampBase, rampZ1,  hw, rampBase, rampZ1,
+                -hw, rampBase, rampZ2,  hw, rampBase, rampZ2,
+                -hw, rampTop, rampZ1,   hw, rampTop, rampZ1,
+            ], 3));
+            rampGeo.setIndex([0,1,4, 4,1,5, 2,3,1, 2,1,0, 4,5,3, 4,3,2]);
+            rampGeo.computeVertexNormals();
+            crossSection.add(new THREE.Mesh(rampGeo, hookColor));
+            
+            // Gancho interno
+            addBox(crossSection, w, g*0.4, g*0.7, oX, intY - hi/2 + g*0.2, intZ + p/2 + g*0.35, hookColor, lineMat);
+            
+            // Lábio de vedação (azul)
+            const labioY = clipTop - p - lb;
+            addBox(crossSection, w, lb*2, m + f, oX, labioY, canalCenter, labioColor, null);
+            
+            // --- DIMENSION ANNOTATIONS ---
+            // Arrows/lines showing dimensions
+            const annMat = new THREE.LineBasicMaterial({ color: 0xff6b6b });
+            
+            // MDF thickness annotation
+            addDimLine(crossSection, oX + w/2 + 0.5, oY, oZ - m/2, oX + w/2 + 0.5, oY, oZ + m/2, '3mm MDF');
+            
+            // Hook depth
+            addDimLine(crossSection, oX + w/2 + 0.5, extY - he/2, extZ - p/2, oX + w/2 + 0.5, extY - he/2, extZ - p/2 - g, '1.2mm gancho');
+            
+            // Folga
+            addDimLine(crossSection, oX - w/2 - 0.5, tampaY, oZ + m/2, oX - w/2 - 0.5, tampaY, oZ + m/2 + f, '0.3mm folga');
+            
+            // Title
+            const title = makeSprite('CORTE SEÇÃO — CLIP SNAP-FIT', 0xff6b6b);
+            title.position.set(oX, tampaY + 3, canalCenter);
+            title.scale.set(6, 2, 1);
+            crossSection.add(title);
+            
+            // Labels
+            const lblTampa = makeSprite('TAMPA MDF', 0xf39c12);
+            lblTampa.position.set(oX, tampaY, canalCenter + 3);
+            lblTampa.scale.set(3, 1.2, 1);
+            crossSection.add(lblTampa);
+            
+            const lblLateral = makeSprite('LATERAL MDF', 0xCD853F);
+            lblLateral.position.set(oX, oY - 2, canalCenter);
+            lblLateral.scale.set(3, 1.2, 1);
+            crossSection.add(lblLateral);
+            
+            const lblGancho = makeSprite('GANCHO ↓', 0xe74c3c);
+            lblGancho.position.set(oX, extY - he/2 - 1, extZ - p/2 - g/2);
+            lblGancho.scale.set(2, 1, 1);
+            crossSection.add(lblGancho);
+            
+            const lblLabio = makeSprite('LÁBIO VEDAÇÃO', 0x3498db);
+            lblLabio.position.set(oX, labioY, canalCenter + 2.5);
+            lblLabio.scale.set(3, 1, 1);
+            crossSection.add(lblLabio);
+        }
+        
+        function addDimLine(parent, x1, y1, z1, x2, y2, z2, text) {
+            const points = [new THREE.Vector3(x1, y1, z1), new THREE.Vector3(x2, y2, z2)];
+            const geo = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0xff6b6b, linewidth: 2 }));
+            parent.add(line);
+            
+            const mid = new THREE.Vector3((x1+x2)/2, (y1+y2)/2, (z1+z2)/2);
+            const lbl = makeSprite(text, 0xff6b6b);
+            lbl.position.copy(mid).add(new THREE.Vector3(1.5, 0.5, 0));
+            lbl.scale.set(2.5, 0.8, 1);
+            parent.add(lbl);
+        }
+        
+        function makeSprite(text, color) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#' + color.toString(16).padStart(6, '0');
+            ctx.font = 'bold 48px Segoe UI, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 256, 64);
+            const tex = new THREE.CanvasTexture(canvas);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+            return new THREE.Sprite(mat);
+        }
+        
+        // === VIEW MODES ===
+        function showView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-selector button').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn' + view.charAt(0).toUpperCase() + view.slice(1)).classList.add('active');
+            
+            const infoBox = document.getElementById('infoBox');
+            
+            boxGroup.visible = true;
+            tampaGroup.visible = true;
+            clipsGroup.visible = true;
+            crossSection.visible = false;
+            
+            boxGroup.traverse(c => { if(c.material) { c.material.opacity = 0.85; c.material.transparent = true; }});
+            
+            switch(view) {
+                case 'full':
+                    infoBox.innerHTML = '<h3>📦 Visão Geral</h3>' +
+                        'Caixa <span class="dim">250×250×250mm</span> com tampa fixada por ' +
+                        '<span class="mat">8 clips snap-fit</span> impressos em PLA/PETG na Ender 3.<br>' +
+                        'Sem parafusos! Pressione a tampa e os ganchos travam automaticamente.';
+                    setCam(30, -0.5, 0.4, S/2, MDF + S/2, S/2);
+                    tampaOffset = 0;
+                    document.getElementById('sldTampa').value = 100;
+                    document.getElementById('valTampa').textContent = 'fechada';
+                    break;
+                case 'clip':
+                    infoBox.innerHTML = '<h3>🔩 Detalhe do Clip</h3>' +
+                        'Perfil em <span class="mat">U invertido</span> abraça borda tampa + lateral.<br>' +
+                        '<span class="dim">Gancho 1.2mm</span> (vermelho) trava na lateral.<br>' +
+                        '<span class="dim">Lábio 0.8mm</span> (azul) veda contra vazamento de ar.<br>' +
+                        'Rampa 45° permite encaixe só pressionando.';
+                    setCam(12, -0.3, 0.3, S*0.3, MDF + S + MDF, MDF);
+                    break;
+                case 'section':
+                    boxGroup.visible = false;
+                    tampaGroup.visible = false;
+                    clipsGroup.visible = false;
+                    crossSection.visible = true;
+                    infoBox.innerHTML = '<h3>✂️ Corte em Seção</h3>' +
+                        'Vista ampliada do perfil do clip na borda da caixa.<br>' +
+                        '<b style="color:#CD853F">Marrom</b> = MDF lateral | ' +
+                        '<b style="color:#f39c12">Amarelo</b> = Tampa<br>' +
+                        '<b style="color:#2ecc71">Verde</b> = Corpo clip | ' +
+                        '<b style="color:#e74c3c">Vermelho</b> = Ganchos<br>' +
+                        '<b style="color:#3498db">Azul</b> = Lábio de vedação (flexível)';
+                    setCam(18, -0.2, 0.25, 0, 8, 0);
+                    break;
+                case 'explode':
+                    infoBox.innerHTML = '<h3>💥 Vista Explodida</h3>' +
+                        'Tampa sobe, clips se separam para mostrar montagem.<br>' +
+                        'Use o slider <b>Tampa</b> para animar abrir/fechar.<br>' +
+                        'Use o slider <b>Clips</b> para separar os clips.';
+                    setCam(35, -0.5, 0.4, S/2, MDF + S/2, S/2);
+                    tampaOffset = 5;
+                    animTampa(0);
+                    document.getElementById('sldTampa').value = 0;
+                    document.getElementById('valTampa').textContent = 'aberta';
+                    break;
+            }
+        }
+        
+        function setCam(d, ry, rx, tx, ty, tz) {
+            dist = d; rotY = ry; rotX = rx;
+            targetX = tx; targetY = ty; targetZ = tz;
+        }
+        
+        // === ANIMATION CONTROLS ===
+        function animTampa(val) {
+            const t = 1 - val / 100; // 0=fechada, 1=aberta
+            tampaOffset = t * 8;
+            tampaGroup.position.y = tampaOffset;
+            
+            // Clips follow tampa when attached (val > 50)
+            if (val > 50) {
+                clipsGroup.position.y = tampaOffset * 0.8;
+            } else {
+                clipsGroup.position.y = tampaOffset;
+            }
+            
+            document.getElementById('valTampa').textContent = val >= 90 ? 'fechada' : val <= 10 ? 'aberta' : Math.round(val) + '%';
+        }
+        
+        function animClips(val) {
+            const t = 1 - val / 100;
+            clipsGroup.children.forEach(clip => {
+                const d = clip.userData;
+                if (!d) return;
+                const offset = t * 4;
+                switch(d.side) {
+                    case 'z-': clip.position.z = d.baseZ - offset; break;
+                    case 'z+': clip.position.z = d.baseZ + offset; break;
+                    case 'x-': clip.position.x = d.baseX - offset; break;
+                    case 'x+': clip.position.x = d.baseX + offset; break;
+                }
+            });
+            document.getElementById('valClips').textContent = val >= 90 ? 'on' : val <= 10 ? 'off' : Math.round(val) + '%';
+        }
+        
+        // === CAMERA VIEWS ===
+        function resetCam() { setCam(30, -0.5, 0.4, S/2, MDF + S/2, S/2); }
+        function viewFront() { setCam(30, 0, 0.2, S/2, MDF + S/2, S/2); }
+        function viewSide() { setCam(30, -Math.PI/2, 0.2, S/2, MDF + S/2, S/2); }
+        function viewTop() { setCam(30, -0.5, 1.4, S/2, MDF + S/2, S/2); }
+        function viewCorner() { setCam(20, -0.3, 0.5, S*0.3, MDF + S, MDF); }
+        
+        function toggleWire() {
+            wireMode = document.getElementById('chkWire').checked;
+            [boxGroup, tampaGroup, clipsGroup, crossSection].forEach(g => {
+                g.traverse(c => {
+                    if (c.material && !Array.isArray(c.material) && c.material.type !== 'LineBasicMaterial' && c.material.type !== 'SpriteMaterial') {
+                        c.material.wireframe = wireMode;
+                    }
+                });
+            });
+        }
+        
+        function toggleRotate() { autoRot = document.getElementById('chkRotate').checked; }
+        
+        // === MOUSE ORBIT ===
+        function setupMouse() {
+            const el = renderer.domElement;
+            el.addEventListener('mousedown', e => { mouseDown = true; mouseX = e.clientX; mouseY = e.clientY; });
+            el.addEventListener('mouseup', () => mouseDown = false);
+            el.addEventListener('mouseleave', () => mouseDown = false);
+            el.addEventListener('mousemove', e => {
+                if (!mouseDown) return;
+                rotY -= (e.clientX - mouseX) * 0.005;
+                rotX += (e.clientY - mouseY) * 0.005;
+                rotX = Math.max(-1.5, Math.min(1.5, rotX));
+                mouseX = e.clientX; mouseY = e.clientY;
+            });
+            el.addEventListener('wheel', e => {
+                dist += e.deltaY * 0.02;
+                dist = Math.max(3, Math.min(80, dist));
+            });
+            // Touch
+            el.addEventListener('touchstart', e => { if(e.touches.length===1){mouseDown=true;mouseX=e.touches[0].clientX;mouseY=e.touches[0].clientY;}});
+            el.addEventListener('touchend', () => mouseDown = false);
+            el.addEventListener('touchmove', e => {
+                if (!mouseDown || e.touches.length !== 1) return;
+                rotY -= (e.touches[0].clientX - mouseX) * 0.005;
+                rotX += (e.touches[0].clientY - mouseY) * 0.005;
+                rotX = Math.max(-1.5, Math.min(1.5, rotX));
+                mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY;
+                e.preventDefault();
+            }, {passive:false});
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (autoRot) rotY += 0.003;
+            
+            camera.position.set(
+                targetX + dist * Math.cos(rotX) * Math.sin(rotY),
+                targetY + dist * Math.sin(rotX),
+                targetZ + dist * Math.cos(rotX) * Math.cos(rotY)
+            );
+            camera.lookAt(targetX, targetY, targetZ);
+            
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>

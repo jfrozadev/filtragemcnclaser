@@ -70,11 +70,14 @@
 ### Compartimento de Carvão Ativado:
 | Item | Descrição |
 |------|----------|
-| Telas MDF (×2) | 244×244mm com abertura central 200×200mm |
-| Tela alumínio | Mosquiteira/cerca fixada com 16 paraf. M3+arruela |
-| Posições (slots) | X=180mm (Tela 1) e X=215mm (Tela 2) |
-| Espaço interno | 35mm entre telas → ~500g carvão ativado |
-| Snap-fit (3D print) | SNAP_TAMPA.scad – clips de vedação |
+| Telas MDF (×2) | 244×244mm com abertura central 200×200mm (11_GAVETA.nc) |
+| Caixa MDF (quadro) | 4 bordas ao redor da abertura com encaixe tela (13_CAIXA_CARVAO.nc) |
+| Tela alumínio | Mosquiteira fixada com 16 paraf. M3+arruela por tela |
+| Posições (slots) | X=165mm (Tela 1) e X=210mm (Tela 2) |
+| Espaço interno | 42mm entre telas → ~500g carvão ativado |
+| Caixa montada | Quadro 200×200×42mm (4 bordas encaixadas ao redor da abertura) |
+| Abas conexão tela | 8 abas (10×3mm) encaixam em 8 slots nas telas, juntando 2 MDF |
+| Snap-fit (3D print) | 16 clips (8 topo + 8 base) – SNAP_TAMPA.scad |
 
 ---
 
@@ -82,18 +85,19 @@
 
 | # | Arquivo | Descrição |
 |---|---------|-----------|
-| 1 | `01_LATERAL_ESQ.nc` | 250×250mm com ranhuras + slots divisórias |
-| 2 | `02_LATERAL_DIR.nc` | Idêntica (espelhada) |
-| 3 | `03_FRONTAL.nc` | 244×250mm com dentes + furo 70mm |
-| 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm |
+| 1 | `01_LATERAL_ESQ.nc` | 250×250mm com ranhuras + slots divisórias + snap-fit |
+| 2 | `02_LATERAL_DIR.nc` | Idêntica (espelhada) + snap-fit |
+| 3 | `03_FRONTAL.nc` | 244×250mm com dentes + furo 70mm + snap-fit |
+| 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm + snap-fit |
 | 5 | `05_TAMPA.nc` | 250×250mm com 4 furos fixação |
 | 6 | `06_BASE.nc` | 250×250mm com 4 furos para pés |
 | 7 | `07_DIVISORIA_MANTA_G3.nc` | 1× placa + manta colada c/ grampos |
 | 8 | `08_DIVISORIA_GM.nc` | 244×244mm + furo 223×210mm |
 | 9 | `09_DIVISORIA_WEGA.nc` | 244×244mm + furo 220×160mm |
 | 10 | `10_DIVISORIA_HEPA.nc` | 244×244mm + furo 110×140mm (HEPA) |
-| 11 | `11_GAVETA.nc` | 2× tela carvão 244×244mm (grade 5×3) |
+| 11 | `11_GAVETA.nc` | 2× tela carvão 244×244mm (abertura 200×200, M3 + 8 slots quadro) |
 | 12 | `12_FLANGES.nc` | Entrada 70mm + Saída 150mm |
+| 13 | `13_CAIXA_CARVAO.nc` | 4× bordas MDF quadro carvão (ao redor abertura, c/ abas tela) |
 
 ---
 
@@ -120,17 +124,43 @@ LATERAL:               DIVISÓRIA:
 As ABAS (5mm) passam pelos SLOTS (4×40mm)
 ```
 
-### Compartimento Carvão (Telas Verticais):
+### Compartimento Carvão (Quadro ao Redor da Abertura):
 ```
 LATERAL:
-   │ ▭ │ X=180mm  (Tela 1)
-   │   │  ← carvão ativado (35mm)
-   │ ▭ │ X=215mm  (Tela 2)
+   │ ▭ │ X=165mm  (Tela 1)
+   │   │  ← quadro carvão (42mm) ao redor da abertura
+   │ ▭ │ X=210mm  (Tela 2)
    
-2 placas MDF com abertura 200×200mm
+VISTA FRONTAL (quadro entre as 2 telas):
+   ┌────────────────────────┐
+   │  ┌──────────────────┐  │
+   │  │  abertura 200×200  │  │ ← borda 22mm da tela
+   │  │  (carvão + tela)   │  │
+   │  └──────────────────┘  │
+   └────────────────────────┘
+     ↑ quadro MDF (4 bordas com encaixe tab-slot)
+
+VISTA LATERAL (corte mostrando encaixe):
+   Tela2 ═══╤════════╤═══  ← aba atravessa slot
+            │ carvão │
+            │  42mm  │     ← borda MDF 3mm
+            │        │
+   Tela1 ═══╧════════╧═══  ← aba atravessa slot
+
+4 bordas MDF formam quadro ao redor da abertura
+8 abas (2/borda) atravessam 8 slots nas telas
+Encaixes juntam Tela 1 + Quadro + Tela 2
 Tela alumínio (mosquiteira) parafusada c/ M3+arruela
 16 furos 3.5mm por placa (4 por lado)
-Encaixam nos slots como as outras divisórias
+Encaixam nos slots laterais como as outras divisórias
+```
+
+### Snap-Fit (Tampa + Base):
+```
+16 clips impressos em PLA/PETG (8 topo + 8 base)
+Perna ext: 30mm | Perna int: 24mm | Gancho: 1.2mm
+Slots MDF: 22×2mm perfurados nos 4 painéis
+Posições: Y=220mm (topo) e Y=30mm (base)
 ```
 
 ---
@@ -143,8 +173,9 @@ Encaixam nos slots como as outras divisórias
 4. **Frontal** → Dentes nos slots das laterais
 5. **Traseira** → Igual ao frontal
 6. **Divisórias filtro** → Deslizar de cima (abas nos slots)
-7. **Telas carvão (×2)** → Preencher com carvão entre elas
-8. **Tampa** → Encaixar com clips snap-fit (sem parafusos)
+7. **Telas carvão (×2)** → Deslizar nos slots X=165 e X=210
+8. **Caixa carvão** → Encaixar 4 tiras + preencher com carvão
+9. **Tampa** → Encaixar com 16 clips snap-fit (sem parafusos)
 
 ---
 
@@ -157,28 +188,30 @@ Abra `MONTAGEM_3D.html` no navegador para:
 
 | Divisória | Posição X | Espessura | Espaço até próximo | Função |
 |-----------|-----------|-----------|-------------------|--------|
-| Manta G3 | **15mm** | 10mm | 30mm→GM | Pré-filtro (partículas grandes) |
-| GM Cabine Bosch | **40mm** | 20mm | 30mm→Wega | Filtro cabine (partículas médias) |
-| Wega Motor | **70mm** | 45mm | 65mm→HEPA | Filtro motor (partículas finas) |
-| **FILTRO HEPA** | **130mm** | 25mm | 95mm→Gaveta | **Filtro HEPA** |
-| Tela Carvão 1 | **180mm** | — | 35mm→Tela 2 | Retém carvão (lado interno) |
-| Tela Carvão 2 | **215mm** | — | 35mm→Traseira | Retém carvão (lado traseira) |
+| Manta G3 | **15mm** | 10mm | 22mm→GM | Pré-filtro (partículas grandes) |
+| GM Cabine Bosch | **40mm** | 20mm | 27mm→Wega | Filtro cabine (partículas médias) |
+| Wega Motor | **90mm** | 45mm | 27mm→HEPA | Filtro motor (partículas finas) |
+| **FILTRO HEPA** | **120mm** | 25mm | 17mm→Tela 1 | **Filtro HEPA** |
+| Tela Carvão 1 | **165mm** | 3mm (MDF) | 42mm→Tela 2 | Retém carvão (lado interno) |
+| Tela Carvão 2 | **210mm** | 3mm (MDF) | 35mm→Traseira | Retém carvão (lado traseira) |
 
 ---
 
 ## 📋 MATERIAIS
 
-- MDF 3mm: ~14 chapas 300×300mm
+- MDF 3mm: ~15 chapas 300×300mm
 - Manta G3 (pré-filtro) 10mm - colada + grampos
 - Filtro GM Cabine Bosch 20mm
 - Filtro Wega Motor 45mm
 - **Filtro HEPA** (110×140×25mm)
 - Carvão ativado ~500g (granulado)
-- Tela metálica ou nylon (colada sobre furos das telas)
+- Tela alumínio mosquiteira (2× para telas carvão)
+- 32× Parafuso M3 + arruela (16 por tela)
 - Cola PVA + Silicone
-- Clips snap-fit impressos em 3D (SNAP_TAMPA.scad)
+- 16× Clips snap-fit impressos em PLA/PETG (SNAP_TAMPA.scad)
+- Filamento PLA/PETG ~50g
 
 ---
 
-**Versão:** 5.0 CORRIGIDA  
+**Versão:** 6.0 — Caixa carvão 4 lados + snap-fit 16 clips  
 **Data:** Fevereiro 2025

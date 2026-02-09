@@ -145,10 +145,10 @@
                 <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>Dentes (macho)</div>
                 <div class="legend-item"><div class="legend-color" style="background:#3498db"></div>Ranhuras (fêmea)</div>
                 <div class="legend-item"><div class="legend-color" style="background:#2ecc71"></div>Slots divisórias</div>
-                <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div>Abas divisórias</div>
-                <div class="legend-item"><div class="legend-color" style="background:#4a4a4a"></div>Comp. carvão</div>
+                <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div>Abas/Encaixes</div>
+                <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Snap-fit clips</div>
+                <div class="legend-item"><div class="legend-color" style="background:#A0522D"></div>Caixa carvão</div>
                 <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Peça atual</div>
-                <div class="legend-item"><div class="legend-color" style="background:#7f8c8d"></div>Parafusos M3</div>
             </div>
         </div>
     </div>
@@ -305,25 +305,25 @@
             },
             {
                 num: 7, title: "Divisória GM Bosch", desc: "Insira a divisória GM CABINE BOSCH",
-                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=45mm. Filtra partículas médias.",
+                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=40mm. Filtra partículas médias.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM'],
-                camera: { pos: [1.2, 2.5, 3.5], look: [0.45, 1.3, 1.25] }
+                camera: { pos: [1.2, 2.5, 3.5], look: [0.40, 1.3, 1.25] }
             },
             {
                 num: 8, title: "Divisória Wega", desc: "Insira a divisória WEGA (filtro motor)",
-                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=80mm. Filtra partículas finas.",
+                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=90mm. Filtra partículas finas.",
                 type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega'],
-                camera: { pos: [1.6, 2.5, 3.5], look: [0.80, 1.3, 1.25] }
+                camera: { pos: [1.6, 2.5, 3.5], look: [0.90, 1.3, 1.25] }
             },
             {
                 num: 9, title: "Divisória HEPA", desc: "Insira a divisória FILTRO HEPA",
-                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=145mm.",
+                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=120mm.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
-                camera: { pos: [2.2, 2.5, 3.5], look: [1.45, 1.3, 1.25] }
+                camera: { pos: [2.2, 2.5, 3.5], look: [1.20, 1.3, 1.25] }
             },
             {
                 num: 10, title: "Telas de Carvão", desc: "Insira as 2 telas de carvão nos slots das laterais",
-                encaixe: "⬛ CARVÃO ATIVADO - 2 placas MDF 244×244mm com abertura 200×200mm nos slots X=180mm e X=215mm. Tela alumínio (mosquiteira) fixada com 16 parafusos M3+arruela. ~500g carvão granulado entre as telas.",
+                encaixe: "⬛ CARVÃO ATIVADO - 2 telas MDF 244×244mm (abertura 200×200mm) nos slots X=165mm e X=210mm + caixa MDF 4 lados com encaixe (13_CAIXA_CARVAO.nc). Tela alumínio mosquiteira fixada com M3+arruela. ~500g carvão granulado.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta'],
                 camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
             },
@@ -509,13 +509,13 @@
             parts.divMantaG3 = createDivisoria(0.15, 'mantag3');
             scene.add(parts.divMantaG3);
             
-            parts.divGM = createDivisoria(0.45, 'gm');
+            parts.divGM = createDivisoria(0.40, 'gm');
             scene.add(parts.divGM);
             
-            parts.divWega = createDivisoria(0.80, 'wega');
+            parts.divWega = createDivisoria(0.90, 'wega');
             scene.add(parts.divWega);
             
-            parts.divHepa = createDivisoria(1.45, 'hepa');
+            parts.divHepa = createDivisoria(1.20, 'hepa');
             scene.add(parts.divHepa);
             
             parts.gaveta = createCarbonCompartment();
@@ -551,28 +551,22 @@
             });
             
             // ========================================
-            // FUROS PARA PARAFUSOS (mesmas posições da tampa)
+            // SNAP-FIT SLOTS NA BASE (mesmas posições que a tampa)
+            // 8 slots para clips snap-fit na base
             // ========================================
-            // 10 furos para parafusos que vêm da base e fixam nas bordas inferiores
-            
-            // 6 furos sobre as laterais
-            const lateralHolePositions = [
-                [0.015, 0.15], [0.015, 1.25], [0.015, 2.35],  // Lat.esq
-                [2.485, 0.15], [2.485, 1.25], [2.485, 2.35],  // Lat.dir
+            const snapSlotMat = new THREE.MeshPhongMaterial({ color: 0x00838f });
+            // Posições dos slots snap-fit (22×2mm)
+            const baseClipPositions = [
+                [1.05, T*0.5], [1.45, T*0.5],     // Lat.esq
+                [1.05, S-T*0.5], [1.45, S-T*0.5], // Lat.dir
+                [T*0.5, 0.82], [T*0.5, 1.62],     // Frontal
+                [S-T*0.5, 0.82], [S-T*0.5, 1.62]  // Traseira
             ];
             
-            // 4 furos sobre frontal/traseira  
-            const frontBackHolePositions = [
-                [0.80, 0.015], [1.70, 0.015],  // Frontal
-                [0.80, 2.485], [1.70, 2.485],  // Traseira
-            ];
-            
-            const screwHoleMat = new THREE.MeshPhongMaterial({ color: 0x444444 });
-            
-            [...lateralHolePositions, ...frontBackHolePositions].forEach(([x, z]) => {
-                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 16), screwHoleMat);
-                hole.position.set(x, T/2, z);
-                group.add(hole);
+            baseClipPositions.forEach(([x, z]) => {
+                const slot = new THREE.Mesh(new THREE.BoxGeometry(0.02, T*2, 0.22), snapSlotMat);
+                slot.position.set(x, T/2, z);
+                group.add(slot);
             });
             
             // Marcação interna - "BASE" no topo (lado interno)
@@ -612,9 +606,9 @@
                 }
             }
             
-            // SLOTS para divisórias (verde) - 4 divisórias
+            // SLOTS para divisórias (verde) - 6 posições (4 filtros + 2 telas carvão)
             const divSlotMat = new THREE.MeshPhongMaterial({ color: COLORS.divSlots, transparent: true, opacity: 0.9 });
-            [0.15, 0.45, 0.80, 1.45].forEach(x => {
+            [0.15, 0.40, 0.90, 1.20, 1.65, 2.10].forEach(x => {
                 const slotL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
                 slotL.position.set(x, T + 0.35, zPos);
                 group.add(slotL);
@@ -622,6 +616,20 @@
                 const slotU = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.4, T*2), divSlotMat);
                 slotU.position.set(x, T + S - 0.35, zPos);
                 group.add(slotU);
+            });
+            
+            // SLOTS SNAP-FIT (ciano) - 22×2mm para clips snap-fit
+            const snapSlotMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
+            [1.05, 1.45].forEach(x => {
+                // Slot superior (Y=220mm = 2.20)
+                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.22, T*2), snapSlotMat);
+                snapTop.position.set(x, T + 2.20, zPos);
+                group.add(snapTop);
+                
+                // Slot inferior (Y=30mm = 0.30)
+                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.22, T*2), snapSlotMat);
+                snapBot.position.set(x, T + 0.30, zPos);
+                group.add(snapBot);
             });
             
             // Marcação interna - identificação da lateral
@@ -814,63 +822,54 @@
             group.add(tampa);
             
             // ========================================
-            // PARAFUSOS - Posições corrigidas
+            // SNAP-FIT CLIPS (substituem parafusos)
+            // 8 clips no topo: 2 por lateral + 2 por frontal/traseira
+            // Impressos em PLA/PETG (SNAP_TAMPA.scad)
+            // Perna externa 30mm, interna 24mm, gancho 1.2mm
             // ========================================
-            // Parafuso: 2.2mm x 6.5mm (rosca fina para MDF 3mm)
-            // 10 parafusos total: 6 sobre laterais + 4 sobre frontal/traseira
+            const clipMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
+            const slotMat2 = new THREE.MeshPhongMaterial({ color: 0x00838f });
             
-            const holeMat = new THREE.MeshPhongMaterial({ color: 0x555555 });
-            
-            // Conversão: 1 unidade 3D = 100mm, então 0.015 = 1.5mm, 0.125 = 12.5mm, etc.
-            
-            // 6 PARAFUSOS SOBRE AS LATERAIS (X = 1.5mm do centro lateral)
-            // Posições Y na tampa = X nas laterais: 15mm, 125mm, 235mm
-            const lateralScrewPositions = [
-                // Lateral esquerda (X=0.015 = 1.5mm do edge) em Z=0.15, 1.25, 2.35
-                [0.015, 0.15],   // Lat.esq perto frontal
-                [0.015, 1.25],   // Lat.esq centro
-                [0.015, 2.35],   // Lat.esq perto traseira
-                // Lateral direita (X=2.485 = 248.5mm) em Z=0.15, 1.25, 2.35
-                [2.485, 0.15],   // Lat.dir perto frontal
-                [2.485, 1.25],   // Lat.dir centro
-                [2.485, 2.35],   // Lat.dir perto traseira
+            // Posições dos clips no topo (escala: 1u = 100mm)
+            // Laterais: X=1.05 e X=1.45 (centro dos painéis), Z=T/2 e Z=S-T/2
+            // Frontal/Traseira: Z=0.82 e Z=1.62, X=T/2 e X=S-T/2
+            const clipPositions = [
+                // Sobre lateral esquerda
+                {x: 1.05, z: T*0.5, rotY: 0},
+                {x: 1.45, z: T*0.5, rotY: 0},
+                // Sobre lateral direita
+                {x: 1.05, z: S - T*0.5, rotY: Math.PI},
+                {x: 1.45, z: S - T*0.5, rotY: Math.PI},
+                // Sobre frontal
+                {x: T*0.5, z: 0.82, rotY: Math.PI/2},
+                {x: T*0.5, z: 1.62, rotY: Math.PI/2},
+                // Sobre traseira
+                {x: S - T*0.5, z: 0.82, rotY: -Math.PI/2},
+                {x: S - T*0.5, z: 1.62, rotY: -Math.PI/2}
             ];
             
-            // 4 PARAFUSOS SOBRE FRONTAL/TRASEIRA (Y = 1.5mm do centro frontal/traseira)
-            // Posições X na tampa = 80mm e 170mm
-            const frontBackScrewPositions = [
-                // Frontal (Z=0.015 = 1.5mm) em X=0.80, 1.70
-                [0.80, 0.015],   // Frontal esquerdo
-                [1.70, 0.015],   // Frontal direito
-                // Traseira (Z=2.485 = 248.5mm) em X=0.80, 1.70
-                [0.80, 2.485],   // Traseira esquerdo
-                [1.70, 2.485],   // Traseira direito
-            ];
-            
-            // Adicionar parafusos sobre laterais
-            lateralScrewPositions.forEach(([x, z]) => {
-                // Furo na tampa
-                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 16), holeMat);
-                hole.position.set(x, T + S + T/2, z);
-                group.add(hole);
+            clipPositions.forEach(({x, z, rotY}) => {
+                // Clip body (perna externa visível)
+                const clipGroup = new THREE.Group();
                 
-                // Parafuso 2.2x6.5mm (rosca fina)
-                const screw = createScrew(0.065, 0.025, 0.011);
-                screw.position.set(x, T + S + T + 0.005, z);
-                group.add(screw);
-            });
-            
-            // Adicionar parafusos sobre frontal/traseira
-            frontBackScrewPositions.forEach(([x, z]) => {
-                // Furo na tampa
-                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 16), holeMat);
-                hole.position.set(x, T + S + T/2, z);
-                group.add(hole);
+                // Perna vertical (30mm = 0.30)
+                const leg = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.30, 0.20), clipMat);
+                leg.position.set(0, -0.15, 0);
+                clipGroup.add(leg);
                 
-                // Parafuso 2.2x6.5mm (rosca fina)
-                const screw = createScrew(0.065, 0.025, 0.011);
-                screw.position.set(x, T + S + T + 0.005, z);
-                group.add(screw);
+                // Gancho na ponta (1.2mm protrusion)
+                const hook = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.04, 0.20), new THREE.MeshPhongMaterial({ color: 0xff5722 }));
+                hook.position.set(-0.012, -0.30, 0);
+                clipGroup.add(hook);
+                
+                // Topo (apoio sobre tampa)
+                const top = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.02, 0.20), clipMat);
+                top.position.set(0.02, 0.01, 0);
+                clipGroup.add(top);
+                
+                clipGroup.rotation.y = rotY;
+                clipGroup.position.set(x, T + S + T, z);
+                group.add(clipGroup);
             });
             
             // Marcação interna - "TAMPA" no lado de baixo (lado interno)
@@ -887,7 +886,7 @@
             const W = S - 2*T; // 244mm (entre as laterais)
             
             // Posições das 2 telas de carvão (slots nas laterais)
-            const telaPositions = [1.80, 2.15]; // X=180mm e X=215mm
+            const telaPositions = [1.65, 2.10]; // X=165mm e X=210mm
             
             const plateMat = new THREE.MeshPhongMaterial({ color: COLORS.mdfLight, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
             const abaMat = new THREE.MeshPhongMaterial({ color: COLORS.abas });
@@ -957,10 +956,53 @@
             // Volume de carvão ativado entre as 2 telas
             const carvaoMat = new THREE.MeshPhongMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.7 });
             const carbonDepth = telaPositions[1] - telaPositions[0]; // 0.35 (35mm)
-            const carbonCenter = (telaPositions[0] + telaPositions[1]) / 2; // 1.975
+            const carbonCenter = (telaPositions[0] + telaPositions[1]) / 2;
             const carvao = new THREE.Mesh(new THREE.BoxGeometry(carbonDepth - T*2, W * 0.85, W * 0.85), carvaoMat);
             carvao.position.set(carbonCenter, T + S/2, S/2);
             group.add(carvao);
+            
+            // ========================================
+            // CAIXA DE CARVÃO - 4 tiras MDF com encaixe
+            // 4 strips formando retângulo 244×244×42mm
+            // ========================================
+            const stripMat = new THREE.MeshPhongMaterial({ color: 0xA0522D, transparent: true, opacity: 0.85 });
+            const stripDepth = carbonDepth; // 42mm = 0.42 (distância entre telas)
+            const stripThick = T; // 3mm MDF
+            
+            // Tiras verticais (esquerda e direita) - 244mm × 42mm
+            const vertStrip = new THREE.BoxGeometry(stripDepth, W, stripThick);
+            const stripLeft = new THREE.Mesh(vertStrip, stripMat);
+            stripLeft.position.set(carbonCenter, T + S/2, T + stripThick/2);
+            group.add(stripLeft);
+            
+            const stripRight = new THREE.Mesh(vertStrip.clone(), stripMat);
+            stripRight.position.set(carbonCenter, T + S/2, S - T - stripThick/2);
+            group.add(stripRight);
+            
+            // Tiras horizontais (superior e inferior) - 238mm corpo × 42mm
+            const horizW = W - 2*T; // 238mm (entre as verticais)
+            const horizStrip = new THREE.BoxGeometry(stripDepth, stripThick, horizW);
+            const stripTop = new THREE.Mesh(horizStrip, stripMat);
+            stripTop.position.set(carbonCenter, T + S - stripThick/2, S/2);
+            group.add(stripTop);
+            
+            const stripBottom = new THREE.Mesh(horizStrip.clone(), stripMat);
+            stripBottom.position.set(carbonCenter, T + stripThick/2, S/2);
+            group.add(stripBottom);
+            
+            // Indicadores de encaixe (tab/slot nos cantos - amarelo)
+            const tabMat = new THREE.MeshPhongMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.9 });
+            const tabSize = new THREE.BoxGeometry(stripDepth * 0.15, stripThick * 0.8, stripThick * 1.2);
+            // 4 cantos × 2 tabs = 8 indicadores
+            [[-1, -1], [-1, 1], [1, -1], [1, 1]].forEach(([vy, vz]) => {
+                const tabY = T + S/2 + vy * (W/2 - stripThick/2);
+                const tabZ = S/2 + vz * (W/2 - stripThick/2);
+                [0.08, 0.24].forEach(frac => {
+                    const tab = new THREE.Mesh(tabSize, tabMat);
+                    tab.position.set(carbonCenter - stripDepth/2 + stripDepth * frac, tabY, tabZ);
+                    group.add(tab);
+                });
+            });
             
             // Borda do volume de carvão
             const carbonEdges = new THREE.LineSegments(

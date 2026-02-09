@@ -1,10 +1,12 @@
 // ==========================================
-// SNAP-FIT CLIP PARA TAMPA - CAIXA DE FILTRAGEM
-// Impressão 3D - PLA/PETG
+// SNAP-FIT CLIP PARA TAMPA E BASE - CAIXA DE FILTRAGEM
+// Impressão 3D - PLA/PETG (Ender 3)
 // ==========================================
-// 8 clips distribuídos nas bordas da caixa
-// Encaixam na tampa (3mm) e travam na borda lateral/frontal/traseira
+// 16 clips: 8 tampa (topo) + 8 base (inferior)
+// Encaixam na tampa/base (3mm) e travam na borda lateral/frontal/traseira
 // Vedação com lábio flexível
+// Pé dobrado: altura 30mm (ext) / 24mm (int)
+// Requer slots 22×2mm cortados no MDF a 30mm da borda
 // ==========================================
 
 // Parâmetros da caixa
@@ -14,10 +16,15 @@ parede = 2;       // Espessura da parede do clip
 
 // Parâmetros do clip
 largura_clip = 20;   // Largura do clip ao longo da borda
-altura_ext = 15;     // Altura externa (desce pelo lado externo)
-altura_int = 12;     // Altura interna (desce por dentro da caixa)
+altura_ext = 30;     // Altura externa (pé dobrado, desce pelo lado externo)
+altura_int = 24;     // Altura interna (pé dobrado, desce por dentro da caixa)
 gancho = 1.2;        // Profundidade do gancho snap-fit
 angulo_gancho = 45;  // Ângulo da rampa de entrada
+
+// Slot no MDF para o gancho
+slot_largura = 22;   // 20mm clip + 2mm folga
+slot_altura = 2;     // 1.2mm gancho + folga
+slot_pos_borda = 30; // Distância do gancho até a borda (= altura_ext)
 
 // Lábio de vedação
 labio_h = 1.5;    // Altura do lábio
@@ -138,7 +145,7 @@ module vedacao_divisoria() {
 }
 
 // === RENDER ===
-// Clip individual
+// Clip individual (tampa/base - mesmo clip para ambos)
 snap_clip_tampa();
 
 // Visualização: clip de canto (deslocado)
@@ -149,3 +156,12 @@ translate([40, 0, 0])
 translate([0, 50, 0])
     scale(0.2)
         vedacao_divisoria();
+
+// Texto informativo (não renderiza, só comentário)
+// Impressão recomendada:
+// - Material: PETG (melhor flexibilidade) ou PLA
+// - Layer: 0.2mm
+// - Infill: 80-100%
+// - Walls: 3 perímetros mínimo
+// - Orientação: clip deitado, ponte para cima
+// - Qtd: 16 unidades (8 topo + 8 base)
