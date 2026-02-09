@@ -1,10 +1,10 @@
 ; ==========================================
-; DIVISÓRIA HEPA EFH13W 244x244mm
+; DIVISÓRIA HEPA 244x244mm
 ; CNC: Two Trees TTS-10 | MDF 3mm
 ; ==========================================
 ; CORTE: S1000 | F150 | 3 PASSAGENS
-; Furo 130x240mm para filtro HEPA Electrolux
-; Filtro: 130x250x45mm (H13 - 99.95%)
+; Furo 110x140mm para filtro HEPA
+; Filtro: 110x140x25mm
 ; GRAVAÇÃO: "FILTRO HEPA" no canto superior
 ; ==========================================
 
@@ -135,15 +135,15 @@ G1 X5.00 Y12.00 F150
 G1 X5.00 Y0.00 F150
 M5
 
-; Furo central 130x240mm (centralizado)
-; X: (244-130)/2 = 57mm cada lado -> X de 57 a 187
-; Y: (244-240)/2 = 2mm cada lado -> Y de 2 a 242
-G0 X57.00 Y2.00
+; Furo central 110x140mm (centralizado)
+; X: (244-110)/2 = 67mm cada lado -> X de 67 a 177
+; Y: (244-140)/2 = 52mm cada lado -> Y de 52 a 192
+G0 X67.00 Y52.00
 M4 S1000
-G1 X187.00 Y2.00 F150
-G1 X187.00 Y242.00 F150
-G1 X57.00 Y242.00 F150
-G1 X57.00 Y2.00 F150
+G1 X177.00 Y52.00 F150
+G1 X177.00 Y192.00 F150
+G1 X67.00 Y192.00 F150
+G1 X67.00 Y52.00 F150
 M5
 
 ; ===== PASSAGEM 2/3 =====
@@ -172,12 +172,12 @@ G1 X5.00 Y12.00 F150
 G1 X5.00 Y0.00 F150
 M5
 
-G0 X57.00 Y2.00
+G0 X67.00 Y52.00
 M4 S1000
-G1 X187.00 Y2.00 F150
-G1 X187.00 Y242.00 F150
-G1 X57.00 Y242.00 F150
-G1 X57.00 Y2.00 F150
+G1 X177.00 Y52.00 F150
+G1 X177.00 Y192.00 F150
+G1 X67.00 Y192.00 F150
+G1 X67.00 Y52.00 F150
 M5
 
 ; ===== PASSAGEM 3/3 =====
@@ -206,12 +206,12 @@ G1 X5.00 Y12.00 F150
 G1 X5.00 Y0.00 F150
 M5
 
-G0 X57.00 Y2.00
+G0 X67.00 Y52.00
 M4 S1000
-G1 X187.00 Y2.00 F150
-G1 X187.00 Y242.00 F150
-G1 X57.00 Y242.00 F150
-G1 X57.00 Y2.00 F150
+G1 X177.00 Y52.00 F150
+G1 X177.00 Y192.00 F150
+G1 X67.00 Y192.00 F150
+G1 X67.00 Y52.00 F150
 M5
 
 ; Fim do programa

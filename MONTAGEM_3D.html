@@ -148,6 +148,7 @@
                 <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div>Abas divisórias</div>
                 <div class="legend-item"><div class="legend-color" style="background:#4a4a4a"></div>Comp. carvão</div>
                 <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Peça atual</div>
+                <div class="legend-item"><div class="legend-color" style="background:#7f8c8d"></div>Parafusos M3</div>
             </div>
         </div>
     </div>
@@ -160,7 +161,7 @@
             <tr><td class="label">MDF:</td><td class="val">3mm</td></tr>
             <tr><td class="label">Dentes:</td><td class="val">25mm largura</td></tr>
             <tr><td class="label">Slots:</td><td class="val">4×40mm</td></tr>
-            <tr><td class="label">HEPA:</td><td class="val highlight">130×240mm ✓</td></tr>
+            <tr><td class="label">HEPA:</td><td class="val highlight">110×140mm ✓</td></tr>
         </table>
     </div>
 
@@ -186,13 +187,89 @@
             abas: 0xf39c12,
             current: 0x9b59b6,
             ghost: 0xcccccc,
-            highlight: 0xff6b6b
+            highlight: 0xff6b6b,
+            screw: 0x7f8c8d,
+            screwHead: 0x95a5a6
         };
+        
+        // Função para criar parafuso 3D realista
+        function createScrew(length = 0.15, headRadius = 0.04, shaftRadius = 0.015) {
+            const group = new THREE.Group();
+            
+            // Cabeça do parafuso (Phillips/cruz)
+            const headMat = new THREE.MeshPhongMaterial({ 
+                color: COLORS.screwHead, 
+                metalness: 0.8,
+                shininess: 100
+            });
+            const headGeom = new THREE.CylinderGeometry(headRadius, headRadius * 0.9, 0.025, 16);
+            const head = new THREE.Mesh(headGeom, headMat);
+            head.position.y = length / 2 + 0.0125;
+            group.add(head);
+            
+            // Fenda Phillips (cruz) na cabeça
+            const slotMat = new THREE.MeshBasicMaterial({ color: 0x2c3e50 });
+            const slot1 = new THREE.Mesh(new THREE.BoxGeometry(headRadius * 1.4, 0.03, 0.008), slotMat);
+            slot1.position.y = length / 2 + 0.026;
+            group.add(slot1);
+            const slot2 = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.03, headRadius * 1.4), slotMat);
+            slot2.position.y = length / 2 + 0.026;
+            group.add(slot2);
+            
+            // Corpo do parafuso (rosca)
+            const shaftMat = new THREE.MeshPhongMaterial({ 
+                color: COLORS.screw,
+                metalness: 0.6,
+                shininess: 80
+            });
+            const shaftGeom = new THREE.CylinderGeometry(shaftRadius, shaftRadius * 0.7, length, 12);
+            const shaft = new THREE.Mesh(shaftGeom, shaftMat);
+            group.add(shaft);
+            
+            // Rosca visual (espiral simplificada)
+            const threadMat = new THREE.MeshBasicMaterial({ color: 0x5a6a7a });
+            for (let i = 0; i < 6; i++) {
+                const threadRing = new THREE.Mesh(
+                    new THREE.TorusGeometry(shaftRadius * 1.1, 0.003, 4, 16),
+                    threadMat
+                );
+                threadRing.rotation.x = Math.PI / 2;
+                threadRing.position.y = -length / 2 + 0.02 + i * 0.02;
+                group.add(threadRing);
+            }
+            
+            return group;
+        }
+        
+        // Função para criar pé de borracha
+        function createRubberFoot() {
+            const group = new THREE.Group();
+            
+            // Pé de borracha (cilindro achatado)
+            const footMat = new THREE.MeshPhongMaterial({ 
+                color: 0x1a1a1a,
+                shininess: 20
+            });
+            const foot = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.06, 0.07, 0.03, 16),
+                footMat
+            );
+            foot.position.y = -0.015;
+            group.add(foot);
+            
+            // Parafuso que fixa o pé
+            const screw = createScrew(0.08, 0.03, 0.012);
+            screw.rotation.x = Math.PI; // Virado para baixo
+            screw.position.y = 0.02;
+            group.add(screw);
+            
+            return group;
+        }
         
         const steps = [
             {
                 num: 1, title: "Base", desc: "Posicione a base na mesa de trabalho",
-                encaixe: "Base 250×250mm - superfície plana. 4 furos para pés de borracha nos cantos.",
+                encaixe: "Base 250×250mm com 4 pés de borracha nos cantos (já instalados com parafusos M3).",
                 type: "info", parts: ['base'],
                 camera: { pos: [4, 2, 4], look: [1.25, 0.1, 1.25] }
             },
@@ -222,7 +299,7 @@
             },
             {
                 num: 6, title: "Divisória Manta G3", desc: "Insira a divisória MANTA G3 (pré-filtro)",
-                encaixe: "🔵 MANTA G3 - Pré-filtro ~15mm espessura. Posição X=15mm. Filtra partículas grandes.",
+                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura (colada + grampos). Posição X=15mm. Filtra partículas grandes.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3'],
                 camera: { pos: [0.8, 2.5, 3.5], look: [0.15, 1.3, 1.25] }
             },
@@ -234,13 +311,13 @@
             },
             {
                 num: 8, title: "Divisória Wega", desc: "Insira a divisória WEGA (filtro motor)",
-                encaixe: "🟢 WEGA MOTOR - Filtro motor 50mm espessura. Posição X=80mm. Filtra partículas finas.",
+                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=80mm. Filtra partículas finas.",
                 type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega'],
                 camera: { pos: [1.6, 2.5, 3.5], look: [0.80, 1.3, 1.25] }
             },
             {
-                num: 9, title: "Divisória HEPA", desc: "Insira a divisória FILTRO HEPA H13",
-                encaixe: "🔷 FILTRO HEPA EFH13W - Filtro H13 45mm espessura. Posição X=145mm. Remove 99,95% partículas!",
+                num: 9, title: "Divisória HEPA", desc: "Insira a divisória FILTRO HEPA",
+                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=145mm.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
                 camera: { pos: [2.2, 2.5, 3.5], look: [1.45, 1.3, 1.25] }
             },
@@ -251,8 +328,8 @@
                 camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
             },
             {
-                num: 11, title: "Tampa", desc: "Feche com a tampa",
-                encaixe: "✅ COMPLETO! Tampa 250×250mm apoia sobre as laterais. Fixe com 4 parafusos nos cantos.",
+                num: 11, title: "Tampa", desc: "Feche com a tampa e aparafuse",
+                encaixe: "✅ COMPLETO! Tampa 250×250mm fixada com 4 parafusos M3 nos cantos (cabeça Phillips visível).",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
                 camera: { pos: [4, 3.5, 4], look: [1.25, 1.3, 1.25] }
             }
@@ -457,9 +534,43 @@
             base.position.set(S/2, T/2, S/2);
             group.add(base);
             
+            // Furos para os pés de borracha (4 cantos - 25mm das bordas)
             const holeMat = new THREE.MeshPhongMaterial({ color: 0x333333 });
-            [[0.2, 0.2], [S-0.2, 0.2], [0.2, S-0.2], [S-0.2, S-0.2]].forEach(([x, z]) => {
+            const footPositions = [[0.25, 0.20], [2.25, 0.20], [0.25, 2.30], [2.25, 2.30]];
+            
+            footPositions.forEach(([x, z]) => {
+                // Furo para pé
                 const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, T*2, 16), holeMat);
+                hole.position.set(x, T/2, z);
+                group.add(hole);
+                
+                // Pé de borracha com parafuso (embaixo da base)
+                const foot = createRubberFoot();
+                foot.position.set(x, 0, z);
+                group.add(foot);
+            });
+            
+            // ========================================
+            // FUROS PARA PARAFUSOS (mesmas posições da tampa)
+            // ========================================
+            // 10 furos para parafusos que vêm da base e fixam nas bordas inferiores
+            
+            // 6 furos sobre as laterais
+            const lateralHolePositions = [
+                [0.015, 0.15], [0.015, 1.25], [0.015, 2.35],  // Lat.esq
+                [2.485, 0.15], [2.485, 1.25], [2.485, 2.35],  // Lat.dir
+            ];
+            
+            // 4 furos sobre frontal/traseira  
+            const frontBackHolePositions = [
+                [0.80, 0.015], [1.70, 0.015],  // Frontal
+                [0.80, 2.485], [1.70, 2.485],  // Traseira
+            ];
+            
+            const screwHoleMat = new THREE.MeshPhongMaterial({ color: 0x444444 });
+            
+            [...lateralHolePositions, ...frontBackHolePositions].forEach(([x, z]) => {
+                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 16), screwHoleMat);
                 hole.position.set(x, T/2, z);
                 group.add(hole);
             });
@@ -657,13 +768,13 @@
             // Furo do filtro com ESPESSURA CORRETA
             let fW, fH, fDepth, fColor, filterLabel;
             if (type === 'mantag3') {
-                fW = 2.0; fH = 2.0; fDepth = 0.15; fColor = 0x1abc9c; filterLabel = 'Manta G3 15mm';
+                fW = 2.0; fH = 2.0; fDepth = 0.10; fColor = 0x1abc9c; filterLabel = 'Manta G3 10mm';
             } else if (type === 'gm') {
-                fW = 2.05; fH = 2.2; fDepth = 0.20; fColor = 0xf1c40f; filterLabel = 'GM Bosch 20mm';
+                fW = 2.23; fH = 2.1; fDepth = 0.20; fColor = 0xf1c40f; filterLabel = 'GM Bosch 20mm';
             } else if (type === 'wega') {
-                fW = 2.2; fH = 1.6; fDepth = 0.50; fColor = 0x2ecc71; filterLabel = 'Wega 50mm';
+                fW = 2.2; fH = 1.6; fDepth = 0.45; fColor = 0x2ecc71; filterLabel = 'Wega 45mm';
             } else {
-                fW = 1.3; fH = 2.4; fDepth = 0.45; fColor = 0x3498db; filterLabel = 'HEPA 45mm';
+                fW = 1.1; fH = 1.4; fDepth = 0.25; fColor = 0x3498db; filterLabel = 'HEPA 25mm';
             }
             
             const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.5 });
@@ -702,11 +813,64 @@
             tampa.position.set(S/2, T + S + T/2, S/2);
             group.add(tampa);
             
+            // ========================================
+            // PARAFUSOS - Posições corrigidas
+            // ========================================
+            // Parafuso: 2.2mm x 6.5mm (rosca fina para MDF 3mm)
+            // 10 parafusos total: 6 sobre laterais + 4 sobre frontal/traseira
+            
             const holeMat = new THREE.MeshPhongMaterial({ color: 0x555555 });
-            [[0.15, 0.15], [S-0.15, 0.15], [0.15, S-0.15], [S-0.15, S-0.15]].forEach(([x, z]) => {
-                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, T*2, 16), holeMat);
+            
+            // Conversão: 1 unidade 3D = 100mm, então 0.015 = 1.5mm, 0.125 = 12.5mm, etc.
+            
+            // 6 PARAFUSOS SOBRE AS LATERAIS (X = 1.5mm do centro lateral)
+            // Posições Y na tampa = X nas laterais: 15mm, 125mm, 235mm
+            const lateralScrewPositions = [
+                // Lateral esquerda (X=0.015 = 1.5mm do edge) em Z=0.15, 1.25, 2.35
+                [0.015, 0.15],   // Lat.esq perto frontal
+                [0.015, 1.25],   // Lat.esq centro
+                [0.015, 2.35],   // Lat.esq perto traseira
+                // Lateral direita (X=2.485 = 248.5mm) em Z=0.15, 1.25, 2.35
+                [2.485, 0.15],   // Lat.dir perto frontal
+                [2.485, 1.25],   // Lat.dir centro
+                [2.485, 2.35],   // Lat.dir perto traseira
+            ];
+            
+            // 4 PARAFUSOS SOBRE FRONTAL/TRASEIRA (Y = 1.5mm do centro frontal/traseira)
+            // Posições X na tampa = 80mm e 170mm
+            const frontBackScrewPositions = [
+                // Frontal (Z=0.015 = 1.5mm) em X=0.80, 1.70
+                [0.80, 0.015],   // Frontal esquerdo
+                [1.70, 0.015],   // Frontal direito
+                // Traseira (Z=2.485 = 248.5mm) em X=0.80, 1.70
+                [0.80, 2.485],   // Traseira esquerdo
+                [1.70, 2.485],   // Traseira direito
+            ];
+            
+            // Adicionar parafusos sobre laterais
+            lateralScrewPositions.forEach(([x, z]) => {
+                // Furo na tampa
+                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 16), holeMat);
                 hole.position.set(x, T + S + T/2, z);
                 group.add(hole);
+                
+                // Parafuso 2.2x6.5mm (rosca fina)
+                const screw = createScrew(0.065, 0.025, 0.011);
+                screw.position.set(x, T + S + T + 0.005, z);
+                group.add(screw);
+            });
+            
+            // Adicionar parafusos sobre frontal/traseira
+            frontBackScrewPositions.forEach(([x, z]) => {
+                // Furo na tampa
+                const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, T*2, 16), holeMat);
+                hole.position.set(x, T + S + T/2, z);
+                group.add(hole);
+                
+                // Parafuso 2.2x6.5mm (rosca fina)
+                const screw = createScrew(0.065, 0.025, 0.011);
+                screw.position.set(x, T + S + T + 0.005, z);
+                group.add(screw);
             });
             
             // Marcação interna - "TAMPA" no lado de baixo (lado interno)

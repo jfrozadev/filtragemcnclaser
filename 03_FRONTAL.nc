@@ -91,6 +91,35 @@ M4 S1000
 G2 X162.00 Y85.00 I-2.00 J0 F150
 M5
 
+; FUROS PILOTO PARA PARAFUSOS TAMPA/BASE
+; Tampa: furos em Y=248.5 (borda superior, centro do MDF)
+; Base: furos em Y=1.5 (borda inferior, centro do MDF)
+; Posições X: 77mm e 167mm (centro da frontal, alinhados com tampa X=80, 170)
+
+; Furo piloto topo esquerdo
+G0 X77.00 Y248.50
+M4 S1000
+G2 X77.00 Y248.50 I-1.00 J0 F150
+M5
+
+; Furo piloto topo direito
+G0 X167.00 Y248.50
+M4 S1000
+G2 X167.00 Y248.50 I-1.00 J0 F150
+M5
+
+; Furo piloto base esquerdo
+G0 X77.00 Y1.50
+M4 S1000
+G2 X77.00 Y1.50 I-1.00 J0 F150
+M5
+
+; Furo piloto base direito
+G0 X167.00 Y1.50
+M4 S1000
+G2 X167.00 Y1.50 I-1.00 J0 F150
+M5
+
 ; ===== PASSAGEM 2/3 =====
 
 G0 X-3.00 Y0.00
@@ -160,6 +189,27 @@ M4 S1000
 G2 X162.00 Y85.00 I-2.00 J0 F150
 M5
 
+; Furos piloto - Passagem 2/3
+G0 X77.00 Y248.50
+M4 S1000
+G2 X77.00 Y248.50 I-1.00 J0 F150
+M5
+
+G0 X167.00 Y248.50
+M4 S1000
+G2 X167.00 Y248.50 I-1.00 J0 F150
+M5
+
+G0 X77.00 Y1.50
+M4 S1000
+G2 X77.00 Y1.50 I-1.00 J0 F150
+M5
+
+G0 X167.00 Y1.50
+M4 S1000
+G2 X167.00 Y1.50 I-1.00 J0 F150
+M5
+
 ; ===== PASSAGEM 3/3 =====
 
 G0 X-3.00 Y0.00
@@ -227,6 +277,27 @@ M5
 G0 X162.00 Y85.00
 M4 S1000
 G2 X162.00 Y85.00 I-2.00 J0 F150
+M5
+
+; Furos piloto - Passagem 3/3
+G0 X77.00 Y248.50
+M4 S1000
+G2 X77.00 Y248.50 I-1.00 J0 F150
+M5
+
+G0 X167.00 Y248.50
+M4 S1000
+G2 X167.00 Y248.50 I-1.00 J0 F150
+M5
+
+G0 X77.00 Y1.50
+M4 S1000
+G2 X77.00 Y1.50 I-1.00 J0 F150
+M5
+
+G0 X167.00 Y1.50
+M4 S1000
+G2 X167.00 Y1.50 I-1.00 J0 F150
 M5
 
 ; ===== GRAVAÇÃO IDENTIFICAÇÃO =====

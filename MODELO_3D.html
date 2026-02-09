@@ -76,7 +76,7 @@
         <div class="specs">
             <div class="specs-title">📋 Dimensões dos Filtros:</div>
             <table>
-                <tr><td class="label">GM Cabine:</td><td class="val">205×220mm, 20mm esp.</td></tr>
+                <tr><td class="label">GM Cabine:</td><td class="val">223×210mm, 20mm esp.</td></tr>
                 <tr><td class="label">Wega Motor:</td><td class="val corrected">220×160mm, 45mm esp. ✓</td></tr>
             </table>
         </div>
@@ -200,18 +200,18 @@
         }
         
         function createFiltros() {
-            // Jeans
+            // Manta G3 - 10mm colada + grampos
             const jeans = new THREE.Mesh(
-                new THREE.BoxGeometry(0.01, S*0.8, S*0.8),
+                new THREE.BoxGeometry(0.10, S*0.8, S*0.8),
                 new THREE.MeshPhongMaterial({ color: 0x1abc9c, transparent: true, opacity: 0.6 })
             );
             jeans.position.set(divs.jeans.x, S/2, S/2);
             jeans.name = 'f-jeans';
             filtGrp.add(jeans);
             
-            // GM 205x220mm, 20mm
+            // GM 223x210mm, 20mm
             const gm = new THREE.Mesh(
-                new THREE.BoxGeometry(0.2, 2.2, 2.05),
+                new THREE.BoxGeometry(0.2, 2.1, 2.23),
                 new THREE.MeshPhongMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.8 })
             );
             gm.position.set(divs.gm.x, S/2, S/2);
