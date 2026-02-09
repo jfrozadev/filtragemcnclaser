@@ -85,8 +85,8 @@
 
 | # | Arquivo | Descrição |
 |---|---------|-----------|
-| 1 | `01_LATERAL_ESQ.nc` | 250×250mm com ranhuras + slots divisórias + snap-fit |
-| 2 | `02_LATERAL_DIR.nc` | Idêntica (espelhada) + snap-fit |
+| 1 | `01_LATERAL_ESQ.nc` | 250×250mm com ranhuras + slots divisórias + snap-fit + furos M2 trilhos |
+| 2 | `02_LATERAL_DIR.nc` | Idêntica (espelhada) + snap-fit + furos M2 trilhos |
 | 3 | `03_FRONTAL.nc` | 244×250mm com dentes + furo 70mm + snap-fit |
 | 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm + snap-fit |
 | 5 | `05_TAMPA.nc` | 250×250mm placa lisa (fixação por snap-fit) |
@@ -211,7 +211,7 @@ Posições: Y=220mm (topo) e Y=30mm (base)
 3. **Lateral Direita** → Paralela, a 244mm de distância
 4. **Frontal** → Dentes nos slots das laterais
 5. **Traseira** → Igual ao frontal
-6. **Trilhos 3D** → Colar nas faces internas das laterais (cola CA + M2×8)
+6. **Trilhos 3D** → Fixar nas laterais com cola CA + parafuso M2×8mm (furos Ø2.5mm pré-cortados, 36/lateral)
 7. **Divisórias filtro** → Deslizar de cima pelos trilhos
 8. **Telas carvão (×2)** → Deslizar nos trilhos X=190 e X=230
 9. **Caixa carvão** → Encaixar 4 tiras + preencher com carvão
@@ -257,9 +257,10 @@ Abra `TRILHO_3D.html` para:
 - 16× Clips snap-fit impressos em PLA/PETG (SNAP_TAMPA.scad)
 - 24× Trilhos deslizantes impressos em PLA/PETG (TRILHO_FILTRO.scad)
 - 6× Puxadores + 6× Travas impressos (TRILHO_FILTRO.scad)
+- 72× Parafuso M2×8mm + porca M2 (fixação trilhos, 36 por lateral)
 - Filamento PLA/PETG ~120g
 
 ---
 
-**Versão:** 8.0 — Arquivos completos trilhos + modelos 3D atualizados  
+**Versão:** 9.0 — Furos M2 fixação trilhos nas laterais + 3D atualizado  
 **Data:** Fevereiro 2026

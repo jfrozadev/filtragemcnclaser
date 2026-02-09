@@ -33,8 +33,8 @@
 //   Layer 0.2mm | Infill 40% | Walls 3
 //
 // FIXAÇÃO NAS LATERAIS:
-//   - Cola CA (cianoacrilato) + parafuso M2×8 (opcional)
-//   - 2 furos Ø2.2mm no fundo do trilho para parafusos
+//   - Cola CA (cianoacrilato) + parafuso M2×8mm (fixação obrigatória)
+//   - 3 furos Ø2.2mm por metade no fundo do trilho (furos Ø2.5mm no MDF)
 //
 // ENDER 3: 200×200mm bed
 //   Metade 122mm → cabe facilmente horizontal
@@ -215,12 +215,12 @@ module trava() {
 // - HEPA (25mm): canal = 26mm
 
 canais = [
-    [15,   12],   // Manta G3: esp efetiva ~10mm c/ MDF holder
-    [40,   21],   // GM Cabine Bosch
-    [90,   46],   // Wega Motor (o mais largo!)
-    [120,  26],   // HEPA
-    [165, 3.4],   // Tela Carvão 1 (MDF 3mm)
-    [210, 3.4],   // Tela Carvão 2 (MDF 3mm)
+    [50,   12],   // Manta G3: esp efetiva ~10mm c/ MDF holder
+    [75,   21],   // GM Cabine Bosch
+    [125,  46],   // Wega Motor (o mais largo!)
+    [155,  26],   // HEPA
+    [190, 3.4],   // Tela Carvão 1 (MDF 3mm)
+    [230, 3.4],   // Tela Carvão 2 (MDF 3mm)
 ];
 
 // ============================
