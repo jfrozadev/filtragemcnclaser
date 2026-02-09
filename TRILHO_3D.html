@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trilhos Deslizantes - Visualização 3D</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; overflow: hidden; }
+        #container { width: 100vw; height: 100vh; }
+
+        #panel {
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(255,255,255,0.97); padding: 18px;
+            border-radius: 12px; max-width: 330px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            max-height: calc(100vh - 30px); overflow-y: auto;
+        }
+
+        h1 { font-size: 1.1rem; color: #2c3e50; margin-bottom: 3px; }
+        .subtitle { font-size: 0.6rem; color: #7f8c8d; margin-bottom: 12px; }
+
+        .section { margin-bottom: 12px; padding-top: 10px; border-top: 1px solid #eee; }
+        .section-title { font-size: 0.72rem; font-weight: 600; color: #444; margin-bottom: 6px; }
+
+        .btn-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+        button {
+            padding: 6px 10px; border: none; border-radius: 5px;
+            font-size: 0.65rem; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-blue { background: #3498db; color: white; }
+        .btn-blue:hover { background: #2980b9; }
+        .btn-green { background: #27ae60; color: white; }
+        .btn-green:hover { background: #219a52; }
+        .btn-orange { background: #f39c12; color: white; }
+        .btn-orange:hover { background: #d68910; }
+        .btn-red { background: #e74c3c; color: white; }
+        .btn-red:hover { background: #c0392b; }
+        .btn-gray { background: #ecf0f1; color: #333; }
+        .btn-gray:hover { background: #d5dbdb; }
+        .btn-gray.active { background: #3498db; color: white; }
+
+        .info-box {
+            font-size: 0.63rem; padding: 8px 10px; border-radius: 6px;
+            margin-top: 6px; line-height: 1.5;
+        }
+        .info-blue { background: #e8f4fd; border-left: 3px solid #3498db; }
+        .info-green { background: #e8f5e9; border-left: 3px solid #27ae60; }
+        .info-orange { background: #fff3e0; border-left: 3px solid #f39c12; }
+
+        table.specs { width: 100%; font-size: 0.6rem; border-collapse: collapse; margin-top: 6px; }
+        table.specs th { background: #f0f0f0; padding: 4px 6px; text-align: left; font-weight: 600; }
+        table.specs td { padding: 3px 6px; border-bottom: 1px solid #eee; }
+        table.specs .val { text-align: right; font-weight: 500; }
+        table.specs .highlight { color: #27ae60; font-weight: 600; }
+
+        .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 6px; }
+        .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.58rem; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+        #info {
+            position: absolute; bottom: 15px; left: 15px;
+            background: rgba(255,255,255,0.9); padding: 8px 14px;
+            border-radius: 6px; font-size: 0.7rem;
+        }
+
+        #dimensions {
+            position: absolute; bottom: 15px; right: 15px;
+            background: rgba(255,255,255,0.95); padding: 12px;
+            border-radius: 8px; font-size: 0.62rem;
+        }
+        #dimensions td { padding: 2px 6px; }
+        #dimensions .label { color: #666; }
+        #dimensions .val { font-weight: 600; text-align: right; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <div id="panel">
+        <h1>🔩 Trilhos Deslizantes 3D</h1>
+        <div class="subtitle">Sistema de filtros removíveis — Ender 3 (200×200mm)</div>
+
+        <div class="section">
+            <div class="section-title">📐 Visualização</div>
+            <div class="btn-row">
+                <button class="btn-blue" onclick="resetView()">Reset</button>
+                <button class="btn-blue" onclick="viewProfile()">Perfil U</button>
+                <button class="btn-blue" onclick="viewDovetail()">Dovetail</button>
+                <button class="btn-blue" onclick="viewInside()">Dentro</button>
+                <button class="btn-blue" onclick="viewTop()">Topo</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🔽 Animações</div>
+            <div class="btn-row">
+                <button class="btn-green" onclick="animateSlide()">Deslizar Filtro</button>
+                <button class="btn-orange" onclick="animateDovetail()">Encaixe Dovetail</button>
+                <button class="btn-red" onclick="animateExplode()">Explodir</button>
+                <button class="btn-gray" onclick="resetAnim()">Reset</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">👁️ Mostrar/Ocultar</div>
+            <div class="btn-row">
+                <button class="btn-gray active" id="t-box" onclick="toggle('box')">Caixa</button>
+                <button class="btn-gray active" id="t-rails" onclick="toggle('rails')">Trilhos</button>
+                <button class="btn-gray active" id="t-filters" onclick="toggle('filters')">Filtros</button>
+                <button class="btn-gray active" id="t-handles" onclick="toggle('handles')">Puxadores</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎯 Filtro Individual</div>
+            <div class="btn-row">
+                <button class="btn-gray" onclick="showFilter(0)">G3</button>
+                <button class="btn-gray" onclick="showFilter(1)">GM</button>
+                <button class="btn-gray" onclick="showFilter(2)">Wega</button>
+                <button class="btn-gray" onclick="showFilter(3)">HEPA</button>
+                <button class="btn-gray" onclick="showFilter(4)">Tela 1</button>
+                <button class="btn-gray" onclick="showFilter(5)">Tela 2</button>
+                <button class="btn-green" onclick="showFilter(-1)">Todos</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📋 Dimensões dos Trilhos</div>
+            <table class="specs">
+                <tr><th>Filtro</th><th>Pos X</th><th>Canal</th><th>Peças</th></tr>
+                <tr><td>Manta G3</td><td class="val">15mm</td><td class="val">12mm</td><td class="val">4</td></tr>
+                <tr><td>GM Cabine</td><td class="val">40mm</td><td class="val">21mm</td><td class="val">4</td></tr>
+                <tr><td>Wega Motor</td><td class="val">90mm</td><td class="val highlight">46mm</td><td class="val">4</td></tr>
+                <tr><td>HEPA</td><td class="val">120mm</td><td class="val">26mm</td><td class="val">4</td></tr>
+                <tr><td>Tela Carvão 1</td><td class="val">165mm</td><td class="val">3.4mm</td><td class="val">4</td></tr>
+                <tr><td>Tela Carvão 2</td><td class="val">210mm</td><td class="val">3.4mm</td><td class="val">4</td></tr>
+                <tr><th colspan="3">TOTAL</th><th class="val highlight">36</th></tr>
+            </table>
+            <div class="info-box info-green">
+                24 trilhos + 6 puxadores + 6 travas = 36 peças<br>
+                ~6 impressões, ~7h30 total (Ender 3)
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎨 Legenda</div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background:#8B4513"></div>MDF Caixa</div>
+                <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilho (metade A)</div>
+                <div class="legend-item"><div class="legend-color" style="background:#4169E1"></div>Trilho (metade B)</div>
+                <div class="legend-item"><div class="legend-color" style="background:#FF8C00"></div>Puxador</div>
+                <div class="legend-item"><div class="legend-color" style="background:#FF4444"></div>Trava/Retenção</div>
+                <div class="legend-item"><div class="legend-color" style="background:#2ecc71"></div>Dovetail</div>
+                <div class="legend-item"><div class="legend-color" style="background:#f1c40f80"></div>Filtros</div>
+                <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Snap-fit clips</div>
+            </div>
+        </div>
+
+        <div class="info-box info-blue">
+            <strong>Conceito:</strong> Trilhos em U colados na face interna das laterais.
+            Cada filtro desliza de cima para baixo. Remove tampa → puxa filtro pelo puxador.
+            Cada trilho = 2 metades com dovetail (122mm+122mm = 244mm).
+        </div>
+    </div>
+
+    <div id="info">🖱️ Arrastar=Girar | Scroll=Zoom | Shift+Arrastar=Pan</div>
+
+    <div id="dimensions">
+        <table>
+            <tr><td class="label">Caixa:</td><td class="val">250×250×250mm</td></tr>
+            <tr><td class="label">Trilho comp.:</td><td class="val">122mm × 2 metades</td></tr>
+            <tr><td class="label">Dovetail:</td><td class="val">6→8mm trapézio</td></tr>
+            <tr><td class="label">Aba U:</td><td class="val">8mm altura</td></tr>
+            <tr><td class="label">Ender 3:</td><td class="val">200×200mm ✓</td></tr>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer;
+        let boxGroup, railGroup, filterGroup, handleGroup;
+        let isExploded = false;
+
+        const S = 2.5;   // 250mm
+        const T = 0.03;  // 3mm MDF
+        const RAIL_W = 0.02; // parede 2mm
+        const RAIL_ABA = 0.08; // aba 8mm
+        const RAIL_BASE = 0.02; // base 2mm
+
+        // Filtros: [posX (escala), canal mm, cor, nome, espessura filtro mm]
+        const FILTERS = [
+            { x: 0.15, canal: 12,   color: 0x1abc9c, name: 'Manta G3',  esp: 10,  fw: 2.0, fh: 2.0 },
+            { x: 0.40, canal: 21,   color: 0xf1c40f, name: 'GM Cabine', esp: 20,  fw: 2.23, fh: 2.1 },
+            { x: 0.90, canal: 46,   color: 0x2ecc71, name: 'Wega Motor',esp: 45,  fw: 2.2, fh: 1.6 },
+            { x: 1.20, canal: 26,   color: 0x3498db, name: 'HEPA',      esp: 25,  fw: 1.1, fh: 1.4 },
+            { x: 1.65, canal: 3.4,  color: 0xDEB887, name: 'Tela Carv1',esp: 3,   fw: 2.44, fh: 2.44 },
+            { x: 2.10, canal: 3.4,  color: 0xA0522D, name: 'Tela Carv2',esp: 3,   fw: 2.44, fh: 2.44 }
+        ];
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+
+            camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+            camera.position.set(4, 3.5, 4.5);
+            camera.lookAt(1.25, 1.25, 1.25);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+            const dLight = new THREE.DirectionalLight(0xffffff, 0.75);
+            dLight.position.set(5, 10, 5);
+            dLight.castShadow = true;
+            scene.add(dLight);
+            const fLight = new THREE.DirectionalLight(0xffffff, 0.25);
+            fLight.position.set(-5, 5, -5);
+            scene.add(fLight);
+
+            const grid = new THREE.GridHelper(8, 16, 0x6c757d, 0x495057);
+            grid.position.y = -0.01;
+            scene.add(grid);
+
+            boxGroup = new THREE.Group();
+            railGroup = new THREE.Group();
+            filterGroup = new THREE.Group();
+            handleGroup = new THREE.Group();
+            scene.add(boxGroup, railGroup, filterGroup, handleGroup);
+
+            createBox();
+            createAllRails();
+            createAllFilters();
+            createAllHandles();
+
+            setupMouse();
+            window.onresize = () => {
+                camera.aspect = innerWidth / innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(innerWidth, innerHeight);
+            };
+        }
+
+        function createBox() {
+            const mat = new THREE.MeshPhongMaterial({ color: 0x8B4513, transparent: true, opacity: 0.25, side: THREE.DoubleSide });
+            const edgeMat = new THREE.LineBasicMaterial({ color: 0x654321 });
+
+            // Base
+            const base = new THREE.Mesh(new THREE.BoxGeometry(S, T, S), mat);
+            base.position.set(S/2, T/2, S/2);
+            boxGroup.add(base);
+
+            // Tampa (transparente, acima)
+            const tampaMat = mat.clone();
+            tampaMat.opacity = 0.15;
+            const tampa = new THREE.Mesh(new THREE.BoxGeometry(S, T, S), tampaMat);
+            tampa.position.set(S/2, T + S + T/2, S/2);
+            tampa.name = 'tampa';
+            boxGroup.add(tampa);
+
+            // Lateral esquerda
+            const latEsq = new THREE.Mesh(new THREE.BoxGeometry(S, S, T), mat.clone());
+            latEsq.position.set(S/2, T + S/2, T/2);
+            boxGroup.add(latEsq);
+
+            // Lateral direita
+            const latDir = new THREE.Mesh(new THREE.BoxGeometry(S, S, T), mat.clone());
+            latDir.position.set(S/2, T + S/2, S - T/2);
+            boxGroup.add(latDir);
+
+            // Frontal
+            const frontal = new THREE.Mesh(new THREE.BoxGeometry(T, S, S - 2*T), mat.clone());
+            frontal.position.set(T/2, T + S/2, S/2);
+            boxGroup.add(frontal);
+
+            // Traseira
+            const traseira = new THREE.Mesh(new THREE.BoxGeometry(T, S, S - 2*T), mat.clone());
+            traseira.position.set(S - T/2, T + S/2, S/2);
+            boxGroup.add(traseira);
+
+            // Edges for clarity
+            [base, tampa, latEsq, latDir, frontal, traseira].forEach(m => {
+                const edges = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), edgeMat);
+                edges.position.copy(m.position);
+                boxGroup.add(edges);
+            });
+        }
+
+        // Create a single U-profile rail at given position
+        function createRailPair(posX, canalMM, side) {
+            const group = new THREE.Group();
+            const canalScale = canalMM / 100; // mm to scene units
+            const totalW = canalScale + 2 * RAIL_W;
+            const halfLen = 1.22; // 122mm
+
+            const matA = new THREE.MeshPhongMaterial({ color: 0x1E90FF, transparent: true, opacity: 0.85 });
+            const matB = new THREE.MeshPhongMaterial({ color: 0x4169E1, transparent: true, opacity: 0.85 });
+            const doveMat = new THREE.MeshPhongMaterial({ color: 0x2ecc71 });
+
+            // Metade A (bottom half, Y = T to T + halfLen)
+            const railA = createUProfile(totalW, halfLen, matA);
+            railA.position.set(posX, T, side === 'esq' ? T + RAIL_BASE : S - T - RAIL_BASE);
+            railA.name = 'railA';
+            group.add(railA);
+
+            // Metade B (top half, Y = T + halfLen to T + 2*halfLen)
+            const railB = createUProfile(totalW, halfLen, matB);
+            railB.position.set(posX, T + halfLen, side === 'esq' ? T + RAIL_BASE : S - T - RAIL_BASE);
+            railB.name = 'railB';
+            group.add(railB);
+
+            // Dovetail indicator at joint
+            const doveSize = 0.06;
+            const dove = new THREE.Mesh(
+                new THREE.BoxGeometry(totalW * 0.6, 0.02, doveSize),
+                doveMat
+            );
+            dove.position.set(
+                posX,
+                T + halfLen,
+                side === 'esq' ? T + RAIL_BASE + doveSize/2 : S - T - RAIL_BASE - doveSize/2
+            );
+            dove.name = 'dovetail';
+            group.add(dove);
+
+            // Trava (retention clip) at the bottom
+            const travaMat = new THREE.MeshPhongMaterial({ color: 0xFF4444 });
+            const trava = new THREE.Mesh(
+                new THREE.BoxGeometry(totalW * 0.5, 0.03, 0.015),
+                travaMat
+            );
+            trava.position.set(
+                posX,
+                T + 0.02,
+                side === 'esq' ? T + RAIL_BASE + RAIL_W + canalScale/2 : S - T - RAIL_BASE - RAIL_W - canalScale/2
+            );
+            trava.name = 'trava';
+            group.add(trava);
+
+            return group;
+        }
+
+        function createUProfile(width, length, material) {
+            const group = new THREE.Group();
+
+            // Base plate (glued to lateral)
+            const basePlate = new THREE.Mesh(
+                new THREE.BoxGeometry(width, length, RAIL_BASE),
+                material
+            );
+            basePlate.position.set(0, length/2, 0);
+            group.add(basePlate);
+
+            // Left wall of U
+            const wallL = new THREE.Mesh(
+                new THREE.BoxGeometry(RAIL_W, length, RAIL_ABA),
+                material.clone()
+            );
+            wallL.position.set(-width/2 + RAIL_W/2, length/2, RAIL_BASE/2 + RAIL_ABA/2);
+            group.add(wallL);
+
+            // Right wall of U
+            const wallR = new THREE.Mesh(
+                new THREE.BoxGeometry(RAIL_W, length, RAIL_ABA),
+                material.clone()
+            );
+            wallR.position.set(width/2 - RAIL_W/2, length/2, RAIL_BASE/2 + RAIL_ABA/2);
+            group.add(wallR);
+
+            return group;
+        }
+
+        function createAllRails() {
+            FILTERS.forEach((f, i) => {
+                // Left rail pair (on lat. esq.)
+                const railL = createRailPair(f.x, f.canal, 'esq');
+                railL.userData = { filterIndex: i };
+                railGroup.add(railL);
+
+                // Right rail pair (on lat. dir.)
+                const railR = createRailPair(f.x, f.canal, 'dir');
+                railR.userData = { filterIndex: i };
+                railGroup.add(railR);
+            });
+        }
+
+        function createAllFilters() {
+            FILTERS.forEach((f, i) => {
+                const espScale = f.esp / 100;
+                const fMat = new THREE.MeshPhongMaterial({
+                    color: f.color, transparent: true, opacity: 0.5
+                });
+                const filter = new THREE.Mesh(
+                    new THREE.BoxGeometry(espScale, f.fh, f.fw),
+                    fMat
+                );
+                filter.position.set(f.x, T + S/2, S/2);
+                filter.userData = { filterIndex: i, homeY: T + S/2, name: f.name };
+                filterGroup.add(filter);
+
+                // Edge outline
+                const edges = new THREE.LineSegments(
+                    new THREE.EdgesGeometry(filter.geometry),
+                    new THREE.LineBasicMaterial({ color: f.color })
+                );
+                edges.position.copy(filter.position);
+                edges.userData = { filterIndex: i, homeY: T + S/2 };
+                filterGroup.add(edges);
+            });
+        }
+
+        function createAllHandles() {
+            FILTERS.forEach((f, i) => {
+                const handleMat = new THREE.MeshPhongMaterial({ color: 0xFF8C00 });
+                const canalScale = f.canal / 100;
+                const handleW = Math.max(canalScale + 0.04, 0.08);
+
+                const handle = new THREE.Mesh(
+                    new THREE.BoxGeometry(handleW, 0.15, 0.03),
+                    handleMat
+                );
+                handle.position.set(f.x, T + S + 0.08, S/2);
+                handle.userData = { filterIndex: i, homeY: T + S + 0.08 };
+                handleGroup.add(handle);
+
+                // Tab going down into filter
+                const tab = new THREE.Mesh(
+                    new THREE.BoxGeometry(handleW * 0.6, 0.05, 0.02),
+                    handleMat.clone()
+                );
+                tab.position.set(f.x, T + S + 0.02, S/2);
+                tab.userData = { filterIndex: i, homeY: T + S + 0.02 };
+                handleGroup.add(tab);
+            });
+        }
+
+        // --- Animations ---
+        let animating = false;
+        let slideFilterIdx = 0;
+
+        function animateSlide() {
+            if (animating) return;
+            animating = true;
+
+            const idx = slideFilterIdx;
+            slideFilterIdx = (slideFilterIdx + 1) % FILTERS.length;
+
+            // Find filter meshes with this index
+            const targets = [];
+            filterGroup.children.forEach(c => { if (c.userData.filterIndex === idx) targets.push(c); });
+            handleGroup.children.forEach(c => { if (c.userData.filterIndex === idx) targets.push(c); });
+
+            const liftY = 2.0;
+            const duration = 1200;
+            const startTime = Date.now();
+            const startPositions = targets.map(t => t.position.y);
+
+            function up() {
+                const t = Math.min((Date.now() - startTime) / duration, 1);
+                const ease = 1 - Math.pow(1 - t, 3);
+                targets.forEach((obj, i) => {
+                    obj.position.y = startPositions[i] + liftY * ease;
+                });
+                if (t < 1) {
+                    requestAnimationFrame(up);
+                } else {
+                    // Pause then come back down
+                    setTimeout(() => {
+                        const downStart = Date.now();
+                        const upPositions = targets.map(o => o.position.y);
+                        function down() {
+                            const t2 = Math.min((Date.now() - downStart) / duration, 1);
+                            const ease2 = 1 - Math.pow(1 - t2, 3);
+                            targets.forEach((obj, i) => {
+                                obj.position.y = upPositions[i] - liftY * ease2;
+                            });
+                            if (t2 < 1) requestAnimationFrame(down);
+                            else animating = false;
+                        }
+                        down();
+                    }, 600);
+                }
+            }
+            up();
+        }
+
+        function animateDovetail() {
+            if (animating) return;
+            animating = true;
+
+            // Separate rail halves A and B
+            const halvesB = [];
+            railGroup.children.forEach(pair => {
+                pair.children.forEach(c => {
+                    if (c.name === 'railB') halvesB.push({ obj: c, startY: c.position.y });
+                });
+            });
+
+            const splitDist = 0.5;
+            const duration = 800;
+            const t0 = Date.now();
+
+            function splitUp() {
+                const t = Math.min((Date.now() - t0) / duration, 1);
+                const e = 1 - Math.pow(1 - t, 3);
+                halvesB.forEach(h => { h.obj.position.y = h.startY + splitDist * e; });
+                if (t < 1) {
+                    requestAnimationFrame(splitUp);
+                } else {
+                    setTimeout(() => {
+                        const t1 = Date.now();
+                        function joinDown() {
+                            const t = Math.min((Date.now() - t1) / duration, 1);
+                            const e = 1 - Math.pow(1 - t, 3);
+                            halvesB.forEach(h => { h.obj.position.y = h.startY + splitDist * (1 - e); });
+                            if (t < 1) requestAnimationFrame(joinDown);
+                            else animating = false;
+                        }
+                        joinDown();
+                    }, 800);
+                }
+            }
+            splitUp();
+        }
+
+        function animateExplode() {
+            isExploded = !isExploded;
+            const off = isExploded ? 0.4 : 0;
+
+            // Spread filter groups apart along X
+            filterGroup.children.forEach(c => {
+                if (c.userData.filterIndex !== undefined) {
+                    const f = FILTERS[c.userData.filterIndex];
+                    const spread = isExploded ? (c.userData.filterIndex - 2.5) * 0.15 : 0;
+                    tweenProp(c.position, 'x', c.position.x, f.x + spread, 500);
+                }
+            });
+            handleGroup.children.forEach(c => {
+                if (c.userData.filterIndex !== undefined) {
+                    const f = FILTERS[c.userData.filterIndex];
+                    const spread = isExploded ? (c.userData.filterIndex - 2.5) * 0.15 : 0;
+                    tweenProp(c.position, 'x', c.position.x, f.x + spread, 500);
+                }
+            });
+            // Spread box  
+            boxGroup.children.forEach(c => {
+                if (c.name === 'tampa') {
+                    tweenProp(c.position, 'y', c.position.y, T + S + T/2 + off, 500);
+                }
+            });
+        }
+
+        function resetAnim() {
+            isExploded = false;
+            animating = false;
+
+            // Reset filters to home positions
+            filterGroup.children.forEach(c => {
+                if (c.userData.homeY !== undefined) c.position.y = c.userData.homeY;
+                if (c.userData.filterIndex !== undefined) c.position.x = FILTERS[c.userData.filterIndex].x;
+            });
+            handleGroup.children.forEach(c => {
+                if (c.userData.homeY !== undefined) c.position.y = c.userData.homeY;
+                if (c.userData.filterIndex !== undefined) c.position.x = FILTERS[c.userData.filterIndex].x;
+            });
+            // Reset rails
+            railGroup.children.forEach(pair => {
+                pair.children.forEach(c => {
+                    if (c.name === 'railB') c.position.y = 1.22;
+                });
+            });
+            // Reset tampa
+            boxGroup.children.forEach(c => {
+                if (c.name === 'tampa') c.position.y = T + S + T/2;
+            });
+        }
+
+        function showFilter(idx) {
+            if (idx === -1) {
+                // Show all
+                railGroup.children.forEach(c => c.visible = true);
+                filterGroup.children.forEach(c => c.visible = true);
+                handleGroup.children.forEach(c => c.visible = true);
+                return;
+            }
+            railGroup.children.forEach(c => {
+                c.visible = c.userData.filterIndex === idx;
+            });
+            filterGroup.children.forEach(c => {
+                c.visible = c.userData.filterIndex === idx;
+            });
+            handleGroup.children.forEach(c => {
+                c.visible = c.userData.filterIndex === idx;
+            });
+        }
+
+        // Toggle groups
+        function toggle(t) {
+            const groups = { box: boxGroup, rails: railGroup, filters: filterGroup, handles: handleGroup };
+            const g = groups[t];
+            if (g) {
+                g.visible = !g.visible;
+                document.getElementById('t-' + t).classList.toggle('active');
+            }
+        }
+
+        // Camera views
+        function resetView() { animCamera([4, 3.5, 4.5], [1.25, 1.25, 1.25]); }
+        function viewProfile() { animCamera([0.15, 1.5, -1.5], [0.15, 1.3, 1.25]); }
+        function viewDovetail() { animCamera([0.5, 1.8, -0.5], [0.4, 1.22, 0.1]); }
+        function viewInside() { animCamera([1.25, 1.3, 1.25], [1.25, 1.3, 0.03]); }
+        function viewTop() { animCamera([1.25, 5.5, 1.25], [1.25, 0.5, 1.25]); }
+
+        function animCamera(pos, look) {
+            const startPos = camera.position.clone();
+            const endPos = new THREE.Vector3(...pos);
+            const endLook = new THREE.Vector3(...look);
+            const t0 = Date.now();
+            (function run() {
+                const t = Math.min((Date.now() - t0) / 500, 1);
+                const e = 1 - Math.pow(1 - t, 3);
+                camera.position.lerpVectors(startPos, endPos, e);
+                camera.lookAt(endLook);
+                if (t < 1) requestAnimationFrame(run);
+            })();
+        }
+
+        function tweenProp(obj, prop, from, to, ms) {
+            const t0 = Date.now();
+            (function run() {
+                const t = Math.min((Date.now() - t0) / ms, 1);
+                obj[prop] = from + (to - from) * (1 - Math.pow(1 - t, 3));
+                if (t < 1) requestAnimationFrame(run);
+            })();
+        }
+
+        function setupMouse() {
+            let drag = false, px = 0, py = 0, shiftKey = false;
+            const pivot = new THREE.Vector3(1.25, 1.25, 1.25);
+
+            renderer.domElement.onmousedown = e => { drag = true; px = e.clientX; py = e.clientY; shiftKey = e.shiftKey; };
+            renderer.domElement.onmousemove = e => {
+                if (!drag) return;
+                const dx = e.clientX - px, dy = e.clientY - py;
+
+                if (e.shiftKey || shiftKey) {
+                    const right = new THREE.Vector3();
+                    const up = new THREE.Vector3();
+                    camera.getWorldDirection(up);
+                    right.crossVectors(up, camera.up).normalize();
+                    up.crossVectors(right, camera.getWorldDirection(new THREE.Vector3())).normalize();
+                    camera.position.addScaledVector(right, -dx * 0.005);
+                    camera.position.addScaledVector(up, dy * 0.005);
+                } else {
+                    camera.position.sub(pivot);
+                    const sph = new THREE.Spherical().setFromVector3(camera.position);
+                    sph.theta -= dx * 0.005;
+                    sph.phi = Math.max(0.1, Math.min(Math.PI - 0.1, sph.phi - dy * 0.005));
+                    camera.position.setFromSpherical(sph).add(pivot);
+                    camera.lookAt(pivot);
+                }
+                px = e.clientX; py = e.clientY;
+            };
+            renderer.domElement.onmouseup = () => { drag = false; shiftKey = false; };
+            renderer.domElement.onmouseleave = () => { drag = false; };
+            renderer.domElement.onwheel = e => {
+                e.preventDefault();
+                const dir = new THREE.Vector3();
+                camera.getWorldDirection(dir);
+                camera.position.addScaledVector(dir, -e.deltaY * 0.003);
+            };
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        // Keyboard shortcuts
+        document.onkeydown = e => {
+            if (e.key === 's' || e.key === 'S') animateSlide();
+            if (e.key === 'd' || e.key === 'D') animateDovetail();
+            if (e.key === 'e' || e.key === 'E') animateExplode();
+            if (e.key === 'r' || e.key === 'R') resetAnim();
+            if (e.key >= '1' && e.key <= '6') showFilter(parseInt(e.key) - 1);
+            if (e.key === '0') showFilter(-1);
+        };
+    </script>
+</body>
+</html>

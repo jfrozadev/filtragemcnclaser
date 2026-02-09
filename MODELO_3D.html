@@ -70,6 +70,7 @@
                 <button class="btn-gray active" id="t-box" onclick="toggle('box')">Caixa</button>
                 <button class="btn-gray active" id="t-div" onclick="toggle('div')">Divisórias</button>
                 <button class="btn-gray active" id="t-filt" onclick="toggle('filt')">Filtros</button>
+                <button class="btn-gray active" id="t-rail" onclick="toggle('rail')">Trilhos</button>
             </div>
         </div>
         
@@ -87,7 +88,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         let scene, camera, renderer;
-        let boxGrp, divGrp, filtGrp;
+        let boxGrp, divGrp, filtGrp, railGrp;
         let isExploded = false, isCut = false;
         
         const S = 2.5, T = 0.03;
@@ -120,11 +121,13 @@
             boxGrp = new THREE.Group();
             divGrp = new THREE.Group();
             filtGrp = new THREE.Group();
-            scene.add(boxGrp, divGrp, filtGrp);
+            railGrp = new THREE.Group();
+            scene.add(boxGrp, divGrp, filtGrp, railGrp);
             
             createBox();
             createDivisorias();
             createFiltros();
+            createRails();
             
             setupMouse();
             onresize = () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); };
@@ -236,6 +239,42 @@
             filtGrp.add(carv);
         }
         
+        function createRails() {
+            const matA = new THREE.MeshPhongMaterial({ color: 0x1E90FF, transparent: true, opacity: 0.8 });
+            const matB = new THREE.MeshPhongMaterial({ color: 0x4169E1, transparent: true, opacity: 0.8 });
+            
+            // Rail positions: [posX scene, canal mm]
+            const positions = [
+                [0.15, 12], [0.40, 21], [0.90, 46], [1.20, 26], [1.65, 3.4], [2.10, 3.4]
+            ];
+            
+            const halfLen = 1.22;
+            const rBase = 0.02;
+            const rWall = 0.02;
+            const rAba = 0.08;
+            
+            positions.forEach(([px, canalMM]) => {
+                const cW = canalMM / 100;
+                const totalW = cW + 2 * rWall;
+                
+                // Both laterals
+                [T/2 + rBase, S - T/2 - rBase].forEach(zBase => {
+                    const isL = zBase < S/2;
+                    const zDir = isL ? 1 : -1;
+                    
+                    // Bottom half (A)
+                    const barA = new THREE.Mesh(new THREE.BoxGeometry(totalW, halfLen, rBase + rAba), matA.clone());
+                    barA.position.set(px, halfLen/2, zBase + zDir * (rBase + rAba)/2);
+                    railGrp.add(barA);
+                    
+                    // Top half (B)
+                    const barB = new THREE.Mesh(new THREE.BoxGeometry(totalW, halfLen, rBase + rAba), matB.clone());
+                    barB.position.set(px, halfLen + halfLen/2, zBase + zDir * (rBase + rAba)/2);
+                    railGrp.add(barB);
+                });
+            });
+        }
+        
         function animDiv(k) {
             const d = divs[k];
             if (!d) return;
@@ -286,7 +325,7 @@
         }
         
         function toggle(t) {
-            const g = { box: boxGrp, div: divGrp, filt: filtGrp }[t];
+            const g = { box: boxGrp, div: divGrp, filt: filtGrp, rail: railGrp }[t];
             if (g) { g.visible = !g.visible; document.getElementById('t-' + t).classList.toggle('active'); }
         }
         

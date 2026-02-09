@@ -148,6 +148,7 @@
                 <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div>Abas/Encaixes</div>
                 <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Snap-fit clips</div>
                 <div class="legend-item"><div class="legend-color" style="background:#A0522D"></div>Caixa carvão</div>
+                <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilhos 3D</div>
                 <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Peça atual</div>
             </div>
         </div>
@@ -298,39 +299,45 @@
                 camera: { pos: [4, 2.5, 2], look: [1.25, 1.3, 1.25] }
             },
             {
-                num: 6, title: "Divisória Manta G3", desc: "Insira a divisória MANTA G3 (pré-filtro)",
-                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura (colada + grampos). Posição X=15mm. Filtra partículas grandes.",
-                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3'],
+                num: 6, title: "Trilhos Deslizantes", desc: "Cole os trilhos 3D nas faces internas das laterais",
+                encaixe: "🔩 TRILHOS 3D — 12 pares de trilhos em U (impressos PLA/PETG). Cola CA + parafuso M2×8 opcional. 2 metades por trilho com encaixe dovetail (122mm+122mm=244mm). Canal guia cada filtro.",
+                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos'],
+                camera: { pos: [1.0, 2.0, -1.5], look: [0.5, 1.3, 0.5] }
+            },
+            {
+                num: 7, title: "Divisória Manta G3", desc: "Deslize a divisória MANTA G3 pelos trilhos (de cima)",
+                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura. Posição X=15mm. Desliza nos trilhos 3D. Puxador no topo.",
+                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3'],
                 camera: { pos: [0.8, 2.5, 3.5], look: [0.15, 1.3, 1.25] }
             },
             {
-                num: 7, title: "Divisória GM Bosch", desc: "Insira a divisória GM CABINE BOSCH",
-                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=40mm. Filtra partículas médias.",
-                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM'],
+                num: 8, title: "Divisória GM Bosch", desc: "Deslize a divisória GM CABINE BOSCH pelos trilhos",
+                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=40mm. Desliza nos trilhos 3D.",
+                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM'],
                 camera: { pos: [1.2, 2.5, 3.5], look: [0.40, 1.3, 1.25] }
             },
             {
-                num: 8, title: "Divisória Wega", desc: "Insira a divisória WEGA (filtro motor)",
-                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=90mm. Filtra partículas finas.",
-                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega'],
+                num: 9, title: "Divisória Wega", desc: "Deslize a divisória WEGA (filtro motor) pelos trilhos",
+                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=90mm. Trilho mais largo (canal 46mm).",
+                type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega'],
                 camera: { pos: [1.6, 2.5, 3.5], look: [0.90, 1.3, 1.25] }
             },
             {
-                num: 9, title: "Divisória HEPA", desc: "Insira a divisória FILTRO HEPA",
-                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=120mm.",
-                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
+                num: 10, title: "Divisória HEPA", desc: "Deslize a divisória FILTRO HEPA pelos trilhos",
+                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=120mm. Canal de 26mm nos trilhos.",
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
                 camera: { pos: [2.2, 2.5, 3.5], look: [1.20, 1.3, 1.25] }
             },
             {
-                num: 10, title: "Telas de Carvão", desc: "Insira as 2 telas de carvão nos slots das laterais",
-                encaixe: "⬛ CARVÃO ATIVADO - 2 telas MDF 244×244mm (abertura 200×200mm) nos slots X=165mm e X=210mm + caixa MDF 4 lados com encaixe (13_CAIXA_CARVAO.nc). Tela alumínio mosquiteira fixada com M3+arruela. ~500g carvão granulado.",
-                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta'],
+                num: 11, title: "Telas de Carvão", desc: "Deslize as 2 telas de carvão pelos trilhos",
+                encaixe: "⬛ CARVÃO ATIVADO - 2 telas MDF 244×244mm (abertura 200×200mm) deslizam nos trilhos X=165mm e X=210mm + caixa MDF 4 lados com encaixe (13_CAIXA_CARVAO.nc). Tela alumínio mosquiteira fixada com M3+arruela. ~500g carvão granulado.",
+                type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta'],
                 camera: { pos: [4, 1.2, 2], look: [2.0, 0.2, 1.25] }
             },
             {
-                num: 11, title: "Tampa", desc: "Feche com a tampa usando clips snap-fit",
-                encaixe: "✅ COMPLETO! Tampa 250×250mm fixada com clips snap-fit impressos em 3D (SNAP_TAMPA.scad). Sem parafusos!",
-                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
+                num: 12, title: "Tampa", desc: "Feche com a tampa usando clips snap-fit",
+                encaixe: "✅ COMPLETO! Tampa 250×250mm fixada com clips snap-fit impressos em 3D. Todos os filtros são removíveis pelos trilhos!",
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
                 camera: { pos: [4, 3.5, 4], look: [1.25, 1.3, 1.25] }
             }
         ];
@@ -520,6 +527,9 @@
             
             parts.gaveta = createCarbonCompartment();
             scene.add(parts.gaveta);
+            
+            parts.trilhos = createTrilhos();
+            scene.add(parts.trilhos);
             
             parts.tampa = createTampa();
             scene.add(parts.tampa);
@@ -881,6 +891,82 @@
             return group;
         }
         
+        function createTrilhos() {
+            const group = new THREE.Group();
+            const railMatA = new THREE.MeshPhongMaterial({ color: 0x1E90FF, transparent: true, opacity: 0.85 });
+            const railMatB = new THREE.MeshPhongMaterial({ color: 0x4169E1, transparent: true, opacity: 0.85 });
+            const doveMat = new THREE.MeshPhongMaterial({ color: 0x2ecc71 });
+            const travaMat = new THREE.MeshPhongMaterial({ color: 0xFF4444 });
+            
+            // 6 filter positions: [posX (scene units), canal width mm]
+            const railPositions = [
+                [0.15, 12],   // Manta G3
+                [0.40, 21],   // GM Cabine
+                [0.90, 46],   // Wega Motor
+                [1.20, 26],   // HEPA
+                [1.65, 3.4],  // Tela Carvão 1
+                [2.10, 3.4]   // Tela Carvão 2
+            ];
+            
+            const halfLen = 1.22; // 122mm in scene units
+            const railBase = 0.02;
+            const railWall = 0.02;
+            const railAba = 0.08;
+            
+            railPositions.forEach(([posX, canalMM]) => {
+                const canalW = canalMM / 100;
+                const totalW = canalW + 2 * railWall;
+                
+                // Both sides (left lateral Z=T, right lateral Z=S-T)
+                [T + railBase, S - T - railBase].forEach(zBase => {
+                    const isLeft = zBase < S/2;
+                    
+                    // Metade A (bottom)
+                    const baseA = new THREE.Mesh(new THREE.BoxGeometry(totalW, halfLen, railBase), railMatA);
+                    baseA.position.set(posX, T + halfLen/2, zBase + (isLeft ? railBase/2 : -railBase/2));
+                    group.add(baseA);
+                    
+                    // Walls of U for metade A
+                    const zWallOffset = isLeft ? railBase + railAba/2 : -railBase - railAba/2;
+                    const wallAL = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatA.clone());
+                    wallAL.position.set(posX - totalW/2 + railWall/2, T + halfLen/2, zBase + zWallOffset);
+                    group.add(wallAL);
+                    const wallAR = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatA.clone());
+                    wallAR.position.set(posX + totalW/2 - railWall/2, T + halfLen/2, zBase + zWallOffset);
+                    group.add(wallAR);
+                    
+                    // Metade B (top)
+                    const baseB = new THREE.Mesh(new THREE.BoxGeometry(totalW, halfLen, railBase), railMatB);
+                    baseB.position.set(posX, T + halfLen + halfLen/2, zBase + (isLeft ? railBase/2 : -railBase/2));
+                    group.add(baseB);
+                    
+                    const wallBL = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatB.clone());
+                    wallBL.position.set(posX - totalW/2 + railWall/2, T + halfLen + halfLen/2, zBase + zWallOffset);
+                    group.add(wallBL);
+                    const wallBR = new THREE.Mesh(new THREE.BoxGeometry(railWall, halfLen, railAba), railMatB.clone());
+                    wallBR.position.set(posX + totalW/2 - railWall/2, T + halfLen + halfLen/2, zBase + zWallOffset);
+                    group.add(wallBR);
+                    
+                    // Dovetail joint indicator (green dot at junction)
+                    const dove = new THREE.Mesh(new THREE.BoxGeometry(totalW * 0.5, 0.025, 0.04), doveMat);
+                    dove.position.set(posX, T + halfLen, zBase + (isLeft ? 0.03 : -0.03));
+                    group.add(dove);
+                    
+                    // Trava at bottom
+                    const trava = new THREE.Mesh(new THREE.BoxGeometry(totalW * 0.4, 0.025, 0.012), travaMat);
+                    trava.position.set(posX, T + 0.02, zBase + (isLeft ? railBase + canalW/200 + railWall : -railBase - canalW/200 - railWall));
+                    group.add(trava);
+                });
+            });
+            
+            // Label
+            const label = createLabel('TRILHOS', 0.08);
+            label.position.set(0.5, T + S - 0.15, -0.1);
+            group.add(label);
+            
+            return group;
+        }
+        
         function createCarbonCompartment() {
             const group = new THREE.Group();
             const W = S - 2*T; // 244mm (entre as laterais)
@@ -1110,6 +1196,7 @@
             if (parts.divWega) parts.divWega.position.y = offset * 0.2;
             if (parts.divHepa) parts.divHepa.position.y = offset * 0.1;
             if (parts.gaveta) parts.gaveta.position.x = offset * 0.3;
+            if (parts.trilhos) parts.trilhos.position.z = 0;
         }
         
         function toggleWireframe() {

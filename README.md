@@ -99,6 +99,8 @@
 | 12 | `12_FLANGES.nc` | Entrada 70mm + Saída 150mm |
 | 13 | `13_CAIXA_CARVAO.nc` | 4× bordas MDF quadro carvão (ao redor abertura, c/ abas tela) |
 | 14 | `TRILHO_FILTRO.scad` | Trilhos deslizantes 3D (filtros removíveis, Ender 3) |
+| 15 | `TRILHO_PRINT_LAYOUT.scad` | Layout de impressão otimizado (6 batches, Ender 3) |
+| 16 | `TRILHO_3D.html` | Visualização 3D interativa dos trilhos |
 
 ---
 
@@ -209,19 +211,25 @@ Posições: Y=220mm (topo) e Y=30mm (base)
 3. **Lateral Direita** → Paralela, a 244mm de distância
 4. **Frontal** → Dentes nos slots das laterais
 5. **Traseira** → Igual ao frontal
-6. **Divisórias filtro** → Deslizar de cima (abas nos slots)
-7. **Telas carvão (×2)** → Deslizar nos slots X=165 e X=210
-8. **Caixa carvão** → Encaixar 4 tiras + preencher com carvão
-9. **Tampa** → Encaixar com 16 clips snap-fit (sem parafusos)
+6. **Trilhos 3D** → Colar nas faces internas das laterais (cola CA + M2×8)
+7. **Divisórias filtro** → Deslizar de cima pelos trilhos
+8. **Telas carvão (×2)** → Deslizar nos trilhos X=165 e X=210
+9. **Caixa carvão** → Encaixar 4 tiras + preencher com carvão
+10. **Tampa** → Encaixar com 16 clips snap-fit (sem parafusos)
 
 ---
 
 ## 🎯 VERIFICAÇÃO 3D
 
 Abra `MONTAGEM_3D.html` no navegador para:
-- Ver a montagem passo a passo
-- Verificar encaixes visuais
+- Ver a montagem passo a passo (12 passos)
+- Verificar encaixes visuais, incluindo trilhos
 - Rotacionar e dar zoom no modelo
+
+Abra `TRILHO_3D.html` para:
+- Ver trilhos deslizantes em detalhe
+- Animar deslizamento dos filtros
+- Ver encaixe dovetail das 2 metades
 
 | Divisória | Posição X | Espessura | Espaço até próximo | Função |
 |-----------|-----------|-----------|-------------------|--------|
@@ -252,5 +260,5 @@ Abra `MONTAGEM_3D.html` no navegador para:
 
 ---
 
-**Versão:** 7.0 — Trilhos deslizantes para filtros removíveis  
+**Versão:** 8.0 — Arquivos completos trilhos + modelos 3D atualizados  
 **Data:** Fevereiro 2026
