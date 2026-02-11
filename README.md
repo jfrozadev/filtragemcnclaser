@@ -99,8 +99,11 @@
 | 12 | `12_FLANGES.nc` | Entrada 70mm + Saída 150mm |
 | 13 | `13_CAIXA_CARVAO.nc` | 4× bordas MDF quadro carvão (ao redor abertura, c/ abas tela) |
 | 14 | `TRILHO_FILTRO.scad` | Trilhos deslizantes 3D (filtros removíveis, Ender 3) |
-| 15 | `TRILHO_PRINT_LAYOUT.scad` | Layout de impressão otimizado (6 batches, Ender 3) |
-| 16 | `TRILHO_3D.html` | Visualização 3D interativa dos trilhos |
+| 15 | `TRILHO_PRINT_LAYOUT.scad` | Layout de impressão COMPLETO (10 batches, 200×200mm) |
+| 16 | `SNAP_TAMPA.scad` | Clips snap-fit + vedação divisória particionada |
+| 17 | `FLANGE_150mm.scad` | Flange 150mm (180×180mm base, cabe em 200×200) |
+| 18 | `FLANGE_70mm.scad` | Flange 70mm (100×100mm base) |
+| 19 | `TRILHO_3D.html` | Visualização 3D interativa dos trilhos |
 
 ---
 
@@ -197,12 +200,37 @@ PERFIL DO TRILHO (seção transversal):
 | Tela Carvão 2 | 230mm | 3.4mm | 4 |
 | **TOTAL** | | | **24 + 6 puxadores + 6 travas = 36** |
 
+### 🖨️ LAYOUT IMPRESSÃO 3D (Ender 3 - 200×200mm)
+
+**Todas as peças cabem na mesa de 200×200mm!**
+
+| Batch | Peças | Qtd | Tempo | Tamanho |
+|-------|-------|-----|-------|---------|
+| 1 | Trilhos Tela Carvão (3.4mm) | 8 | ~50min | 80×122mm ✓ |
+| 2 | Trilhos Manta G3 (12mm) | 4 | ~1h | 73×122mm ✓ |
+| 3 | Trilhos GM Cabine (21mm) | 4 | ~1h20 | 109×122mm ✓ |
+| 4 | Trilhos HEPA (26mm) | 4 | ~1h30 | 129×122mm ✓ |
+| 5A | Trilhos Wega A (46mm) | 2 | ~1h | 103×122mm ✓ |
+| 5B | Trilhos Wega B (46mm) | 2 | ~1h | 103×122mm ✓ |
+| 6 | Puxadores + Travas | 12 | ~45min | 200×33mm ✓ |
+| 7 | Snap Clips (tampa+base) | 16 | ~2h | 100×130mm ✓ |
+| 8 | Vedação Divisória (8 seg) | 8 | ~1h30 | 130×65mm ✓ |
+| 9 | Flange 150mm | 1 | ~3h | 180×180mm ✓ |
+| 10 | Flange 70mm | 1 | ~1h30 | 100×100mm ✓ |
+| **TOTAL** | | **62** | **~15h30** | |
+
+**Arquivo:** `TRILHO_PRINT_LAYOUT.scad` — abrir no OpenSCAD, descomentar batch desejado, F6+F7 para exportar STL.
+
 ### Snap-Fit (Tampa + Base):
 ```
 16 clips impressos em PLA/PETG (8 topo + 8 base)
 Perna ext: 30mm | Perna int: 24mm | Gancho: 1.2mm
 Slots MDF: 22×2mm perfurados nos 4 painéis
 Posições: Y=220mm (topo) e Y=30mm (base)
+
+Vedação divisória (opcional):
+  8 segmentos com encaixes dovetail (~122mm cada)
+  Particionada para caber na mesa 200×200mm
 ```
 
 ---
@@ -260,10 +288,12 @@ Abra `TRILHO_3D.html` para:
 - 16× Clips snap-fit impressos em PLA/PETG (SNAP_TAMPA.scad)
 - 24× Trilhos deslizantes impressos em PLA/PETG (TRILHO_FILTRO.scad)
 - 6× Puxadores + 6× Travas impressos (TRILHO_FILTRO.scad)
+- 8× Vedação divisória (opcional) impressos (SNAP_TAMPA.scad)
+- 2× Flanges impressos (FLANGE_150mm.scad + FLANGE_70mm.scad)
 - 24× Parafuso Allen M2×5mm (fixação trilhos, 12 por lateral — rosca no PLA, sem porca)
-- Filamento PLA/PETG ~120g
+- Filamento PLA/PETG ~150g
 
 ---
 
-**Versão:** 9.3 — Divisórias 244×240mm (entre bases trilhos), sem abas/slots (trilhos substituem)  
+**Versão:** 9.4 — Layout impressão 3D particionado para mesa 200×200mm  
 **Data:** Fevereiro 2026

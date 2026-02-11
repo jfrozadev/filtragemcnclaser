@@ -1,28 +1,45 @@
 // ============================================================
-// TRILHO_PRINT_LAYOUT.scad
-// Layout otimizado para impressão na Ender 3 (200×200mm)
+// PRINT_LAYOUT_COMPLETO.scad
+// Layout de referência — Ender 3 (200×200mm)
 // ============================================================
 //
-// Este arquivo organiza as peças do TRILHO_FILTRO.scad em
-// batches que cabem na mesa da Ender 3.
+// ⚠️  ARQUIVOS SEPARADOS POR FILTRO (recomendado):
+//   Use os arquivos PRINT_*.scad individuais para imprimir.
+//   Cada arquivo tem as peças distribuídas na mesa, prontas
+//   para exportar STL direto no OpenSCAD (F6 → F7).
 //
-// USO:
-//   1. Abrir no OpenSCAD
-//   2. Descomentar o batch desejado
-//   3. Exportar STL → Slicer (Cura/PrusaSlicer)
+// | Arquivo               | Peças                   | Mesa       | Tempo  |
+// |-----------------------|-------------------------|------------|--------|
+// | PRINT_TELA_CARVAO.scad| 8× trilho 3.4mm         | 83×122mm   | ~50min |
+// | PRINT_MANTA_G3.scad   | 4× trilho 12mm          | 76×122mm   | ~1h    |
+// | PRINT_GM_CABINE.scad  | 4× trilho 21mm          | 112×122mm  | ~1h20  |
+// | PRINT_HEPA.scad       | 4× trilho 26mm          | 132×122mm  | ~1h30  |
+// | PRINT_WEGA.scad       | 2+2× trilho 46mm        | 106×122mm  | ~2h    |
+// | PRINT_ACESSORIOS.scad | 6× puxadores + 6× travas| 200×33mm   | ~45min |
+// | PRINT_SNAP_CLIPS.scad | 16× snap clips          | 92×48mm    | ~2h    |
+// | PRINT_VEDACAO.scad    | 8× vedação segmentos    | 122×72mm   | ~1h30  |
+// | FLANGE_150mm.scad     | Flange 150mm            | 180×180mm  | ~3h    |
+// | FLANGE_70mm.scad      | Flange 70mm             | 100×100mm  | ~1h30  |
+// |-----------------------|-------------------------|------------|--------|
+// | TOTAL                 | 62 peças                | 11 prints  | ~15h30 |
 //
 // CONFIGURAÇÕES DE IMPRESSÃO:
 //   Material: PLA ou PETG
 //   Layer: 0.2mm
-//   Infill: 40% (grid ou gyroid)
+//   Infill: 40% (trilhos) / 80% (clips)
 //   Walls: 3 perímetros
-//   Suporte: NÃO necessário (perfil U deitado, abas para cima)
-//   Orientação: base do trilho na cama, abas U para cima
+//   Suporte: NÃO necessário (orientação otimizada)
+//
+// ============================================================
+//
+// Este arquivo mantém os batches consolidados para
+// preview/referência. Para impressão use os PRINT_*.scad.
 //
 // ============================================================
 
-// Importar módulos do arquivo principal
+// Importar módulos dos arquivos principais
 use <TRILHO_FILTRO.scad>
+use <SNAP_TAMPA.scad>
 
 // Espaçamento entre peças na cama
 gap = 3; // 3mm entre peças
@@ -30,6 +47,28 @@ gap = 3; // 3mm entre peças
 // Bed size
 bed_x = 200;
 bed_y = 200;
+
+// ============================================================
+// SUMÁRIO DE BATCHES (10 impressões totais)
+// ============================================================
+//
+// | Batch | Peças                    | Tamanho     | Tempo  |
+// |-------|--------------------------|-------------|--------|
+// | 1     | 8× trilho fino (3.4mm)   | 80×122mm    | ~50min |
+// | 2     | 4× trilho G3 (12mm)      | 73×122mm    | ~1h    |
+// | 3     | 4× trilho GM (21mm)      | 109×122mm   | ~1h20  |
+// | 4     | 4× trilho HEPA (26mm)    | 129×122mm   | ~1h30  |
+// | 5A    | 2× trilho Wega A (46mm)  | 103×122mm   | ~1h    |
+// | 5B    | 2× trilho Wega B (46mm)  | 103×122mm   | ~1h    |
+// | 6     | 6× puxadores + 6× travas | 200×33mm    | ~45min |
+// | 7     | 16× snap clips           | 100×130mm   | ~2h    |
+// | 8     | 8× vedação segmentos     | 130×65mm    | ~1h30  |
+// | 9     | Flange 150mm             | 180×180mm   | ~3h    |
+// | 10    | Flange 70mm              | 100×100mm   | ~1h30  |
+// |-------|--------------------------|-------------|--------|
+// | TOTAL | 55 peças                 | 10 prints   | ~15h   |
+//
+// ============================================================
 
 // ============================================================
 // LAYOUT CORRIGIDO: Peças lado a lado em X, comp em Y
@@ -277,13 +316,89 @@ module preview_all_batches() {
     
     color("Orange") translate([0, 810, 0])
         batch_6_acessorios();
+    
+    color("Magenta") translate([0, 945, 0])
+        batch_7_snap_clips();
+    
+    color("Cyan") translate([0, 1080, 0])
+        batch_8_vedacao();
+}
+
+// ============================================================
+// BATCH 7: Snap-fit Clips — 16 unidades
+// 4 fileiras × 4 colunas (20mm × 30mm cada + gap)
+// Tamanho total: ~100mm × 130mm ✓
+// Tempo estimado: ~2h
+// ORIENTAÇÃO: Clip deitado com ponte na mesa (Z=0)
+// ============================================================
+
+module batch_7_snap_clips() {
+    clip_w = 20;    // largura do clip (X)
+    clip_d = 8.3;   // profundidade total Y (mdf+folga+2*parede = 3+0.3+2*2 = 7.3 + ganchos ~1mm)
+    altura_ext = 30; // altura perna externa
+    parede = 2;      // espessura ponte
+    
+    for (row = [0:3]) {
+        for (col = [0:3]) {
+            translate([col * (clip_w + gap), row * (clip_d + gap), 0])
+            // Orientação para impressão: pernas para cima, ponte na mesa
+            // Geometria original: Z[-30, +2], Y[~-1.2, ~8.3]
+            // rotate 180° (XZ): Z→[-2,+30], Y→[-8.3,+1.2]
+            // translate Y+clip_d, Z+parede: Y[0, 9.5], Z[0, 32]
+            translate([0, clip_d, parede])
+            rotate([180, 0, 0])
+                snap_clip_tampa();
+        }
+    }
+    
+    // Dimensão cada clip: 20mm × ~9mm × 32mm (X×Y×Z)
+    // Layout: 4col × 4row
+    // Tamanho total: 4×(20+3)=92mm × 4×(9+3)=48mm ✓ (bem compacto!)
+}
+
+// ============================================================
+// BATCH 8: Vedação Divisória — 8 segmentos
+// 4 horizontais (122mm) + 4 verticais (120mm)
+// Deitados lado a lado em Y
+// Tamanho total: ~130mm × 65mm ✓
+// Tempo estimado: ~1h30
+// ============================================================
+
+module batch_8_vedacao() {
+    frame_w = 6;
+    
+    // 4 segmentos horizontais (122mm cada, deitados em Y)
+    for (i = [0:1]) {
+        translate([0, i * (frame_w + gap), 0])
+            vedacao_segmento_h_a();
+    }
+    for (i = [0:1]) {
+        translate([0, (2 + i) * (frame_w + gap), 0])
+            vedacao_segmento_h_b();
+    }
+    
+    // 4 segmentos verticais (120mm cada, rotacionados)
+    for (i = [0:1]) {
+        translate([0, (4 + i) * (frame_w + gap), 0])
+        rotate([0, 0, -90])
+        translate([-120, 0, 0])
+            vedacao_segmento_v_a();
+    }
+    for (i = [0:1]) {
+        translate([0, (6 + i) * (frame_w + gap), 0])
+        rotate([0, 0, -90])
+        translate([-120, 0, 0])
+            vedacao_segmento_v_b();
+    }
+    
+    // Tamanho total: 122mm × 8×(6+3) = 122mm × 72mm ✓
 }
 
 // ============================================================
 // RENDER — Descomentar a linha desejada
 // ============================================================
 
-// Batches individuais (para gerar STL):
+// === TRILHOS ===
 batch_1_tela_carvao();      // 8× trilhos finos (~50min)
 // batch_2_manta_g3();      // 4× trilhos G3 (~1h)
 // batch_3_gm_cabine();     // 4× trilhos GM (~1h20)
@@ -292,40 +407,49 @@ batch_1_tela_carvao();      // 8× trilhos finos (~50min)
 // batch_5b_wega();         // 2× trilhos Wega B (~1h)
 // batch_6_acessorios();    // 6× puxadores + 6× travas (~45min)
 
-// Batches combinados (menos impressões):
+// === SNAP CLIPS + VEDAÇÃO ===
+// batch_7_snap_clips();    // 16× snap clips (~2h)
+// batch_8_vedacao();       // 8× segmentos vedação (~1h30)
+
+// === BATCHES COMBINADOS ===
 // batch_combo_manta_gm();     // G3 + GM juntos (~2h)
 // batch_combo_hepa_wega_a();  // HEPA + Wega A juntos (~2h30)
 
-// Visualização geral (não para impressão):
+// === VISUALIZAÇÃO ===
 // preview_all_batches();
 
 // ============================================================
-// RESUMO DOS BATCHES
+// NOTA: FLANGES (180×180 e 100×100mm)
+// ============================================================
+// As flanges são impressas separadamente usando seus arquivos:
+//   - FLANGE_150mm.scad → 180×180mm ✓ (cabe em 200×200)
+//   - FLANGE_70mm.scad  → 100×100mm ✓ (cabe em 200×200)
+// Basta abrir o arquivo .scad, F6 para renderizar, F7 para exportar STL.
+// ============================================================
+
+// ============================================================
+// RESUMO COMPLETO — TODAS AS PEÇAS 3D
 // ============================================================
 //
-// OPÇÃO A — 7 batches individuais (~7h25 total):
-// | Batch | Filtro     | Peças | Tempo  | Tamanho cama     |
-// |-------|-----------|-------|--------|------------------|
-// | 1     | Tela×2    | 8     | ~50min | 80×122mm   ✓    |
-// | 2     | Manta G3  | 4     | ~1h    | 73×122mm   ✓    |
-// | 3     | GM Cabine | 4     | ~1h20  | 109×122mm  ✓    |
-// | 4     | HEPA      | 4     | ~1h30  | 129×122mm  ✓    |
-// | 5A    | Wega (A)  | 2     | ~1h    | 103×122mm  ✓    |
-// | 5B    | Wega (B)  | 2     | ~1h    | 103×122mm  ✓    |
-// | 6     | Acessórios| 12    | ~45min | 200×33mm   ✓    |
-// | TOTAL |           | 36    | ~7h25  |                  |
+// | Batch | Peças                    | Qtd | Tempo  | Tamanho      |
+// |-------|--------------------------|-----|--------|--------------|
+// | 1     | Trilhos Tela Carvão      |  8  | ~50min | 80×122mm  ✓ |
+// | 2     | Trilhos Manta G3         |  4  | ~1h    | 73×122mm  ✓ |
+// | 3     | Trilhos GM Cabine        |  4  | ~1h20  | 109×122mm ✓ |
+// | 4     | Trilhos HEPA             |  4  | ~1h30  | 129×122mm ✓ |
+// | 5A    | Trilhos Wega (metade A)  |  2  | ~1h    | 103×122mm ✓ |
+// | 5B    | Trilhos Wega (metade B)  |  2  | ~1h    | 103×122mm ✓ |
+// | 6     | Puxadores + Travas       | 12  | ~45min | 200×33mm  ✓ |
+// | 7     | Snap Clips (tampa/base)  | 16  | ~2h    | 100×130mm ✓ |
+// | 8     | Vedação Divisória (opt)  |  8  | ~1h30  | 130×65mm  ✓ |
+// | 9     | Flange 150mm             |  1  | ~3h    | 180×180mm ✓ |
+// | 10    | Flange 70mm              |  1  | ~1h30  | 100×100mm ✓ |
+// |-------|--------------------------|-----|--------|--------------|
+// | TOTAL |                          | 62  | ~15h30 |              |
 //
-// OPÇÃO B — 4 batches combinados (~6h05 total):
-// | Batch | Filtros        | Peças | Tempo  | Tamanho cama  |
-// |-------|---------------|-------|--------|---------------|
-// | 1     | Tela×2        | 8     | ~50min | 80×122mm  ✓  |
-// | 2     | G3 + GM       | 8     | ~2h    | 185×122mm ✓  |
-// | 3     | HEPA + Wega A | 6     | ~2h30  | 192×122mm ✓  |
-// | 4     | Wega B        | 2     | ~1h    | 103×122mm ✓  |
-// | 5     | Acessórios    | 12    | ~45min | 200×33mm  ✓  |
-// | TOTAL |               | 36    | ~7h05  |               |
+// TODAS AS PEÇAS CABEM NA MESA 200×200mm ✓
 //
-// NOTA: Todas as dimensões agora cabem na Ender 3 (200×200mm)
-//   Peças dispostas lado a lado em X, comp=122mm em Y
+// MATERIAL ESTIMADO:
+//   PLA/PETG: ~150g (trilhos 80g + clips 30g + flanges 40g)
 //
 // ============================================================

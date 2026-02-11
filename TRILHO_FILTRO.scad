@@ -7,10 +7,10 @@
 // das laterais. Cada filtro (divisória MDF) desliza de cima
 // para baixo nos trilhos. Remove tampa snap-fit → puxa filtro.
 //
-// Cada trilho = 2 METADES com encaixe dovetail no meio
-//   Metade A: 122mm (com dovetail macho)
-//   Metade B: 122mm (com dovetail fêmea)
-//   Montado: 244mm (largura interna da caixa)
+// Cada trilho = 2 METADES com junta reta (sem dovetail)
+//   Metade A: 122mm
+//   Metade B: 122mm (idêntica à A)
+//   Montado: 244mm (fixação cola CA + parafuso M2)
 //
 // 6 PARES de trilhos (esq + dir por pos):
 //   1. Manta G3     (X=50mm,  esp=10mm)
@@ -22,7 +22,8 @@
 //
 // PEÇAS POR FILTRO:
 //   2× metade A (esq+dir) + 2× metade B (esq+dir) = 4 peças
-//   Total: 6×4 = 24 peças (12 impressões se imprimir 2 por vez)
+//   Total: 6×4 = 24 peças
+//   Metade B é idêntica à A (junta reta, ambas coladas/parafusadas)
 //
 // Alternativamente: os trilhos finos (tela carvão 3mm) e os
 // padrão (10-25mm) podem compartilhar o mesmo perfil com canal
@@ -34,7 +35,9 @@
 //
 // FIXAÇÃO NAS LATERAIS:
 //   - Cola CA (cianoacrilato) + parafuso Allen M2×5mm (fixação obrigatória)
-//   - 3 furos Ø2.2mm por metade no fundo do trilho (furos Ø2.5mm no MDF)
+//   - 1 furo Ø2.2mm por metade no centro do trilho (furos Ø2.5mm no MDF)
+//   - Alinhamento garantido pela superfície plana do MDF lateral
+//   - Junta reta entre as 2 metades (sem dovetail)
 //
 // ENDER 3: 200×200mm bed
 //   Metade 122mm → cabe facilmente horizontal
@@ -57,10 +60,14 @@ trilho_base = 2;      // Espessura da base (cola no MDF lateral)
 trilho_aba = 8;       // Altura da aba do U (guia o MDF)
 
 // Dovetail (encaixe das 2 metades)
-dove_larg = 6;        // Largura na base do dovetail
-dove_topo = 8;        // Largura no topo (trapézio)
-dove_alt = 8;         // Comprimento do encaixe (na direção do trilho)
-dove_prof = 4;        // Profundidade (metade da espessura)
+// REMOVIDO: O dovetail ocupava o espaço do canal, bloqueando
+// o filtro de deslizar. Junta reta é suficiente porque os
+// trilhos são colados + parafusados na parede MDF (alinhamento
+// garantido pela superfície plana da lateral).
+// dove_larg = 6;
+// dove_topo = 8;
+// dove_alt = 8;
+// dove_prof = 4;
 
 // Furos de fixação
 furo_diam = 2.2;      // Diâmetro para parafuso M2
@@ -95,41 +102,16 @@ module perfil_u(canal_w, comprimento) {
     }
 }
 
-// Dovetail macho (trapézio que sai)
-module dovetail_macho() {
-    hull() {
-        translate([0, 0, 0])
-            cube([dove_larg, dove_alt, 0.1]);
-        translate([-(dove_topo - dove_larg)/2, 0, dove_prof])
-            cube([dove_topo, dove_alt, 0.1]);
-    }
-}
+// Dovetail REMOVIDO — bloqueava o canal do filtro
+// Junta reta: as 2 metades encostam e são fixadas
+// independentemente na parede MDF com cola + parafuso.
 
-// Dovetail fêmea (encaixe negativo)
-module dovetail_femea() {
-    hull() {
-        translate([-0.1, -0.1, -0.1])
-            cube([dove_larg + 0.2, dove_alt + 0.2, 0.1]);
-        translate([-(dove_topo - dove_larg)/2 - 0.1, -0.1, dove_prof + 0.1])
-            cube([dove_topo + 0.2, dove_alt + 0.2, 0.1]);
-    }
-}
-
-// Metade A (com dovetail macho na ponta)
+// Metade A (junta reta)
 module trilho_metade_a(canal_w) {
     largura_total = canal_w + 2 * trilho_parede;
     
     difference() {
-        union() {
-            // Perfil U
-            perfil_u(canal_w, trilho_comp);
-            
-            // Dovetail macho (na ponta Y=trilho_comp)
-            translate([largura_total/2 - dove_larg/2, trilho_comp, (trilho_base + trilho_aba)/2 - dove_alt/2])
-            rotate([0, -90, 0])
-            rotate([0, 0, 90])
-                dovetail_macho();
-        }
+        perfil_u(canal_w, trilho_comp);
         
         // Furos de fixação (no fundo/base)
         for (i = [1:n_furos]) {
@@ -139,26 +121,9 @@ module trilho_metade_a(canal_w) {
     }
 }
 
-// Metade B (com dovetail fêmea na ponta)
+// Metade B (junta reta — idêntica à A)
 module trilho_metade_b(canal_w) {
-    largura_total = canal_w + 2 * trilho_parede;
-    
-    difference() {
-        // Perfil U
-        perfil_u(canal_w, trilho_comp);
-        
-        // Dovetail fêmea (na ponta Y=0, receptor)
-        translate([largura_total/2 - dove_larg/2, -dove_alt, (trilho_base + trilho_aba)/2 - dove_alt/2])
-        rotate([0, -90, 0])
-        rotate([0, 0, 90])
-            dovetail_femea();
-        
-        // Furos de fixação
-        for (i = [1:n_furos]) {
-            translate([largura_total/2, trilho_comp * i/(n_furos+1), -0.1])
-                cylinder(h = trilho_base + 0.2, d = furo_diam, $fn = 20);
-        }
-    }
+    trilho_metade_a(canal_w);
 }
 
 // Par de trilhos montado (244mm) - para visualização

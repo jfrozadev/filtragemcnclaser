@@ -142,12 +142,12 @@
             <div class="section-title">🎨 Legenda</div>
             <div class="legend">
                 <div class="legend-item"><div class="legend-color" style="background:#8B4513"></div>MDF 3mm</div>
+                <div class="legend-item"><div class="legend-color" style="background:#000000"></div>Furos/Cortes/Ranhuras</div>
                 <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>Dentes (macho)</div>
-                <div class="legend-item"><div class="legend-color" style="background:#3498db"></div>Ranhuras (fêmea)</div>
                 <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilhos 3D</div>
                 <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Snap-fit clips</div>
+                <div class="legend-item"><div class="legend-color" style="background:#ff5722"></div>Ganchos clip</div>
                 <div class="legend-item"><div class="legend-color" style="background:#A0522D"></div>Caixa carvão</div>
-                <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilhos 3D</div>
                 <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Peça atual</div>
             </div>
         </div>
@@ -299,7 +299,7 @@
             },
             {
                 num: 6, title: "Trilhos Deslizantes", desc: "Fixe os trilhos 3D nas laterais (cola CA + Allen M2×5mm)",
-                encaixe: "🔩 TRILHOS 3D — 12 pares de trilhos em U (impressos PLA/PETG). Cola CA + parafuso Allen M2×5mm (fixação obrigatória, 12 furos Ø2.5mm pré-cortados por lateral, 1 por metade no centro). 3mm MDF + 2mm base trilho = 5mm. Cabeça Allen fica rente. 2 metades por trilho com encaixe dovetail (122mm+122mm=244mm). Canal guia cada filtro.",
+                encaixe: "🔩 TRILHOS 3D — 12 pares de trilhos em U (impressos PLA/PETG). Cola CA + parafuso Allen M2×5mm (fixação obrigatória, 12 furos Ø2.5mm pré-cortados por lateral, 1 por metade no centro). 3mm MDF + 2mm base trilho = 5mm. Cabeça Allen fica rente. 2 metades por trilho com junta reta (122mm+122mm=244mm). Canal guia cada filtro.",
                 type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos'],
                 camera: { pos: [1.0, 2.0, -1.5], look: [0.5, 1.3, 0.5] }
             },
@@ -334,10 +334,14 @@
                 camera: { pos: [4, 1.2, 2], look: [2.10, 0.2, 1.25] }
             },
             {
-                num: 12, title: "Tampa", desc: "Feche com a tampa usando clips snap-fit",
-                encaixe: "✅ COMPLETO! Tampa 250×250mm fixada com clips snap-fit impressos em 3D. Todos os filtros são removíveis pelos trilhos!",
+                num: 12, title: "Tampa + Snap-Fit", desc: "Feche com a tampa usando clips snap-fit",
+                encaixe: "🔒 FUNCIONAMENTO DO CLIP SNAP-FIT:\n\n" +
+                    "1️⃣ SLOT NO MDF: Furo retangular 22×2mm (horizontal) cortado nas laterais, frontal e traseira em Y=30mm (base) e Y=220mm (topo).\n\n" +
+                    "2️⃣ CLIP IMPRESSO: Ponte (ciano) abraça a borda do MDF. Perna externa 30mm + perna interna 24mm.\n\n" +
+                    "3️⃣ GANCHO (laranja): Projeção de 1.2mm na ponta da perna externa. Quando empurra a tampa, a perna flexiona para dentro, o gancho passa pelo slot e TRAVA por trás.\n\n" +
+                    "4️⃣ PARA ABRIR: Flexione levemente as 8 pernas externas para dentro e puxe a tampa para cima.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
-                camera: { pos: [4, 3.5, 4], look: [1.25, 1.3, 1.25] }
+                camera: { pos: [0.5, 2.8, -0.3], look: [1.00, 2.20, 0.03] }
             }
         ];
 
@@ -544,7 +548,8 @@
             group.add(base);
             
             // Furos para os pés de borracha (4 cantos - 25mm das bordas)
-            const holeMat = new THREE.MeshPhongMaterial({ color: 0x333333 });
+            // PRETO = buraco/corte no MDF
+            const holeMat = new THREE.MeshPhongMaterial({ color: 0x000000 });
             const footPositions = [[0.25, 0.20], [2.25, 0.20], [0.25, 2.30], [2.25, 2.30]];
             
             footPositions.forEach(([x, z]) => {
@@ -599,14 +604,16 @@
                 legI.position.set(0, HINT2/2, (MF2/2 + PW2/2));
                 clipGroup.add(legI);
                 
-                // Gancho externo
-                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.04, GH2), hookMat2);
-                hookE.position.set(0, HEXT2 - 0.02, -(MF2/2 + PW2 + GH2/2));
+                // Gancho externo (posição = 30mm acima da ponte da base)
+                // Slot na lateral está em Y = T + 0.30 = 0.33
+                // Clip da base está em Y = 0, então gancho em Y = 0.30 + T
+                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.02, GH2), hookMat2);
+                hookE.position.set(0, HEXT2 + T - 0.01, -(MF2/2 + PW2 + GH2/2));
                 clipGroup.add(hookE);
                 
                 // Gancho interno
-                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.03, GH2*0.8), hookMat2);
-                hookI.position.set(0, HINT2 - 0.015, (MF2/2 + PW2 + GH2*0.4));
+                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.02, GH2*0.8), hookMat2);
+                hookI.position.set(0, HINT2 + T - 0.01, (MF2/2 + PW2 + GH2*0.4));
                 clipGroup.add(hookI);
                 
                 clipGroup.rotation.y = rotY;
@@ -636,7 +643,8 @@
             group.add(plate);
             
             // RANHURAS nas bordas X=0 e X=S (para frontal/traseira)
-            const slotMat = new THREE.MeshPhongMaterial({ color: COLORS.slots, transparent: true, opacity: 0.8 });
+            // PRETO = corte/ranhura no MDF (onde os dentes encaixam)
+            const slotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             for (let i = 0; i < 10; i++) {
                 if (i % 2 === 1) {
                     // Ranhura frontal (X próximo a 0)
@@ -653,23 +661,26 @@
             
             // SLOTS divisórias REMOVIDOS — divisórias deslizam nos trilhos 3D
             
-            // SLOTS SNAP-FIT (ciano) - 22×2mm para clips snap-fit
-            const snapSlotMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
+            // SLOTS SNAP-FIT - 22×2mm para clips snap-fit (HORIZONTAL)
+            // PRETO = buraco/corte no MDF (o slot é um furo retangular)
+            // 22mm largura (X) × 2mm altura (Y)
+            const snapSlotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             [1.00, 1.73].forEach(x => {
                 // Slot superior (Y=220mm = 2.20)
-                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.22, T*2), snapSlotMat);
+                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.02, T*2), snapSlotMat);
                 snapTop.position.set(x, T + 2.20, zPos);
                 group.add(snapTop);
                 
                 // Slot inferior (Y=30mm = 0.30)
-                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.22, T*2), snapSlotMat);
+                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.02, T*2), snapSlotMat);
                 snapBot.position.set(x, T + 0.30, zPos);
                 group.add(snapBot);
             });
             
             // FUROS M2 para fixação dos trilhos (Ø2.5mm)
             // 6 posições X × 2 furos Y = 12 furos por lateral (centro cada metade)
-            const furoMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            // PRETO = buraco/corte no MDF
+            const furoMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const furoRadius = 0.0125; // 1.25mm = Ø2.5mm
             const furoGeom = new THREE.CylinderGeometry(furoRadius, furoRadius, T * 3, 12);
             const furoXpositions = [0.50, 0.75, 1.25, 1.55, 1.90, 2.30];
@@ -719,8 +730,8 @@
                 }
             }
             
-            // Furo 70mm de entrada
-            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            // Furo 70mm de entrada - PRETO = buraco/corte no MDF
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, T*3, 32), holeMat);
             hole.rotation.z = Math.PI/2;
             hole.position.set(T/2, T + S/2, S/2);
@@ -744,6 +755,21 @@
             labelEntrada.rotation.y = -Math.PI/2; // Texto voltado para fora
             labelEntrada.position.set(-0.02, T + S - 0.3, S/2);
             group.add(labelEntrada);
+            
+            // SLOTS SNAP-FIT - 22×2mm para clips snap-fit (frontal)
+            // PRETO = buraco/corte no MDF
+            const snapSlotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            [0.82, 1.62].forEach(z => {
+                // Slot superior (Y=220mm = 2.20)
+                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
+                snapTop.position.set(T/2, T + 2.20, z);
+                group.add(snapTop);
+                
+                // Slot inferior (Y=30mm = 0.30)
+                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
+                snapBot.position.set(T/2, T + 0.30, z);
+                group.add(snapBot);
+            });
             
             return group;
         }
@@ -773,8 +799,8 @@
                 }
             }
             
-            // Furo 150mm de saída
-            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            // Furo 150mm de saída - PRETO = buraco/corte no MDF
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, T*3, 32), holeMat);
             hole.rotation.z = Math.PI/2;
             hole.position.set(S - T/2, T + S/2, S/2);
@@ -798,6 +824,21 @@
             labelSaida.rotation.y = Math.PI/2; // Texto voltado para fora
             labelSaida.position.set(S + 0.02, T + S - 0.3, S/2);
             group.add(labelSaida);
+            
+            // SLOTS SNAP-FIT - 22×2mm para clips snap-fit (traseira)
+            // PRETO = buraco/corte no MDF
+            const snapSlotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            [0.82, 1.62].forEach(z => {
+                // Slot superior (Y=220mm = 2.20)
+                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
+                snapTop.position.set(S - T/2, T + 2.20, z);
+                group.add(snapTop);
+                
+                // Slot inferior (Y=30mm = 0.30)
+                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
+                snapBot.position.set(S - T/2, T + 0.30, z);
+                group.add(snapBot);
+            });
             
             return group;
         }
@@ -825,6 +866,13 @@
             } else {
                 fW = 1.1; fH = 1.4; fDepth = 0.25; fColor = 0x3498db; filterLabel = 'HEPA 25mm';
             }
+            
+            // FURO NO MDF (preto) - abertura onde o filtro encaixa
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const holeGeom = new THREE.BoxGeometry(T * 2, fH * 0.95, fW * 0.95);
+            const hole = new THREE.Mesh(holeGeom, holeMat);
+            hole.position.set(posX, T + S/2, S/2);
+            group.add(hole);
             
             const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.5 });
             const filter = new THREE.Mesh(new THREE.BoxGeometry(fDepth, fH, fW), filterMat);
@@ -916,14 +964,16 @@
                 legI.position.set(0, -HINT/2, (MF/2 + PW/2));
                 clipGroup.add(legI);
                 
-                // Gancho externo (vermelho, encaixa no slot da lateral)
-                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.04, GH), hookMat);
-                hookE.position.set(0, -HEXT + 0.02, -(MF/2 + PW + GH/2));
+                // Gancho externo (laranja, encaixa no slot da lateral)
+                // Posição Y ajustada: gancho fica 30mm abaixo do topo da LATERAL (não da tampa)
+                // Clip está em T+S+T, slot está 30mm abaixo de T+S, então offset = -HEXT - T
+                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.02, GH), hookMat);
+                hookE.position.set(0, -HEXT - T + 0.01, -(MF/2 + PW + GH/2));
                 clipGroup.add(hookE);
                 
                 // Gancho interno (menor)
-                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.03, GH*0.8), hookMat);
-                hookI.position.set(0, -HINT + 0.015, (MF/2 + PW + GH*0.4));
+                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.02, GH*0.8), hookMat);
+                hookI.position.set(0, -HINT - T + 0.01, (MF/2 + PW + GH*0.4));
                 clipGroup.add(hookI);
                 
                 clipGroup.rotation.y = rotY;
@@ -944,7 +994,7 @@
             const group = new THREE.Group();
             const railMatA = new THREE.MeshPhongMaterial({ color: 0x1E90FF, transparent: true, opacity: 0.85 });
             const railMatB = new THREE.MeshPhongMaterial({ color: 0x4169E1, transparent: true, opacity: 0.85 });
-            const doveMat = new THREE.MeshPhongMaterial({ color: 0x2ecc71 });
+            const juntaMat = new THREE.MeshPhongMaterial({ color: 0x2ecc71 }); // linha da junta reta
             const travaMat = new THREE.MeshPhongMaterial({ color: 0xFF4444 });
             
             // 6 filter positions: [posX (scene units), canal width mm]
@@ -997,10 +1047,10 @@
                     wallBR.position.set(posX + totalW/2 - railWall/2, railY0 + halfLen + halfLen/2, zBase + zWallOffset);
                     group.add(wallBR);
                     
-                    // Dovetail joint indicator (green dot at junction)
-                    const dove = new THREE.Mesh(new THREE.BoxGeometry(totalW * 0.5, 0.025, 0.04), doveMat);
-                    dove.position.set(posX, railY0 + halfLen, zBase + (isLeft ? 0.03 : -0.03));
-                    group.add(dove);
+                    // Junta reta (linha indicadora na junção das 2 metades)
+                    const junta = new THREE.Mesh(new THREE.BoxGeometry(totalW, 0.005, railBase + railAba), juntaMat);
+                    junta.position.set(posX, railY0 + halfLen, zBase + (isLeft ? railBase/2 + railAba/2 : -railBase/2 - railAba/2));
+                    group.add(junta);
                     
                     // Trava at bottom
                     const trava = new THREE.Mesh(new THREE.BoxGeometry(totalW * 0.4, 0.025, 0.012), travaMat);
@@ -1026,7 +1076,8 @@
             const telaPositions = [1.90, 2.30]; // X=190mm e X=230mm
             
             const plateMat = new THREE.MeshPhongMaterial({ color: COLORS.mdfLight, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
-            const holeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+            // PRETO = buraco/corte no MDF
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             const meshMat = new THREE.MeshPhongMaterial({ color: 0x888888, transparent: true, opacity: 0.3, side: THREE.DoubleSide });
             
             telaPositions.forEach((posX) => {
