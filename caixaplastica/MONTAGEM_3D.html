@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Caixa Plástica Filtragem — Montagem 3D v4.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#1a1a2e;color:#eee;overflow:hidden}
+#info{
+    position:absolute;top:10px;left:10px;z-index:10;
+    background:rgba(0,0,0,0.88);padding:16px;border-radius:10px;
+    max-width:370px;font-size:13px;line-height:1.5;border:1px solid #333;
+}
+#info h2{color:#00bcd4;margin-bottom:6px;font-size:16px}
+#info .sub{color:#888;font-size:11px;margin-bottom:10px}
+.step-title{color:#4caf50;font-weight:bold;font-size:14px}
+.step-desc{color:#ccc;margin:4px 0}
+#controls{
+    position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+    z-index:10;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;
+}
+button{
+    background:#00bcd4;color:#000;border:none;padding:10px 20px;
+    border-radius:6px;cursor:pointer;font-weight:bold;font-size:14px;transition:background .2s;
+}
+button:hover{background:#00e5ff}
+button:disabled{background:#444;color:#666;cursor:not-allowed}
+#btnAll{background:#ff9800}#btnAll:hover{background:#ffb74d}
+#stepLabel{color:#fff;font-size:16px;font-weight:bold;min-width:120px;text-align:center}
+#legend{
+    position:absolute;top:10px;right:10px;z-index:10;
+    background:rgba(0,0,0,0.88);padding:12px;border-radius:10px;
+    font-size:12px;border:1px solid #333;
+}
+#legend h3{color:#ff9800;margin-bottom:6px}
+.leg-item{display:flex;align-items:center;gap:8px;margin:3px 0}
+.leg-color{width:14px;height:14px;border-radius:3px;border:1px solid #555}
+canvas{display:block}
+</style>
+</head>
+<body>
+
+<div id="info">
+    <h2>&#x1F4E6; Caixa Plástica Ordene 30L — Filtragem</h2>
+    <div class="sub">
+        307×425×305mm ext. | 301×419mm int.<br>
+        MDF 300×300×3mm inteiro (sem corte externo)<br>
+        Guias piso 50mm + Barras anti-tombo no aro
+    </div>
+    <div id="stepInfo">
+        <div class="step-title" id="sT">Carregando...</div>
+        <div class="step-desc" id="sD"></div>
+    </div>
+</div>
+
+<div id="legend">
+    <h3>Legenda</h3>
+    <div class="leg-item"><div class="leg-color" style="background:#e0e0e0;opacity:.5"></div>Caixa plástica</div>
+    <div class="leg-item"><div class="leg-color" style="background:#8d6e63"></div>MDF 300×300×3mm</div>
+    <div class="leg-item"><div class="leg-color" style="background:#00bcd4"></div>Guia piso U (PLA) 50mm</div>
+    <div class="leg-item"><div class="leg-color" style="background:#e91e63"></div>Barra anti-tombo (PLA)</div>
+    <div class="leg-item"><div class="leg-color" style="background:#66bb6a"></div>Manta G3</div>
+    <div class="leg-item"><div class="leg-color" style="background:#42a5f5"></div>GM Cabine</div>
+    <div class="leg-item"><div class="leg-color" style="background:#ffa726"></div>Wega Motor</div>
+    <div class="leg-item"><div class="leg-color" style="background:#ef5350"></div>HEPA</div>
+    <div class="leg-item"><div class="leg-color" style="background:#78909c"></div>Carvão ativado</div>
+    <div class="leg-item"><div class="leg-color" style="background:#ffcc02"></div>Flanges (serra-copo)</div>
+    <div class="leg-item"><div class="leg-color" style="background:#ab47bc"></div>Furos M3</div>
+    <div class="leg-item"><div class="leg-color" style="background:#26c6da"></div>Fluxo de ar</div>
+</div>
+
+<div id="controls">
+    <button id="bP" onclick="prev()">&#x25C0; Anterior</button>
+    <span id="stepLabel">Passo 0/0</span>
+    <button id="bN" onclick="next()">Próximo &#x25B6;</button>
+    <button id="btnAll" onclick="showAll()">Mostrar Tudo</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+/* =======================================================
+   CONSTANTES  (1 unidade = 100 mm,  S = 0.01)
+   ======================================================= */
+var S = 0.01;
+
+// Caixa plástica Ordene 30L
+var BW = 307*S, BD = 425*S, BH = 305*S, PW = 3*S;
+var IW = BW - 2*PW;            // 301mm interno
+var FLR = 5*S;                  // espessura fundo plástico
+
+// MDF 300×300×3mm inteiro
+var MW = 300*S, MH = 300*S, MT = 3*S;
+var xO = PW + (IW - MW) / 2;   // offset X para centralizar MDF
+
+// Guia de posição PISO (match GUIA_POSICAO.scad)
+var G_CANAL  = 3.4*S;          // canal para MDF
+var G_PAREDE = 1.5*S;          // parede guia
+var G_BASE_H = 2*S;            // altura base
+var G_ALT    = 50*S;           // 50mm altura (anti-tombo!)
+var G_COMP   = 80*S;           // comprimento (transversal)
+var G_W      = G_CANAL + 2*G_PAREDE; // 6.4mm
+
+// Barra anti-tombo (topo)
+var BAR_LARG = 15*S;           // largura (assenta no aro)
+var BAR_ALT  = 20*S;           // altura da barra
+var BAR_ENC  = 14*S;           // profundidade rasgo
+// Seção 1: Y=40..175 (135mm) — G3, GM, Wega
+// Seção 2: Y=235..360 (125mm) — HEPA, C1, C2
+var BAR1_INI = 40*S, BAR1_COMP = 135*S;
+var BAR2_INI = 235*S, BAR2_COMP = 125*S;
+
+// Posições divisórias (Y desde parede frontal interna)
+var P = {
+    g3: 50*S, gm: 95*S, wg: 165*S,
+    hp: 245*S, t1: 310*S, t2: 350*S
+};
+
+// Cores
+var C = {
+    box: 0xe0e0e0, mdf: 0x8d6e63, guia: 0x00bcd4,
+    bar: 0xe91e63,
+    g3: 0x66bb6a, gm: 0x42a5f5, wg: 0xffa726,
+    hp: 0xef5350, ca: 0x78909c, fl: 0xffcc02,
+    m3: 0xab47bc, ar: 0x26c6da
+};
+
+/* =======================================================
+   SETUP Three.js
+   ======================================================= */
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+scene.fog = new THREE.Fog(0x1a1a2e, 14, 28);
+
+var cam = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.01, 50);
+cam.position.set(5.5, 4.5, 7);
+
+var ren = new THREE.WebGLRenderer({ antialias: true });
+ren.setSize(innerWidth, innerHeight);
+ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+ren.shadowMap.enabled = true;
+document.body.appendChild(ren.domElement);
+
+var ctl = new THREE.OrbitControls(cam, ren.domElement);
+ctl.target.set(BW/2, BH/2, BD/2);
+ctl.enableDamping = true;
+ctl.dampingFactor = 0.08;
+
+// Luzes
+scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+var dl1 = new THREE.DirectionalLight(0xffffff, 0.85);
+dl1.position.set(5, 8, 5); dl1.castShadow = true; scene.add(dl1);
+var dl2 = new THREE.DirectionalLight(0xffffff, 0.3);
+dl2.position.set(-4, 6, -4); scene.add(dl2);
+
+// Grid
+var grd = new THREE.GridHelper(10, 20, 0x333366, 0x222244);
+grd.position.y = -0.002; scene.add(grd);
+
+/* =======================================================
+   HELPERS
+   ======================================================= */
+function lbl(text, sz) {
+    var cv = document.createElement('canvas'), cx = cv.getContext('2d');
+    cv.width = 512; cv.height = 128;
+    cx.clearRect(0, 0, 512, 128);
+    var fs = Math.floor(sz * 320);
+    cx.font = 'bold ' + fs + 'px Arial';
+    cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    cx.fillStyle = 'rgba(0,0,0,0.75)';
+    cx.fillText(text, 258, 66);
+    cx.fillStyle = '#ffffff';
+    cx.fillText(text, 256, 64);
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(cv), transparent: true, depthTest: false
+    }));
+    sp.scale.set(sz * 3, sz * 0.75, 1);
+    return sp;
+}
+
+function floorMark(text, posY) {
+    var cv = document.createElement('canvas'), cx = cv.getContext('2d');
+    cv.width = 256; cv.height = 64;
+    cx.font = 'bold 22px Arial';
+    cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    cx.fillStyle = 'rgba(0,0,0,0.5)'; cx.fillText(text, 130, 34);
+    cx.fillStyle = '#aaaaaa'; cx.fillText(text, 128, 32);
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(cv), transparent: true, depthTest: false
+    }));
+    sp.scale.set(0.3, 0.075, 1);
+    sp.position.set(BW/2, FLR + 0.01, PW + posY);
+    return sp;
+}
+
+/* =======================================================
+   COMPONENTES
+   ======================================================= */
+
+// --- Caixa Plástica ---
+function mkBox() {
+    var g = new THREE.Group();
+
+    // Caixa translúcida
+    var geo = new THREE.BoxGeometry(BW, BH, BD);
+    var mesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+        color: C.box, transparent: true, opacity: 0.1,
+        side: THREE.DoubleSide, depthWrite: false
+    }));
+    mesh.position.set(BW/2, BH/2, BD/2);
+    g.add(mesh);
+
+    // Arestas
+    var edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geo),
+        new THREE.LineBasicMaterial({ color: 0x889999 })
+    );
+    edges.position.set(BW/2, BH/2, BD/2);
+    g.add(edges);
+
+    // Fundo
+    var floor = new THREE.Mesh(
+        new THREE.BoxGeometry(IW, FLR, BD - 2*PW),
+        new THREE.MeshPhongMaterial({ color: C.box, transparent: true, opacity: 0.25 })
+    );
+    floor.position.set(BW/2, FLR/2, BD/2);
+    g.add(floor);
+
+    // Aro superior (rim) — visível para mostrar onde as barras apoiam
+    var rimGeo = new THREE.BoxGeometry(BW + 0.002, 6*S, BD + 0.002);
+    var rimMat = new THREE.MeshPhongMaterial({ color: 0xbbbbbb, transparent: true, opacity: 0.15 });
+    var rim = new THREE.Mesh(rimGeo, rimMat);
+    rim.position.set(BW/2, BH - 3*S, BD/2);
+    g.add(rim);
+
+    // Marcas de posição no fundo
+    var marks = [
+        ['Y=50 G3', P.g3], ['Y=95 GM', P.gm], ['Y=165 Wega', P.wg],
+        ['Y=245 HEPA', P.hp], ['Y=310 C1', P.t1], ['Y=350 C2', P.t2]
+    ];
+    marks.forEach(function(m) { g.add(floorMark(m[0], m[1])); });
+
+    // Linhas de posição no fundo
+    var lineMat = new THREE.LineBasicMaterial({ color: 0x556677, transparent: true, opacity: 0.5 });
+    marks.forEach(function(m) {
+        var pts = [
+            new THREE.Vector3(PW, FLR + 0.002, PW + m[1]),
+            new THREE.Vector3(BW - PW, FLR + 0.002, PW + m[1])
+        ];
+        g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+    });
+
+    // Label
+    var lb = lbl('ORDENE 30L \u2014 307\u00d7425\u00d7305mm', 0.12);
+    lb.position.set(BW/2, BH + 0.25, BD/2);
+    g.add(lb);
+
+    // Seta fluxo de ar
+    var ar = new THREE.ArrowHelper(
+        new THREE.Vector3(0, 0, 1), new THREE.Vector3(BW/2, BH*0.72, PW + 0.05),
+        BD*0.65, C.ar, 0.12, 0.06
+    );
+    g.add(ar);
+    var la = lbl('FLUXO DE AR \u2192', 0.07);
+    la.position.set(BW/2, BH*0.72 + 0.1, BD*0.45);
+    g.add(la);
+
+    return g;
+}
+
+// --- Guia U-channel PISO (par: esq + dir) — 50mm altura ---
+function mkGuias(posY) {
+    var g = new THREE.Group();
+    var mat = new THREE.MeshPhongMaterial({ color: C.guia });
+    var zC = PW + posY + MT/2;  // centro Z alinhado com MDF
+
+    function oneGuia(xStart) {
+        var gg = new THREE.Group();
+
+        // Base (cola no fundo)
+        var base = new THREE.Mesh(new THREE.BoxGeometry(G_COMP, G_BASE_H, G_W), mat);
+        base.position.set(xStart + G_COMP/2, FLR + G_BASE_H/2, zC);
+        gg.add(base);
+
+        // Parede frontal
+        var wF = new THREE.Mesh(new THREE.BoxGeometry(G_COMP, G_ALT, G_PAREDE), mat);
+        wF.position.set(xStart + G_COMP/2, FLR + G_BASE_H + G_ALT/2, zC - G_CANAL/2 - G_PAREDE/2);
+        gg.add(wF);
+
+        // Parede traseira
+        var wB = new THREE.Mesh(new THREE.BoxGeometry(G_COMP, G_ALT, G_PAREDE), mat);
+        wB.position.set(xStart + G_COMP/2, FLR + G_BASE_H + G_ALT/2, zC + G_CANAL/2 + G_PAREDE/2);
+        gg.add(wB);
+
+        return gg;
+    }
+
+    // Guia esquerda
+    g.add(oneGuia(PW));
+    // Guia direita
+    g.add(oneGuia(BW - PW - G_COMP));
+
+    return g;
+}
+
+// --- Barra Anti-Tombo (par: esq + dir, uma seção) ---
+function mkBarras(secao) {
+    var g = new THREE.Group();
+    var mat = new THREE.MeshPhongMaterial({ color: C.bar, transparent: true, opacity: 0.85 });
+
+    var barIni, barComp, rasgos;
+    if (secao === 1) {
+        barIni = BAR1_INI; barComp = BAR1_COMP;
+        rasgos = [P.g3 - BAR1_INI, P.gm - BAR1_INI, P.wg - BAR1_INI];
+    } else {
+        barIni = BAR2_INI; barComp = BAR2_COMP;
+        rasgos = [P.hp - BAR2_INI, P.t1 - BAR2_INI, P.t2 - BAR2_INI];
+    }
+
+    // Posição Y (altura): topo da caixa — barra assenta no aro
+    var barY = BH - 6*S;  // aro está ~6mm abaixo do topo
+    var zStart = PW + barIni;
+
+    function oneBarra(xCenter) {
+        // Renderizar como segmentos entre rasgos (para ver entalhes)
+        var segments = [];
+        var prevEnd = 0;
+        for (var i = 0; i < rasgos.length; i++) {
+            var rStart = rasgos[i] - G_CANAL/2;
+            var rEnd = rasgos[i] + G_CANAL/2;
+            if (rStart > prevEnd + 0.001*S) {
+                segments.push([prevEnd, rStart]);
+            }
+            prevEnd = rEnd;
+        }
+        if (prevEnd < barComp) {
+            segments.push([prevEnd, barComp]);
+        }
+
+        var gg = new THREE.Group();
+        segments.forEach(function(seg) {
+            var segLen = seg[1] - seg[0];
+            var piece = new THREE.Mesh(new THREE.BoxGeometry(BAR_LARG, BAR_ALT, segLen), mat);
+            piece.position.set(xCenter, barY + BAR_ALT/2, zStart + seg[0] + segLen/2);
+            gg.add(piece);
+        });
+
+        // Rasgos (visuais — linhas amarelas indicando onde o MDF passa)
+        var rLine = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
+        rasgos.forEach(function(rPos) {
+            var pts = [
+                new THREE.Vector3(xCenter - BAR_LARG/2, barY, zStart + rPos),
+                new THREE.Vector3(xCenter + BAR_LARG/2, barY, zStart + rPos)
+            ];
+            gg.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), rLine));
+        });
+
+        return gg;
+    }
+
+    // Barra esquerda (sobre a parede esquerda)
+    g.add(oneBarra(PW/2));
+    // Barra direita (sobre a parede direita)
+    g.add(oneBarra(BW - PW/2));
+
+    // Label
+    var lb = lbl('BARRA S' + secao + ' (anti-tombo)', 0.07);
+    lb.position.set(BW/2, barY + BAR_ALT + 0.06, zStart + barComp/2);
+    g.add(lb);
+
+    return g;
+}
+
+// --- Divisória MDF (frame com abertura + furos M3) ---
+function mkDiv(posY, aw, ah, nome, nHoles) {
+    var g = new THREE.Group();
+    var mat = new THREE.MeshPhongMaterial({ color: C.mdf, side: THREE.DoubleSide });
+    var zP = PW + posY + MT/2;
+    var bW = (MW - aw*S) / 2;
+    var bH = (MH - ah*S) / 2;
+
+    // 4 bordas MDF
+    var mL = new THREE.Mesh(new THREE.BoxGeometry(bW, MH, MT), mat);
+    mL.position.set(xO + bW/2, FLR + MH/2, zP); g.add(mL);
+    var mR = new THREE.Mesh(new THREE.BoxGeometry(bW, MH, MT), mat);
+    mR.position.set(xO + MW - bW/2, FLR + MH/2, zP); g.add(mR);
+    var mB = new THREE.Mesh(new THREE.BoxGeometry(aw*S, bH, MT), mat);
+    mB.position.set(xO + MW/2, FLR + bH/2, zP); g.add(mB);
+    var mT = new THREE.Mesh(new THREE.BoxGeometry(aw*S, bH, MT), mat);
+    mT.position.set(xO + MW/2, FLR + MH - bH/2, zP); g.add(mT);
+
+    // Furos M3
+    var m3Mat = new THREE.MeshPhongMaterial({ color: C.m3 });
+    var m3R = 1.75*S, m3H = MT * 1.5;
+    var oXs = xO + bW, oYs = FLR + bH;
+    var oW = aw*S, oH = ah*S, hOff = 8*S;
+
+    var holes = [
+        [oXs + hOff, oYs + hOff],
+        [oXs + oW - hOff, oYs + hOff],
+        [oXs + hOff, oYs + oH - hOff],
+        [oXs + oW - hOff, oYs + oH - hOff]
+    ];
+    if (nHoles >= 8) {
+        holes.push(
+            [oXs + oW/2, oYs + hOff],
+            [oXs + oW/2, oYs + oH - hOff],
+            [oXs + hOff, oYs + oH/2],
+            [oXs + oW - hOff, oYs + oH/2]
+        );
+    }
+    holes.forEach(function(h) {
+        var c = new THREE.Mesh(new THREE.CylinderGeometry(m3R, m3R, m3H, 8), m3Mat);
+        c.rotation.x = Math.PI/2;
+        c.position.set(h[0], h[1], zP);
+        g.add(c);
+    });
+
+    // Label
+    var lb = lbl(nome, 0.09);
+    lb.position.set(xO + MW/2, FLR + MH + 0.07, zP);
+    g.add(lb);
+
+    return g;
+}
+
+// --- Filtro ---
+function mkFiltro(posY, aw, ah, esp, cor) {
+    var g = new THREE.Group();
+    var f = new THREE.Mesh(
+        new THREE.BoxGeometry(aw*S, ah*S, esp*S),
+        new THREE.MeshPhongMaterial({ color: cor, transparent: true, opacity: 0.55 })
+    );
+    f.position.set(xO + MW/2, FLR + MH/2, PW + posY + MT + esp*S/2);
+    g.add(f);
+    return g;
+}
+
+// --- Flange (serra-copo) ---
+function mkFlange(tipo, posZ) {
+    var g = new THREE.Group();
+    var mat = new THREE.MeshPhongMaterial({ color: C.fl, transparent: true, opacity: 0.85 });
+    var r = (tipo === 'in' ? 70 : 150) * S / 2;
+    var dir = tipo === 'in' ? -1 : 1;
+
+    var hole = new THREE.Mesh(
+        new THREE.CircleGeometry(r, 32),
+        new THREE.MeshBasicMaterial({ color: 0x111118, side: THREE.DoubleSide })
+    );
+    hole.position.set(BW/2, BH/2, posZ + dir*0.001);
+    g.add(hole);
+
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(r, 4*S, 12, 32), mat);
+    ring.rotation.x = Math.PI/2;
+    ring.position.set(BW/2, BH/2, posZ);
+    g.add(ring);
+
+    var tubeLen = 28*S;
+    var tube = new THREE.Mesh(
+        new THREE.CylinderGeometry(r, r, tubeLen, 32, 1, true),
+        new THREE.MeshPhongMaterial({ color: C.fl, transparent: true, opacity: 0.3, side: THREE.DoubleSide })
+    );
+    tube.rotation.x = Math.PI/2;
+    tube.position.set(BW/2, BH/2, posZ + dir*tubeLen/2);
+    g.add(tube);
+
+    var lb = lbl(tipo === 'in' ? 'ENTRADA \u00D870mm' : 'SA\u00CDDA \u00D8150mm', 0.09);
+    lb.position.set(BW/2, BH + 0.1, posZ + dir*0.1);
+    g.add(lb);
+
+    return g;
+}
+
+// --- Carvão ativado ---
+function mkCarvao() {
+    var g = new THREE.Group();
+    var gap = P.t2 - P.t1 - MT;
+    var b = new THREE.Mesh(
+        new THREE.BoxGeometry(200*S, 200*S, gap),
+        new THREE.MeshPhongMaterial({ color: C.ca, transparent: true, opacity: 0.4 })
+    );
+    b.position.set(xO + MW/2, FLR + MH/2, PW + P.t1 + MT + gap/2);
+    g.add(b);
+    var lb = lbl('CARV\u00C3O ~700g', 0.09);
+    lb.position.set(xO + MW/2, FLR + MH + 0.07, PW + (P.t1 + P.t2)/2);
+    g.add(lb);
+    return g;
+}
+
+/* =======================================================
+   PASSOS DA MONTAGEM (12 passos)
+   ======================================================= */
+var steps = [], objs = [];
+
+function addStep(t, d, fn) {
+    var o = fn();
+    o.visible = false;
+    scene.add(o);
+    objs.push(o);
+    steps.push({ title: t, desc: d });
+}
+
+// 1. Caixa
+addStep('1. Caixa Pl\u00E1stica',
+    'Caixa Organizadora Ordene 30L (307\u00d7425\u00d7305mm). Marca\u00e7\u00f5es de posi\u00e7\u00e3o no fundo. Aro superior vis\u00edvel.',
+    mkBox);
+
+// 2. Flanges
+addStep('2. Flanges (Serra-Copo)',
+    'Furar com serra-copo: \u00d870mm frente (entrada) + \u00d8150mm atr\u00e1s (sa\u00edda). Centralizar na face.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkFlange('in', 0));
+        g.add(mkFlange('out', BD));
+        return g;
+    });
+
+// 3. Guias G3 + GM
+addStep('3. Guias Piso: G3 + GM',
+    'Colar 4 guias U no fundo (50mm alt.) Super Bonder gel: Y=50mm (G3) + Y=95mm (GM). Canal 3.4mm.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkGuias(P.g3));
+        g.add(mkGuias(P.gm));
+        return g;
+    });
+
+// 4. Guias Wega + HEPA
+addStep('4. Guias Piso: Wega + HEPA',
+    'Colar 4 guias: Y=165mm (Wega) + Y=245mm (HEPA). Guias 50mm de altura = boa resist\u00eancia a tombo.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkGuias(P.wg));
+        g.add(mkGuias(P.hp));
+        return g;
+    });
+
+// 5. Guias Carvão
+addStep('5. Guias Piso: Carv\u00e3o',
+    'Colar 4 guias: Y=310mm (Tela 1) + Y=350mm (Tela 2). Espa\u00e7o 40mm para carv\u00e3o ativado.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkGuias(P.t1));
+        g.add(mkGuias(P.t2));
+        return g;
+    });
+
+// 6. BARRAS ANTI-TOMBO (NOVO!)
+addStep('6. Barras Anti-Tombo (Topo)',
+    'Encaixar 4 barras no aro da caixa (2 esq + 2 dir). Rasgos capturam o topo do MDF. Impede tombo!',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkBarras(1));  // Seção 1: G3, GM, Wega
+        g.add(mkBarras(2));  // Seção 2: HEPA, C1, C2
+        return g;
+    });
+
+// 7. Manta G3
+addStep('7. Manta G3 (Y=50)',
+    'MDF 300\u00d7300mm inteiro desliza nas guias + barra topo. Abertura 200\u00d7200mm + 8 furos M3. Filtro 10mm.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkDiv(P.g3, 200, 200, 'MANTA G3', 8));
+        g.add(mkFiltro(P.g3, 200, 200, 10, C.g3));
+        return g;
+    });
+
+// 8. GM Cabine
+addStep('8. GM Cabine (Y=95)',
+    'MDF (abertura 212\u00d7200mm) + Filtro GM Bosch 20mm. 8 furos M3.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkDiv(P.gm, 212, 200, 'GM CABINE', 8));
+        g.add(mkFiltro(P.gm, 212, 200, 20, C.gm));
+        return g;
+    });
+
+// 9. Wega Motor
+addStep('9. Wega Motor (Y=165)',
+    'MDF (abertura 223\u00d7160mm) + Filtro Wega 45mm. 4 furos M3.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkDiv(P.wg, 223, 160, 'WEGA MOTOR', 4));
+        g.add(mkFiltro(P.wg, 223, 160, 45, C.wg));
+        return g;
+    });
+
+// 10. HEPA
+addStep('10. HEPA (Y=245)',
+    'MDF (abertura 100\u00d7130mm) + Filtro HEPA 25mm. 8 furos M3.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkDiv(P.hp, 100, 130, 'HEPA', 8));
+        g.add(mkFiltro(P.hp, 100, 130, 25, C.hp));
+        return g;
+    });
+
+// 11. Carvão
+addStep('11. Carv\u00e3o Ativado',
+    '2 telas MDF (abertura 200\u00d7200mm + tela alum\u00ednio) Y=310/350. ~700g carv\u00e3o granulado.',
+    function() {
+        var g = new THREE.Group();
+        g.add(mkDiv(P.t1, 200, 200, 'TELA 1', 8));
+        g.add(mkDiv(P.t2, 200, 200, 'TELA 2', 8));
+        g.add(mkCarvao());
+        return g;
+    });
+
+// 12. Tampa
+addStep('12. Fechar Tampa',
+    'Tampa original. O MDF fica preso: guias 50mm embaixo + barras anti-tombo em cima + paredes laterais. Firme!',
+    function() {
+        var g = new THREE.Group();
+        var lid = new THREE.Mesh(
+            new THREE.BoxGeometry(BW + 0.005, 8*S, BD + 0.005),
+            new THREE.MeshPhongMaterial({ color: C.box, transparent: true, opacity: 0.25 })
+        );
+        lid.position.set(BW/2, BH + 4*S, BD/2);
+        g.add(lid);
+        var bord = new THREE.LineSegments(
+            new THREE.EdgesGeometry(new THREE.BoxGeometry(BW + 0.005, 8*S, BD + 0.005)),
+            new THREE.LineBasicMaterial({ color: 0x889999 })
+        );
+        bord.position.set(BW/2, BH + 4*S, BD/2);
+        g.add(bord);
+        var lb = lbl('TAMPA \u2014 MDF FIRME!', 0.11);
+        lb.position.set(BW/2, BH + 0.2, BD/2);
+        g.add(lb);
+        return g;
+    });
+
+/* =======================================================
+   NAVEGAÇÃO
+   ======================================================= */
+var cur = 0;
+
+function upd() {
+    objs.forEach(function(o, i) { o.visible = i < cur; });
+    var t = document.getElementById('sT');
+    var d = document.getElementById('sD');
+    var sl = document.getElementById('stepLabel');
+
+    if (cur === 0) {
+        t.textContent = 'Clique "Pr\u00f3ximo \u25b6" para iniciar';
+        d.textContent = 'Guias piso 50mm (anti-tombo) + barras no aro da caixa. Setas \u2190\u2192 / Home / End.';
+    } else {
+        t.textContent = steps[cur - 1].title;
+        d.textContent = steps[cur - 1].desc;
+    }
+    sl.textContent = 'Passo ' + cur + '/' + steps.length;
+    document.getElementById('bP').disabled = cur === 0;
+    document.getElementById('bN').disabled = cur >= steps.length;
+}
+
+function next() { if (cur < steps.length) { cur++; upd(); } }
+function prev() { if (cur > 0) { cur--; upd(); } }
+function showAll() { cur = steps.length; upd(); }
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') next();
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'Home') { cur = 0; upd(); }
+    if (e.key === 'End') showAll();
+});
+
+upd();
+
+/* =======================================================
+   ANIMATION LOOP
+   ======================================================= */
+function animate() {
+    requestAnimationFrame(animate);
+    ctl.update();
+    ren.render(scene, cam);
+}
+animate();
+
+addEventListener('resize', function() {
+    cam.aspect = innerWidth / innerHeight;
+    cam.updateProjectionMatrix();
+    ren.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
