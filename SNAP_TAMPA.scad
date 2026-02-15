@@ -6,7 +6,7 @@
 // Encaixam na tampa/base (3mm) e travam na borda lateral/frontal/traseira
 // Vedação com lábio flexível
 // Pé dobrado: altura 30mm (ext) / 24mm (int)
-// Requer slots 22×2mm cortados no MDF a 30mm da borda
+// Requer slots 22×2mm cortados no MDF a 27mm da borda
 // ==========================================
 
 // Parâmetros da caixa
@@ -24,7 +24,7 @@ angulo_gancho = 45;  // Ângulo da rampa de entrada
 // Slot no MDF para o gancho
 slot_largura = 22;   // 20mm clip + 2mm folga
 slot_altura = 2;     // 1.2mm gancho + folga
-slot_pos_borda = 30; // Distância do gancho até a borda (= altura_ext)
+slot_pos_borda = 27; // Distância do gancho até a borda LATERAL (altura_ext - mdf = 30 - 3 = 27mm)
 
 // Lábio de vedação
 labio_h = 1.5;    // Altura do lábio

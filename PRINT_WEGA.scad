@@ -1,6 +1,7 @@
 // ============================================================
 // PRINT: TRILHOS WEGA MOTOR (Posição 3 — X=125mm)
 // 4 peças idênticas — canal 46mm (filtro 45mm + folga)
+// Filtro corpo: 220×160×41mm (mídia), frame/borda: 246×183×4mm (PU)
 // ============================================================
 // ATENÇÃO: 4 peças (4×53mm = 212mm) NÃO cabem juntas!
 // Impressão em 2 rodadas de 2 peças cada.

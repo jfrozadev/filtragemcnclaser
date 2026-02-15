@@ -161,7 +161,8 @@
             <tr><td class="label">MDF:</td><td class="val">3mm</td></tr>
             <tr><td class="label">Dentes:</td><td class="val">25mm largura</td></tr>
             <tr><td class="label">Slots:</td><td class="val">4×40mm</td></tr>
-            <tr><td class="label">HEPA:</td><td class="val highlight">110×140mm ✓</td></tr>
+            <tr><td class="label">HEPA:</td><td class="val highlight">100×130mm (furo) ✓</td></tr>
+            <tr><td class="label">Wega:</td><td class="val highlight">200×140mm (furo) ✓</td></tr>
         </table>
     </div>
 
@@ -305,25 +306,25 @@
             },
             {
                 num: 7, title: "Divisória Manta G3", desc: "Deslize a divisória MANTA G3 pelos trilhos (de cima)",
-                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura. Posição X=50mm. Desliza nos trilhos 3D. Puxador no topo.",
+                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura. Posição X=50mm. Manta fixada com 8 clips 3D (snap-on na borda do furo). Troca rápida: puxa clips → remove manta → reencaixa.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3'],
                 camera: { pos: [1.15, 2.5, 3.5], look: [0.50, 1.3, 1.25] }
             },
             {
                 num: 8, title: "Divisória GM Bosch", desc: "Deslize a divisória GM CABINE BOSCH pelos trilhos",
-                encaixe: "🟡 GM CABINE BOSCH - Filtro cabine 20mm espessura. Posição X=75mm. Desliza nos trilhos 3D.",
+                encaixe: "🟡 GM CABINE BOSCH - 223×210×20mm (furo 213×200mm). Filtro leve de papel. Fixado com 8 retentores 3D (CLIP_GM_CABINE.scad) — aba flexível faz pressão suave. Troca: levanta abas → remove filtro.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM'],
                 camera: { pos: [1.55, 2.5, 3.5], look: [0.75, 1.3, 1.25] }
             },
             {
                 num: 9, title: "Divisória Wega", desc: "Deslize a divisória WEGA (filtro motor) pelos trilhos",
-                encaixe: "🟢 WEGA MOTOR - Filtro motor 45mm espessura. Posição X=125mm. Trilho mais largo (canal 46mm).",
+                encaixe: "🟢 WEGA MOTOR - 220×160×45mm (furo 200×140mm). Borda 10mm repousa no MDF. Fixado com 8 clips 3D (CLIP_WEGA.scad). Troca rápida: solta clips → remove filtro.",
                 type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega'],
                 camera: { pos: [1.95, 2.5, 3.5], look: [1.25, 1.3, 1.25] }
             },
             {
                 num: 10, title: "Divisória HEPA", desc: "Deslize a divisória FILTRO HEPA pelos trilhos",
-                encaixe: "🔷 FILTRO HEPA - 110×140×25mm. Posição X=155mm. Canal de 26mm nos trilhos.",
+                encaixe: "🔷 FILTRO HEPA - 110×140×25mm (furo 100×130mm). Borda 5mm repousa no MDF. Fixado com 8 clips 3D (CLIP_HEPA.scad). Troca rápida: solta clips → remove filtro.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
                 camera: { pos: [2.55, 2.5, 3.5], look: [1.55, 1.3, 1.25] }
             },
@@ -342,6 +343,15 @@
                     "4️⃣ PARA ABRIR: Flexione levemente as 8 pernas externas para dentro e puxe a tampa para cima.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
                 camera: { pos: [0.5, 2.8, -0.3], look: [1.00, 2.20, 0.03] }
+            },
+            {
+                num: 13, title: "Flanges (Entrada/Saída)", desc: "Parafuse as flanges 3D nos furos de ventilação",
+                encaixe: "🔧 FLANGES CONECTORES (impressão 3D — PETG ou ABS):\n\n" +
+                    "▶ ENTRADA (Frontal): Flange Ø70mm — base 100×100×3mm, bocal 30mm. Parafusos M4×12mm nos 4 cantos. Conecta mangueira/duto de 70mm.\n\n" +
+                    "▶ SAÍDA (Traseira): Flange Ø150mm — base 180×180×4mm, bocal 40mm. Parafusos M5×15mm nos 4 cantos. Conecta duto de exaustão 150mm.\n\n" +
+                    "💡 Vedação: aplique silicone ou junta de borracha entre a flange e o MDF para evitar vazamento de ar.",
+                type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa', 'flanges'],
+                camera: { pos: [-0.5, 1.5, 3.5], look: [1.25, 1.28, 1.25] }
             }
         ];
 
@@ -536,6 +546,9 @@
             
             parts.tampa = createTampa();
             scene.add(parts.tampa);
+            
+            parts.flanges = createFlanges();
+            scene.add(parts.flanges);
             
             Object.values(parts).forEach(p => p.visible = false);
         }
@@ -859,12 +872,155 @@
             let fW, fH, fDepth, fColor, filterLabel;
             if (type === 'mantag3') {
                 fW = 2.0; fH = 2.0; fDepth = 0.10; fColor = 0x1abc9c; filterLabel = 'Manta G3 10mm';
+                
+                // 8 Clips de retenção da manta (snap-on)
+                const clipMat = new THREE.MeshPhongMaterial({ color: 0xFF6600, transparent: true, opacity: 0.9 });
+                const clipPositions = [
+                    // [oY, oZ, rotY] - posições relativas ao centro do furo
+                    // Lado inferior (2 clips)
+                    [-(fH/2 - 0.02), -0.40, 0],
+                    [-(fH/2 - 0.02),  0.40, 0],
+                    // Lado superior (2 clips)
+                    [ (fH/2 - 0.02), -0.40, Math.PI],
+                    [ (fH/2 - 0.02),  0.40, Math.PI],
+                    // Lado esquerdo (2 clips)
+                    [-0.40, -(fW/2 - 0.02), Math.PI/2],
+                    [ 0.40, -(fW/2 - 0.02), Math.PI/2],
+                    // Lado direito (2 clips)
+                    [-0.40,  (fW/2 - 0.02), -Math.PI/2],
+                    [ 0.40,  (fW/2 - 0.02), -Math.PI/2],
+                ];
+                
+                const centerY = T + S/2;
+                const centerZ = S/2;
+                
+                clipPositions.forEach(([oY, oZ, rot]) => {
+                    const clipGroup = new THREE.Group();
+                    
+                    // Base (por baixo do MDF)
+                    const base = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.02, 0.03, 0.08),
+                        clipMat
+                    );
+                    base.position.set(0.005, 0, 0);
+                    clipGroup.add(base);
+                    
+                    // Aba (sobre a manta)
+                    const aba = new THREE.Mesh(
+                        new THREE.BoxGeometry(fDepth + 0.02, 0.015, 0.03),
+                        clipMat
+                    );
+                    aba.position.set(-fDepth/2, 0, 0);
+                    clipGroup.add(aba);
+                    
+                    // Parede vertical
+                    const parede = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.02, fDepth + T + 0.02, 0.03),
+                        clipMat
+                    );
+                    parede.position.set(0, -(fDepth/2 + T/2)/2, 0);
+                    clipGroup.add(parede);
+                    
+                    clipGroup.position.set(posX, centerY + oY, centerZ + oZ);
+                    clipGroup.rotation.x = rot;
+                    group.add(clipGroup);
+                });
             } else if (type === 'gm') {
-                fW = 2.23; fH = 2.1; fDepth = 0.20; fColor = 0xf1c40f; filterLabel = 'GM Bosch 20mm';
+                fW = 2.13; fH = 2.0; fDepth = 0.20; fColor = 0xf1c40f; filterLabel = 'GM Bosch 20mm';
+                
+                // 8 Clips retentores do filtro de cabine (pressão leve)
+                const clipMatGM = new THREE.MeshPhongMaterial({ color: 0xFF6600, transparent: true, opacity: 0.9 });
+                const clipPositionsGM = [
+                    [-(fH/2 - 0.02), -0.45, 0],
+                    [-(fH/2 - 0.02),  0.45, 0],
+                    [ (fH/2 - 0.02), -0.45, Math.PI],
+                    [ (fH/2 - 0.02),  0.45, Math.PI],
+                    [-0.35, -(fW/2 - 0.02), Math.PI/2],
+                    [ 0.35, -(fW/2 - 0.02), Math.PI/2],
+                    [-0.35,  (fW/2 - 0.02), -Math.PI/2],
+                    [ 0.35,  (fW/2 - 0.02), -Math.PI/2],
+                ];
+                const centerYGM = T + S/2;
+                const centerZGM = S/2;
+                clipPositionsGM.forEach(([oY, oZ, rot]) => {
+                    const clipGroup = new THREE.Group();
+                    const baseGM = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.025, 0.06), clipMatGM);
+                    baseGM.position.set(0.005, 0, 0);
+                    clipGroup.add(baseGM);
+                    const abaGM = new THREE.Mesh(new THREE.BoxGeometry(fDepth + 0.02, 0.008, 0.025), clipMatGM);
+                    abaGM.position.set(-fDepth/2, 0, 0);
+                    clipGroup.add(abaGM);
+                    const paredeGM = new THREE.Mesh(new THREE.BoxGeometry(0.02, fDepth + T + 0.01, 0.025), clipMatGM);
+                    paredeGM.position.set(0, -(fDepth/2 + T/2)/2, 0);
+                    clipGroup.add(paredeGM);
+                    clipGroup.position.set(posX, centerYGM + oY, centerZGM + oZ);
+                    clipGroup.rotation.x = rot;
+                    group.add(clipGroup);
+                });
             } else if (type === 'wega') {
-                fW = 2.2; fH = 1.6; fDepth = 0.45; fColor = 0x2ecc71; filterLabel = 'Wega 45mm';
+                fW = 2.0; fH = 1.4; fDepth = 0.45; fColor = 0x2ecc71; filterLabel = 'Wega 45mm';
+                
+                // 8 Clips de retenção do filtro Wega (snap-on)
+                const clipMatW = new THREE.MeshPhongMaterial({ color: 0xFF6600, transparent: true, opacity: 0.9 });
+                const clipPositionsW = [
+                    [-(fH/2 - 0.02), -0.40, 0],
+                    [-(fH/2 - 0.02),  0.40, 0],
+                    [ (fH/2 - 0.02), -0.40, Math.PI],
+                    [ (fH/2 - 0.02),  0.40, Math.PI],
+                    [-0.40, -(fW/2 - 0.02), Math.PI/2],
+                    [ 0.40, -(fW/2 - 0.02), Math.PI/2],
+                    [-0.40,  (fW/2 - 0.02), -Math.PI/2],
+                    [ 0.40,  (fW/2 - 0.02), -Math.PI/2],
+                ];
+                const centerYW = T + S/2;
+                const centerZW = S/2;
+                clipPositionsW.forEach(([oY, oZ, rot]) => {
+                    const clipGroup = new THREE.Group();
+                    const baseW = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.08), clipMatW);
+                    baseW.position.set(0.005, 0, 0);
+                    clipGroup.add(baseW);
+                    const abaW = new THREE.Mesh(new THREE.BoxGeometry(fDepth + 0.02, 0.015, 0.03), clipMatW);
+                    abaW.position.set(-fDepth/2, 0, 0);
+                    clipGroup.add(abaW);
+                    const paredeW = new THREE.Mesh(new THREE.BoxGeometry(0.02, fDepth + T + 0.02, 0.03), clipMatW);
+                    paredeW.position.set(0, -(fDepth/2 + T/2)/2, 0);
+                    clipGroup.add(paredeW);
+                    clipGroup.position.set(posX, centerYW + oY, centerZW + oZ);
+                    clipGroup.rotation.x = rot;
+                    group.add(clipGroup);
+                });
             } else {
-                fW = 1.1; fH = 1.4; fDepth = 0.25; fColor = 0x3498db; filterLabel = 'HEPA 25mm';
+                fW = 1.0; fH = 1.3; fDepth = 0.25; fColor = 0x3498db; filterLabel = 'HEPA 25mm';
+                
+                // 8 Clips de retenção do filtro HEPA (snap-on)
+                const clipMatH = new THREE.MeshPhongMaterial({ color: 0xFF6600, transparent: true, opacity: 0.9 });
+                const clipPositionsH = [
+                    [-(fH/2 - 0.02), -0.25, 0],
+                    [-(fH/2 - 0.02),  0.25, 0],
+                    [ (fH/2 - 0.02), -0.25, Math.PI],
+                    [ (fH/2 - 0.02),  0.25, Math.PI],
+                    [-0.25, -(fW/2 - 0.02), Math.PI/2],
+                    [ 0.25, -(fW/2 - 0.02), Math.PI/2],
+                    [-0.25,  (fW/2 - 0.02), -Math.PI/2],
+                    [ 0.25,  (fW/2 - 0.02), -Math.PI/2],
+                ];
+                const centerYH = T + S/2;
+                const centerZH = S/2;
+                clipPositionsH.forEach(([oY, oZ, rot]) => {
+                    const clipGroup = new THREE.Group();
+                    const baseH = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 0.06), clipMatH);
+                    baseH.position.set(0.005, 0, 0);
+                    clipGroup.add(baseH);
+                    const abaH = new THREE.Mesh(new THREE.BoxGeometry(fDepth + 0.02, 0.012, 0.025), clipMatH);
+                    abaH.position.set(-fDepth/2, 0, 0);
+                    clipGroup.add(abaH);
+                    const paredeH = new THREE.Mesh(new THREE.BoxGeometry(0.02, fDepth + T + 0.01, 0.025), clipMatH);
+                    paredeH.position.set(0, -(fDepth/2 + T/2)/2, 0);
+                    clipGroup.add(paredeH);
+                    clipGroup.position.set(posX, centerYH + oY, centerZH + oZ);
+                    clipGroup.rotation.x = rot;
+                    group.add(clipGroup);
+                });
             }
             
             // FURO NO MDF (preto) - abertura onde o filtro encaixa
@@ -990,6 +1146,140 @@
             return group;
         }
         
+        function createFlanges() {
+            const group = new THREE.Group();
+            const flangeMat = new THREE.MeshPhongMaterial({ color: 0xE67E22, transparent: true, opacity: 0.85 });
+            const bocalMat = new THREE.MeshPhongMaterial({ color: 0xD35400, transparent: true, opacity: 0.80 });
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const screwMat = new THREE.MeshPhongMaterial({ color: 0x888888 });
+            
+            const centerY = T + S/2;
+            const centerZ = S/2;
+            
+            // ====== FLANGE 70mm - FRONTAL (ENTRADA) ======
+            // Base 100×100×3mm, bocal Ø70mm ×30mm
+            const f70 = new THREE.Group();
+            {
+                const baseW = 1.00, baseH = 1.00, baseD = 0.03;
+                const bocDiam = 0.70, bocH = 0.30, wallT = 0.02;
+                
+                // Base quadrada
+                const base = new THREE.Mesh(
+                    new THREE.BoxGeometry(baseD, baseH, baseW), flangeMat
+                );
+                base.position.set(-baseD/2, 0, 0);
+                f70.add(base);
+                
+                // Bocal cilíndrico (tubo saindo para fora)
+                const bocExt = new THREE.Mesh(
+                    new THREE.CylinderGeometry(bocDiam/2, bocDiam/2, bocH, 32),
+                    bocalMat
+                );
+                bocExt.rotation.z = Math.PI/2;
+                bocExt.position.set(-baseD - bocH/2, 0, 0);
+                f70.add(bocExt);
+                
+                // Furo interno do bocal (preto)
+                const bocHole = new THREE.Mesh(
+                    new THREE.CylinderGeometry(bocDiam/2 - wallT, bocDiam/2 - wallT, bocH + 0.02, 32),
+                    holeMat
+                );
+                bocHole.rotation.z = Math.PI/2;
+                bocHole.position.set(-baseD - bocH/2, 0, 0);
+                f70.add(bocHole);
+                
+                // Anel de reforço na junção base-bocal
+                const ring = new THREE.Mesh(
+                    new THREE.TorusGeometry(bocDiam/2 + 0.02, 0.015, 8, 32),
+                    flangeMat
+                );
+                ring.rotation.y = Math.PI/2;
+                ring.position.set(-baseD, 0, 0);
+                f70.add(ring);
+                
+                // 4 parafusos nos cantos
+                const margin = 0.10; // 10mm
+                [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([dy,dz]) => {
+                    const screw = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.02, 0.02, 0.06, 8), screwMat
+                    );
+                    screw.rotation.z = Math.PI/2;
+                    screw.position.set(-baseD/2, dy*(baseH/2 - margin), dz*(baseW/2 - margin));
+                    f70.add(screw);
+                });
+            }
+            f70.position.set(0, centerY, centerZ);
+            group.add(f70);
+            
+            // ====== FLANGE 150mm - TRASEIRA (SAÍDA) ======
+            // Base 180×180×4mm, bocal Ø150mm ×40mm
+            const f150 = new THREE.Group();
+            {
+                const baseW = 1.80, baseH = 1.80, baseD = 0.04;
+                const bocDiam = 1.50, bocH = 0.40, wallT = 0.02;
+                
+                // Base quadrada
+                const base = new THREE.Mesh(
+                    new THREE.BoxGeometry(baseD, baseH, baseW), flangeMat
+                );
+                base.position.set(baseD/2, 0, 0);
+                f150.add(base);
+                
+                // Bocal cilíndrico (tubo saindo para fora)
+                const bocExt = new THREE.Mesh(
+                    new THREE.CylinderGeometry(bocDiam/2, bocDiam/2, bocH, 32),
+                    bocalMat
+                );
+                bocExt.rotation.z = Math.PI/2;
+                bocExt.position.set(baseD + bocH/2, 0, 0);
+                f150.add(bocExt);
+                
+                // Furo interno do bocal (preto)
+                const bocHole = new THREE.Mesh(
+                    new THREE.CylinderGeometry(bocDiam/2 - wallT, bocDiam/2 - wallT, bocH + 0.02, 32),
+                    holeMat
+                );
+                bocHole.rotation.z = Math.PI/2;
+                bocHole.position.set(baseD + bocH/2, 0, 0);
+                f150.add(bocHole);
+                
+                // Anel de reforço na junção base-bocal
+                const ring = new THREE.Mesh(
+                    new THREE.TorusGeometry(bocDiam/2 + 0.03, 0.02, 8, 32),
+                    flangeMat
+                );
+                ring.rotation.y = Math.PI/2;
+                ring.position.set(baseD, 0, 0);
+                f150.add(ring);
+                
+                // 4 parafusos nos cantos
+                const margin = 0.12; // 12mm
+                [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([dy,dz]) => {
+                    const screw = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.025, 0.025, 0.08, 8), screwMat
+                    );
+                    screw.rotation.z = Math.PI/2;
+                    screw.position.set(baseD/2, dy*(baseH/2 - margin), dz*(baseW/2 - margin));
+                    f150.add(screw);
+                });
+            }
+            f150.position.set(S, centerY, centerZ);
+            group.add(f150);
+            
+            // Labels
+            const lbl70 = createLabel('FLANGE 70mm', 0.06);
+            lbl70.rotation.y = -Math.PI/2;
+            lbl70.position.set(-0.15, centerY + 0.60, centerZ);
+            group.add(lbl70);
+            
+            const lbl150 = createLabel('FLANGE 150mm', 0.08);
+            lbl150.rotation.y = Math.PI/2;
+            lbl150.position.set(S + 0.20, centerY + 1.00, centerZ);
+            group.add(lbl150);
+            
+            return group;
+        }
+        
         function createTrilhos() {
             const group = new THREE.Group();
             const railMatA = new THREE.MeshPhongMaterial({ color: 0x1E90FF, transparent: true, opacity: 0.85 });
@@ -999,7 +1289,7 @@
             
             // 6 filter positions: [posX (scene units), canal width mm]
             const railPositions = [
-                [0.50, 12],   // Manta G3
+                [0.50, 17],   // Manta G3 (MDF + clips + manta)
                 [0.75, 21],   // GM Cabine
                 [1.25, 46],   // Wega Motor
                 [1.55, 26],   // HEPA

@@ -91,7 +91,7 @@
 | 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm + snap-fit |
 | 5 | `05_TAMPA.nc` | 250×250mm placa lisa (fixação por snap-fit) |
 | 6 | `06_BASE.nc` | 250×250mm + 4 furos para pés de borracha |
-| 7 | `07_DIVISORIA_MANTA_G3.nc` | 1× placa + manta colada c/ grampos |
+| 7 | `07_DIVISORIA_MANTA_G3.nc` | 1× placa + 16 slots para clips 3D |
 | 8 | `08_DIVISORIA_GM.nc` | 244×240mm + furo 223×210mm |
 | 9 | `09_DIVISORIA_WEGA.nc` | 244×240mm + furo 220×160mm |
 | 10 | `10_DIVISORIA_HEPA.nc` | 244×240mm + furo 110×140mm (HEPA) |
@@ -185,14 +185,14 @@ PERFIL DO TRILHO (seção transversal):
    │ ╠═══╣ │  ← canal (esp. filtro + 0.4mm)
    └─┴───┴─┘  ← base (cola no MDF lateral)
 
-2 METADES com dovetail (122mm + 122mm = 244mm):
+2 METADES com junta reta (122mm + 122mm = 244mm):
    Cabe na Ender 3 (200×200mm)
-   Encaixe macho/fêmea no centro
+   Fixadas com cola CA + parafuso M2 (sem dovetail)
 ```
 
 | Filtro | Pos X | Canal | Peças (2×metade A + 2×metade B) |
 |--------|-------|-------|-------------------------------|
-| Manta G3 | 50mm | 12mm | 4 |
+| Manta G3 | 50mm | 17mm | 4 |
 | GM Cabine | 75mm | 21mm | 4 |
 | Wega Motor | 125mm | 46mm | 4 |
 | HEPA | 155mm | 26mm | 4 |
@@ -207,7 +207,7 @@ PERFIL DO TRILHO (seção transversal):
 | Batch | Peças | Qtd | Tempo | Tamanho |
 |-------|-------|-----|-------|---------|
 | 1 | Trilhos Tela Carvão (3.4mm) | 8 | ~50min | 80×122mm ✓ |
-| 2 | Trilhos Manta G3 (12mm) | 4 | ~1h | 73×122mm ✓ |
+| 2 | Trilhos Manta G3 (17mm) | 4 | ~1h | 88×122mm ✓ |
 | 3 | Trilhos GM Cabine (21mm) | 4 | ~1h20 | 109×122mm ✓ |
 | 4 | Trilhos HEPA (26mm) | 4 | ~1h30 | 129×122mm ✓ |
 | 5A | Trilhos Wega A (46mm) | 2 | ~1h | 103×122mm ✓ |
@@ -277,7 +277,7 @@ Abra `TRILHO_3D.html` para:
 ## 📋 MATERIAIS
 
 - MDF 3mm: ~15 chapas 300×300mm
-- Manta G3 (pré-filtro) 10mm - colada + grampos
+- Manta G3 (pré-filtro) 10mm - fixada com 8 clips 3D (CLIP_MANTA_G3.scad)
 - Filtro GM Cabine Bosch 20mm
 - Filtro Wega Motor 45mm
 - **Filtro HEPA** (110×140×25mm)
@@ -286,6 +286,7 @@ Abra `TRILHO_3D.html` para:
 - 32× Parafuso M3 + arruela (16 por tela)
 - Cola PVA + Silicone
 - 16× Clips snap-fit impressos em PLA/PETG (SNAP_TAMPA.scad)
+- 8× Clips manta G3 impressos em PLA/PETG (CLIP_MANTA_G3.scad)
 - 24× Trilhos deslizantes impressos em PLA/PETG (TRILHO_FILTRO.scad)
 - 6× Puxadores + 6× Travas impressos (TRILHO_FILTRO.scad)
 - 8× Vedação divisória (opcional) impressos (SNAP_TAMPA.scad)

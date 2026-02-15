@@ -180,7 +180,7 @@ module trava() {
 // - HEPA (25mm): canal = 26mm
 
 canais = [
-    [50,   12],   // Manta G3: esp efetiva ~10mm c/ MDF holder
+    [50,   17],   // Manta G3: MDF 3mm + clips 3.5mm + manta 10mm + folga
     [75,   21],   // GM Cabine Bosch
     [125,  46],   // Wega Motor (o mais largo!)
     [155,  26],   // HEPA
