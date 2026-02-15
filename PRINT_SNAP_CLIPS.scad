@@ -1,10 +1,13 @@
 // ============================================================
-// PRINT: SNAP-FIT CLIPS — 16 unidades (tampa + base)
-// Mesa: ~92mm × 45mm — cabe na Ender 3 (200×200mm) ✓
+// PRINT: CANTONEIRAS M3 — 16 unidades (8 tampa + 8 base)
+// L-bracket para fixação tampa/base nos painéis laterais
+// Mesa: ~92mm × 73mm — cabe na Ender 3 (200×200mm) ✓
 // ============================================================
-// Snap-fit: ponte na mesa (Z=0), pernas para cima
-// 8× tampa (topo) + 8× base (inferior)
-// Infill recomendado: 80% (precisa ser resistente)
+// Orientação: flange horizontal na mesa (Z=0)
+//             flange vertical para cima
+// Infill recomendado: 80-100% (precisa ser resistente)
+// Material: PETG (melhor) ou PLA
+// Hardware: 32× M3×8mm + 32× porca M3
 // ============================================================
 // Clips de retenção de filtro estão em arquivos separados:
 //   PRINT_CLIP_MANTA.scad — 8× braço 13mm
@@ -16,20 +19,14 @@
 use <SNAP_TAMPA.scad>
 
 gap = 3;
+cant_w = 20;      // largura X da cantoneira
+cant_d = 15;      // profundidade Y da cantoneira (flange horizontal)
 
-// === SEÇÃO 1: 16 SNAP-FIT CLIPS (tampa + base) ===
-clip_w = 20;     // largura X
-clip_d = 8.3;    // profundidade Y
-parede = 2;      // espessura ponte
-
-// 4 colunas × 4 fileiras = 16 clips
+// 4 colunas × 4 fileiras = 16 cantoneiras
 for (row = [0:3]) {
     for (col = [0:3]) {
-        translate([col * (clip_w + gap), row * (clip_d + gap), 0])
-        // Orientação: ponte na mesa, pernas para cima
-        translate([0, clip_d, parede])
-        rotate([180, 0, 0])
-            snap_clip_tampa();
+        translate([col * (cant_w + gap), row * (cant_d + gap), 0])
+            cantoneira_tampa();
     }
 }
 

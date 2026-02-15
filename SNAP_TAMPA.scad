@@ -1,11 +1,13 @@
 // ==========================================
-// SNAP-FIT CLIP PARA TAMPA E BASE - CAIXA DE FILTRAGEM
+// CANTONEIRA M3 PARA TAMPA E BASE - CAIXA DE FILTRAGEM
 // + CLIP RETENÇÃO FILTRO (PARAFUSO M3) PARA DIVISÓRIAS
 // Impressão 3D - PLA/PETG (Ender 3)
 // ==========================================
-// SISTEMA HÍBRIDO:
-// - 16 clips snap-fit: 8 tampa (topo) + 8 base (inferior)
-//   Encaixam na tampa/base (3mm) e travam na borda lateral/frontal/traseira
+// SISTEMA DE FIXAÇÃO:
+// - 16 cantoneiras L-bracket: 8 tampa (topo) + 8 base (inferior)
+//   Parafuso M3 pela tampa/base + parafuso M3 pelo painel lateral
+//   Cada cantoneira: 2× M3 + 2× porca M3 (capturadas)
+//   Total: 32× M3×8mm + 32× porcas M3
 // - 28 clips retenção filtro (parafuso M3×10mm):
 //     8× Manta G3  (10mm espessura, braço 13mm)
 //     8× GM Cabine  (20mm espessura, braço 23mm)
@@ -20,79 +22,105 @@ mdf = 3;          // Espessura MDF
 folga = 0.3;      // Folga para encaixe
 parede = 2;       // Espessura da parede do clip
 
-// Parâmetros do clip
-largura_clip = 20;   // Largura do clip ao longo da borda
-altura_ext = 30;     // Altura externa (pé dobrado, desce pelo lado externo)
-altura_int = 24;     // Altura interna (pé dobrado, desce por dentro da caixa)
-gancho = 1.2;        // Profundidade do gancho snap-fit
-angulo_gancho = 45;  // Ângulo da rampa de entrada
+// === CANTONEIRA (L-BRACKET) PARA TAMPA/BASE ===
+//
+// Vista lateral (seção):
+//
+//   ═══════════════ Tampa (MDF 3mm)
+//       ↕ parafuso M3 (vertical, pela tampa)
+//   ┌───●────┐
+//   │ h-flange│ ← flange horizontal (sob a tampa)
+//   ├────────┤
+//   │        │
+//   │ v-flange│ ← flange vertical (contra painel interno)
+//   │   ●    │ ← parafuso M3 (horizontal, pelo painel)
+//   │        │
+//   └────────┘
+//   ║ painel ║   (interior da caixa →)
+//
+// Montagem:
+// 1. Inserir porca M3 nos bolsos hexagonais da cantoneira
+// 2. Posicionar cantoneira no canto interno (tampa × painel)
+// 3. Parafusar M3 por fora da tampa → rosca na porca do h-flange
+// 4. Parafusar M3 por fora do painel → rosca na porca do v-flange
+//
+// Posições (8 por tampa/base, 2 por lado):
+//   Lateral ESQ/DIR: profundidade X=100 e X=173
+//   Frontal/Traseira: largura X=85 e X=165
+//
+// Furos nos painéis: Ø3.5mm a 10mm da borda topo/base
+// Furos na tampa/base: Ø3.5mm a 10mm da borda de cada lado
 
-// Slot no MDF para o gancho
-slot_largura = 22;   // 20mm clip + 2mm folga
-slot_altura = 2;     // 1.2mm gancho + folga
-slot_pos_borda = 27; // Distância do gancho até a borda LATERAL (altura_ext - mdf = 30 - 3 = 27mm)
+// Parâmetros cantoneira
+cant_larg = 20;       // Largura ao longo da parede (mm)
+cant_h_prof = 15;     // Profundidade flange horizontal (mm)
+cant_h_esp = 3;       // Espessura flange horizontal (mm)
+cant_v_alt = 18;      // Altura flange vertical (mm)
+cant_v_esp = 3;       // Espessura flange vertical (mm)
+cant_furo_d = 3.5;    // Diâmetro furo M3 (com folga)
+cant_porca_af = 5.5;  // Across-flats porca M3 hexagonal
+cant_porca_h = 2.5;   // Altura porca M3
+cant_gusset = 8;      // Tamanho do reforço triangular
+cant_r = 1.5;         // Raio cantos arredondados
 
-// Lábio de vedação
-labio_h = 1.5;    // Altura do lábio
-labio_esp = 0.8;  // Espessura do lábio (flexível)
-
-module snap_clip_tampa() {
-    // Parte que abraça a borda (U invertido)
+module cantoneira_tampa() {
+    // L-bracket para fixação tampa/base nos painéis laterais
+    // Orientação: flange horizontal no plano XY (plano Z=0)
+    //             flange vertical sobe em Z a partir de Y=0
+    
     difference() {
         union() {
-            // Parte superior (sobre a tampa)
-            translate([0, 0, 0])
-                cube([largura_clip, mdf + folga + 2*parede, parede]);
+            // ── FLANGE HORIZONTAL (sob a tampa) ──
+            // Repousa contra a face inferior da tampa
+            // X: 0..cant_larg, Y: 0..cant_h_prof, Z: 0..cant_h_esp
+            hull() {
+                translate([cant_r, cant_r, 0])
+                    cylinder(h = cant_h_esp, r = cant_r, $fn = 20);
+                translate([cant_larg - cant_r, cant_r, 0])
+                    cylinder(h = cant_h_esp, r = cant_r, $fn = 20);
+                translate([cant_r, cant_h_prof - cant_r, 0])
+                    cylinder(h = cant_h_esp, r = cant_r, $fn = 20);
+                translate([cant_larg - cant_r, cant_h_prof - cant_r, 0])
+                    cylinder(h = cant_h_esp, r = cant_r, $fn = 20);
+            }
             
-            // Parede externa (desce por fora da caixa)
-            translate([0, 0, -altura_ext])
-                cube([largura_clip, parede, altura_ext + parede]);
+            // ── FLANGE VERTICAL (contra painel interno) ──
+            // Sobe de Z=0 até Z=cant_v_alt, na face Y=0
+            // X: 0..cant_larg, Y: 0..cant_v_esp, Z: 0..cant_v_alt
+            cube([cant_larg, cant_v_esp, cant_v_alt]);
             
-            // Parede interna (desce por dentro da caixa)
-            translate([0, mdf + folga + parede, -altura_int])
-                cube([largura_clip, parede, altura_int + parede]);
-            
-            // Gancho externo (snap-fit)
-            translate([0, 0, -altura_ext])
-                gancho_snap(largura_clip, parede, gancho, angulo_gancho);
-            
-            // Gancho interno (snap-fit)
-            translate([0, mdf + folga + parede, -altura_int])
-                mirror([0, 1, 0])
-                    gancho_snap(largura_clip, parede, gancho * 0.8, angulo_gancho);
-            
-            // Lábio de vedação (interno, flexível)
-            translate([0, parede, -labio_h])
-                cube([largura_clip, mdf + folga, labio_esp]);
+            // ── REFORÇO TRIANGULAR (gusset) ──
+            // No canto entre h-flange e v-flange
+            hull() {
+                translate([2, cant_v_esp, cant_h_esp])
+                    cube([cant_larg - 4, 0.01, 0.01]);
+                translate([2, cant_v_esp + cant_gusset, cant_h_esp])
+                    cube([cant_larg - 4, 0.01, 0.01]);
+                translate([2, cant_v_esp, cant_h_esp + cant_gusset])
+                    cube([cant_larg - 4, 0.01, 0.01]);
+            }
         }
         
-        // Canal para facilitar flexão do lábio
-        translate([largura_clip/2, parede + (mdf+folga)/2, -labio_h - 0.1])
-            cube([largura_clip - 4, mdf + folga - 1, labio_esp + 0.2], center=true);
+        // ── FURO M3 FLANGE HORIZONTAL (parafuso pela tampa) ──
+        // Centrado na flange horizontal
+        translate([cant_larg/2, cant_h_prof/2, -0.1])
+            cylinder(h = cant_h_esp + 0.2, d = cant_furo_d, $fn = 24);
+        
+        // Bolso hexagonal para porca M3 (topo do h-flange)
+        translate([cant_larg/2, cant_h_prof/2, cant_h_esp - cant_porca_h])
+            cylinder(h = cant_porca_h + 0.1, d = cant_porca_af / cos(30), $fn = 6);
+        
+        // ── FURO M3 FLANGE VERTICAL (parafuso pelo painel) ──
+        // Centrado na flange vertical, a ~10mm do topo
+        translate([cant_larg/2, -0.1, cant_v_alt - 10])
+            rotate([-90, 0, 0])
+                cylinder(h = cant_v_esp + 0.2, d = cant_furo_d, $fn = 24);
+        
+        // Bolso hexagonal para porca M3 (face interna do v-flange)
+        translate([cant_larg/2, cant_v_esp - cant_porca_h, cant_v_alt - 10])
+            rotate([-90, 0, 0])
+                cylinder(h = cant_porca_h + 0.1, d = cant_porca_af / cos(30), $fn = 6);
     }
-}
-
-module gancho_snap(w, wall_t, hook_d, angle) {
-    // Rampa de entrada + gancho de retenção
-    hull() {
-        cube([w, wall_t, 0.1]);
-        translate([0, -hook_d, 0])
-            cube([w, 0.1, hook_d / tan(angle)]);
-    }
-    // Gancho de retenção (face plana para travar)
-    translate([0, -hook_d, 0])
-        cube([w, hook_d, 0.6]);
-}
-
-// === CLIP PARA CANTOS (L-shaped) ===
-// Para os 4 cantos da caixa onde lateral encontra frontal/traseira
-module snap_clip_canto() {
-    snap_clip_tampa();
-    
-    // Extensão em L para o canto
-    translate([largura_clip, 0, 0])
-    rotate([0, 0, 90])
-        snap_clip_tampa();
 }
 
 // === VEDAÇÃO PARA DIVISÓRIAS ===
@@ -329,9 +357,29 @@ module vedacao_divisoria_OLD() {
 }
 
 // === CLIP RETENÇÃO FILTRO PARA DIVISÓRIAS (PARAFUSO M3) ===
-// Perfil Z: base parafusada → braço vertical → aba sobre o filtro
+// Design estilo clip HVAC comercial (referência foto)
+// Perfil Z: base parafusada → braço vertical → aba SOBRE o filtro
+//
+// Vista lateral (perfil Z):
+//
+//   aba ←←←←
+//            ↑
+//       braço ↑     FILTRO contra o MDF
+//            ↑
+//            └→→→→→→→ base (parafuso M3 aqui)
+//                      ▓▓ FRAME MDF ▓▓
+//
+// A aba estende-se sobre o filtro (direção -Y)
+// A base repousa no frame MDF (direção +Y)
 // Braço vertical = espessura_filtro + MDF (3mm)
 // Parametrizado: cada filtro tem espessura diferente
+//
+// Detalhes construtivos (inspirado na foto):
+//   • Base com cantos arredondados (r=1.5mm)
+//   • Filete triangular base→braço (reforço estrutural)
+//   • Filete triangular braço→aba (reforço menor)
+//   • Chanfro na ponta da aba (rampa para encaixe do filtro)
+//   • Escareado para cabeça do parafuso
 //
 // Qtd: 8+8+4+8 = 28 clips retenção total
 //
@@ -346,83 +394,121 @@ module vedacao_divisoria_OLD() {
 //     (57,100)(57,140)(187,100)(187,140)(105,40)(139,40)(105,200)(139,200)
 
 // Parâmetros clip retenção filtro (comuns)
-ret_largura = 20;     // Largura do clip (mm)
-ret_base_comp = 15;   // Comprimento da base (sobre o frame MDF)
-ret_base_esp = 3;     // Espessura da base (sobre o MDF)
-ret_braco_esp = 2;    // Espessura do braço vertical
-ret_aba_comp = 10;    // Comprimento da aba (sobre o filtro)
+ret_largura = 20;     // Largura do clip X (mm)
+ret_base_comp = 15;   // Comprimento da base Y (sobre o frame MDF)
+ret_base_esp = 3;     // Espessura da base Z
+ret_braco_esp = 2.5;  // Espessura do braço vertical Y (2.5mm p/ rigidez)
+ret_aba_comp = 10;    // Comprimento da aba (projeção sobre o filtro)
 ret_aba_esp = 2;      // Espessura da aba de retenção
 ret_furo_d = 3.5;     // Diâmetro do furo M3 (com folga)
+ret_r_base = 1.5;     // Raio cantos arredondados da base
+ret_gusset = 5;       // Tamanho do reforço triangular base→braço
+ret_chanfro = 2;      // Comprimento do chanfro na ponta da aba
 
 // Módulo parametrizado — espessura_filtro determina altura do braço
 module clip_parafuso_filtro(espessura_filtro = 10) {
     braco_alt = espessura_filtro + mdf;  // filtro + MDF 3mm
+    z_aba = ret_base_esp + braco_alt - ret_aba_esp;  // Z base da aba
+    gusset_b = min(ret_gusset, braco_alt * 0.6);     // gusset proporcional
+    gusset_a = min(3, braco_alt * 0.4);              // gusset aba menor
     
     difference() {
         union() {
-            // Base horizontal (parafusada no frame MDF ao redor da abertura)
-            cube([ret_largura, ret_base_comp, ret_base_esp]);
+            // ── BASE COM CANTOS ARREDONDADOS ──
+            // Placa horizontal parafusada no frame MDF
+            // Y vai de 0 (borda interna, junto ao braço) a ret_base_comp
+            hull() {
+                translate([ret_r_base, ret_r_base, 0])
+                    cylinder(h = ret_base_esp, r = ret_r_base, $fn = 24);
+                translate([ret_largura - ret_r_base, ret_r_base, 0])
+                    cylinder(h = ret_base_esp, r = ret_r_base, $fn = 24);
+                translate([ret_r_base, ret_base_comp - ret_r_base, 0])
+                    cylinder(h = ret_base_esp, r = ret_r_base, $fn = 24);
+                translate([ret_largura - ret_r_base, ret_base_comp - ret_r_base, 0])
+                    cylinder(h = ret_base_esp, r = ret_r_base, $fn = 24);
+            }
             
-            // Braço vertical (sobe da borda interna da base)
-            translate([0, 0, ret_base_esp])
-                cube([ret_largura, ret_braco_esp, braco_alt]);
+            // ── BRAÇO VERTICAL ──
+            // Sobe da borda interna (Y=0), contínuo desde Z=0 até topo
+            cube([ret_largura, ret_braco_esp, ret_base_esp + braco_alt]);
             
-            // Aba de retenção (se estende sobre o filtro, pressiona)
-            translate([0, 0, ret_base_esp + braco_alt - ret_aba_esp])
+            // ── ABA DE RETENÇÃO (estende SOBRE o filtro, direção -Y) ──
+            // Projeta ret_aba_comp além da face interna do braço
+            // De Y = -(ret_aba_comp - ret_braco_esp) até Y = ret_braco_esp
+            translate([0, -(ret_aba_comp - ret_braco_esp), z_aba])
                 cube([ret_largura, ret_aba_comp, ret_aba_esp]);
             
-            // Reforço (gusset entre base e braço)
+            // ── CHANFRO NA PONTA DA ABA ──
+            // Rampa suave para facilitar inserção/remoção do filtro
+            // Afina de ret_aba_esp para ~40% nos últimos ret_chanfro mm
+            hull() {
+                // Seção completa (onde chanfro começa)
+                translate([0, -(ret_aba_comp - ret_braco_esp - ret_chanfro), z_aba])
+                    cube([ret_largura, 0.01, ret_aba_esp]);
+                // Ponta afinada (tip)
+                translate([0, -(ret_aba_comp - ret_braco_esp), z_aba + ret_aba_esp * 0.6])
+                    cube([ret_largura, 0.01, ret_aba_esp * 0.4]);
+            }
+            
+            // ── REFORÇO BASE→BRAÇO (gusset triangular) ──
+            // Triângulo estrutural no canto interno base/braço (lado frame)
+            // Visível na foto como reforço diagonal
             hull() {
                 translate([2, ret_braco_esp, ret_base_esp])
-                    cube([ret_largura - 4, 4, 0.1]);
-                translate([2, ret_braco_esp, ret_base_esp])
-                    cube([ret_largura - 4, 0.1, 4]);
+                    cube([ret_largura - 4, 0.01, 0.01]);
+                translate([2, ret_braco_esp + gusset_b, ret_base_esp])
+                    cube([ret_largura - 4, 0.01, 0.01]);
+                translate([2, ret_braco_esp, ret_base_esp + gusset_b])
+                    cube([ret_largura - 4, 0.01, 0.01]);
+            }
+            
+            // ── REFORÇO BRAÇO→ABA (gusset menor) ──
+            // Triângulo no canto interno braço/aba (lado filtro)
+            hull() {
+                translate([3, 0, z_aba])
+                    cube([ret_largura - 6, 0.01, 0.01]);
+                translate([3, -gusset_a, z_aba])
+                    cube([ret_largura - 6, 0.01, 0.01]);
+                translate([3, 0, z_aba - gusset_a])
+                    cube([ret_largura - 6, 0.01, 0.01]);
             }
         }
         
-        // Furo para parafuso M3 (passante na base)
+        // ── FURO M3 PASSANTE (centro da base) ──
         translate([ret_largura/2, ret_base_comp/2, -0.1])
-            cylinder(h = ret_base_esp + 0.2, d = ret_furo_d, $fn = 24);
+            cylinder(h = ret_base_esp + 0.2, d = ret_furo_d, $fn = 32);
         
-        // Rebaixo para cabeça do parafuso (escareado)
-        translate([ret_largura/2, ret_base_comp/2, ret_base_esp - 1.5])
-            cylinder(h = 1.6, d1 = ret_furo_d, d2 = 6.5, $fn = 24);
+        // ── ESCAREADO PARA CABEÇA DO PARAFUSO ──
+        translate([ret_largura/2, ret_base_comp/2, ret_base_esp - 1.2])
+            cylinder(h = 1.3, d1 = ret_furo_d, d2 = 6.5, $fn = 32);
     }
 }
 
 // === MÓDULOS DE CONVENIÊNCIA POR TIPO DE FILTRO ===
-module clip_manta()  { clip_parafuso_filtro(10); }  // braço 13mm
-module clip_gm()     { clip_parafuso_filtro(20); }  // braço 23mm
-module clip_wega()   { clip_parafuso_filtro(10); }  // braço 13mm
-module clip_hepa()   { clip_parafuso_filtro(2); }   // braço 5mm (borda 2mm + MDF 3mm)
+module clip_manta()  { clip_parafuso_filtro(10); }  // braço 13mm (Manta G3, 10mm)
+module clip_gm()     { clip_parafuso_filtro(20); }  // braço 23mm (GM Cabine, 20mm)
+module clip_wega()   { clip_parafuso_filtro(10); }  // braço 13mm (Wega, 10mm)
+module clip_hepa()   { clip_parafuso_filtro(2); }   // braço 5mm  (HEPA borda 2mm)
 
 // === RENDER ===
-// Clip individual (tampa/base - mesmo clip para ambos)
-snap_clip_tampa();
-
-// Visualização: clip de canto (deslocado)
-translate([40, 0, 0])
-    snap_clip_canto();
+// Cantoneira individual (fixação tampa/base)
+cantoneira_tampa();
 
 // Visualização: clips retenção filtro por tipo (deslocados)
-translate([80, 0, 0])
+// Offset Y=8 para compensar aba que estende em -Y
+translate([80, 8, 0])
     clip_manta();   // braço 13mm (Manta G3 / Wega 10mm)
 
-translate([105, 0, 0])
+translate([108, 8, 0])
     clip_gm();      // braço 23mm (GM Cabine 20mm)
 
-translate([130, 0, 0])
+translate([136, 8, 0])
     clip_hepa();    // braço 5mm (HEPA borda 2mm)
 
 // Visualização: frame vedação divisória MONTADO (deslocado, escala 0.3)
-translate([0, 50, 0])
+translate([0, 60, 0])
     scale(0.3)
         vedacao_divisoria_montada();
-
-// Visualização: batch de impressão da vedação (deslocado)
-translate([0, 120, 0])
-    scale(0.5)
-        vedacao_print_batch();
 
 // Texto informativo (não renderiza, só comentário)
 // Impressão recomendada:
@@ -430,19 +516,11 @@ translate([0, 120, 0])
 // - Layer: 0.2mm
 // - Infill: 80-100%
 // - Walls: 3 perímetros mínimo
-// - Orientação: clip deitado, ponte para cima
-// - Qtd clips snap-fit: 16 unidades (8 topo + 8 base)
-// - Qtd clips retenção filtro: 28 unidades
-//     8× Manta (braço 13mm) + 8× GM (braço 23mm)
-//     4× Wega (braço 13mm) + 8× HEPA (braço 5mm)
-// - Parafusos: 28× M3×10mm + 28× porca M3
-// - Qtd vedação: 8 segmentos por divisória (opcional)
-//
-// LAYOUT IMPRESSÃO CLIPS (200×200mm):
-//   16 snap-fit + 28 retenção = 44 clips total
-//   Snap-fit: 4 fileiras × 4 colunas = ~92mm × 45mm
-//   Retenção: agrupados por altura (3 tamanhos diferentes)
-//
-// LAYOUT IMPRESSÃO VEDAÇÃO (200×200mm):
-//   8 segmentos (~122mm × 6mm cada)
-//   Deitados lado a lado = ~130mm × 65mm ✓
+// - Qtd cantoneiras: 16 unidades (8 tampa + 8 base)
+// - Qtd clips retenção filtro: 28 unidades (arquivos separados)
+//     PRINT_CLIP_MANTA.scad — 8× braço 13mm
+//     PRINT_CLIP_GM.scad    — 8× braço 23mm
+//     PRINT_CLIP_WEGA.scad  — 4× braço 13mm
+//     PRINT_CLIP_HEPA.scad  — 8× braço 5mm
+// - Hardware cantoneiras: 32× M3×8mm + 32× porca M3
+// - Hardware filtros: 28× M3 + 28× porca M3

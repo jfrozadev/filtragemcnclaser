@@ -145,9 +145,9 @@
                 <div class="legend-item"><div class="legend-color" style="background:#000000"></div>Furos/Cortes/Ranhuras</div>
                 <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>Dentes (macho)</div>
                 <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilhos 3D</div>
-                <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Snap-fit clips</div>
+                <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Cantoneiras M3</div>
                 <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Clip retenção (parafuso)</div>
-                <div class="legend-item"><div class="legend-color" style="background:#ff5722"></div>Ganchos clip</div>
+                <div class="legend-item"><div class="legend-color" style="background:#ff5722"></div>Parafusos M3</div>
                 <div class="legend-item"><div class="legend-color" style="background:#A0522D"></div>Caixa carvão</div>
                 <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Peça atual</div>
             </div>
@@ -161,7 +161,7 @@
             <tr><td class="label">Caixa:</td><td class="val">250×250×250mm</td></tr>
             <tr><td class="label">MDF:</td><td class="val">3mm</td></tr>
             <tr><td class="label">Dentes:</td><td class="val">25mm largura</td></tr>
-            <tr><td class="label">Slots:</td><td class="val">4×40mm</td></tr>
+            <tr><td class="label">Fixação:</td><td class="val">16 cantoneiras M3</td></tr>
             <tr><td class="label">HEPA:</td><td class="val highlight">100×130mm (furo) ✓</td></tr>
             <tr><td class="label">Wega:</td><td class="val highlight">223×160mm (furo) ✓</td></tr>
             <tr><td class="label">GM:</td><td class="val highlight">212×200mm (furo) ✓</td></tr>
@@ -338,12 +338,12 @@
                 camera: { pos: [4, 1.2, 2], look: [2.10, 0.2, 1.25] }
             },
             {
-                num: 12, title: "Tampa + Snap-Fit", desc: "Feche com a tampa usando clips snap-fit",
-                encaixe: "🔒 FUNCIONAMENTO DO CLIP SNAP-FIT:\n\n" +
-                    "1️⃣ SLOT NO MDF: Furo retangular 22×2mm (horizontal) cortado nas laterais, frontal e traseira em Y=30mm (base) e Y=220mm (topo).\n\n" +
-                    "2️⃣ CLIP IMPRESSO: Ponte (ciano) abraça a borda do MDF. Perna externa 30mm + perna interna 24mm.\n\n" +
-                    "3️⃣ GANCHO (laranja): Projeção de 1.2mm na ponta da perna externa. Quando empurra a tampa, a perna flexiona para dentro, o gancho passa pelo slot e TRAVA por trás.\n\n" +
-                    "4️⃣ PARA ABRIR: Flexione levemente as 8 pernas externas para dentro e puxe a tampa para cima.",
+                num: 12, title: "Tampa + Cantoneiras M3", desc: "Fixe a tampa com 8 cantoneiras L-bracket (parafusos M3)",
+                encaixe: "🔩 SISTEMA CANTONEIRA M3 (L-BRACKET):\n\n" +
+                    "1️⃣ CANTONEIRA IMPRESSA: Peça em L (ciano) com flange horizontal (15×20×3mm) + flange vertical (20×18×3mm) + reforço triangular. Bolsos hexagonais capturam porcas M3.\n\n" +
+                    "2️⃣ POSICIONAR: Encaixe a cantoneira no canto interno (junção tampa × painel). Insira porcas M3 nos bolsos hexagonais. 8 cantoneiras: 2 por lateral + 2 por frontal/traseira.\n\n" +
+                    "3️⃣ PARAFUSAR: M3×8mm por fora da tampa (furo Ø3.5mm) → rosca na porca do flange horizontal. M3×8mm por fora do painel (furo Ø3.5mm a 10mm da borda) → rosca na porca do flange vertical.\n\n" +
+                    "4️⃣ PARA ABRIR: Desparafuse os 8 M3 da tampa (chave Phillips ou Allen). Cantoneiras ficam presas nos painéis pelo 2º parafuso — não se perdem! Recolocar a tampa é rápido.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa', 'gaveta', 'tampa'],
                 camera: { pos: [0.5, 2.8, -0.3], look: [1.00, 2.20, 0.03] }
             },
@@ -581,60 +581,24 @@
             });
             
             // ========================================
-            // SNAP-FIT CLIPS NA BASE (invertidos, pernas para CIMA)
-            // 8 clips idênticos aos da tampa, espelhados verticalmente
-            // Conforme SNAP_TAMPA.scad: ponte + 2 pernas + ganchos
+            // FUROS M3 Ø3.5mm NA BASE para cantoneiras
+            // 8 furos (mesmas posições da tampa)
+            // Cantoneiras ficam no interior — sem peças externas
             // ========================================
-            const clipMat2 = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
-            const hookMat2 = new THREE.MeshPhongMaterial({ color: 0xff5722 });
-            const CW2 = 0.20, PW2 = 0.02, MF2 = T + 0.003;
-            const HEXT2 = 0.30, HINT2 = 0.24, GH2 = 0.012;
-            const BRIDGE2 = MF2 + 2*PW2;
-            
-            const baseClipPositions = [
-                {x: 1.00, z: T*0.5, rotY: 0},
-                {x: 1.73, z: T*0.5, rotY: 0},
-                {x: 1.00, z: S - T*0.5, rotY: Math.PI},
-                {x: 1.73, z: S - T*0.5, rotY: Math.PI},
-                {x: T*0.5, z: 0.82, rotY: Math.PI/2},
-                {x: T*0.5, z: 1.62, rotY: Math.PI/2},
-                {x: S - T*0.5, z: 0.82, rotY: -Math.PI/2},
-                {x: S - T*0.5, z: 1.62, rotY: -Math.PI/2}
+            const m3BaseMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const m3BaseR = 0.0175;
+            // Lateral ESQ/DIR: X=100 e X=173, a 10mm da borda
+            // Frontal/Traseira: Z=85 e Z=165, a 10mm da borda
+            const baseM3Positions = [
+                {x: 1.00, z: 0.10}, {x: 1.73, z: 0.10},
+                {x: 1.00, z: 2.40}, {x: 1.73, z: 2.40},
+                {x: 0.10, z: 0.85}, {x: 0.10, z: 1.65},
+                {x: 2.40, z: 0.85}, {x: 2.40, z: 1.65}
             ];
-            
-            baseClipPositions.forEach(({x, z, rotY}) => {
-                const clipGroup = new THREE.Group();
-                
-                // Ponte (embaixo da base)
-                const bridge = new THREE.Mesh(new THREE.BoxGeometry(CW2, PW2, BRIDGE2), clipMat2);
-                bridge.position.set(0, -PW2/2, 0);
-                clipGroup.add(bridge);
-                
-                // Perna externa (sobe por fora da caixa)
-                const legE = new THREE.Mesh(new THREE.BoxGeometry(CW2, HEXT2, PW2), clipMat2);
-                legE.position.set(0, HEXT2/2, -(MF2/2 + PW2/2));
-                clipGroup.add(legE);
-                
-                // Perna interna (sobe por dentro da caixa)
-                const legI = new THREE.Mesh(new THREE.BoxGeometry(CW2, HINT2, PW2), clipMat2);
-                legI.position.set(0, HINT2/2, (MF2/2 + PW2/2));
-                clipGroup.add(legI);
-                
-                // Gancho externo (posição = 30mm acima da ponte da base)
-                // Slot na lateral está em Y = T + 0.30 = 0.33
-                // Clip da base está em Y = 0, então gancho em Y = 0.30 + T
-                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.02, GH2), hookMat2);
-                hookE.position.set(0, HEXT2 + T - 0.01, -(MF2/2 + PW2 + GH2/2));
-                clipGroup.add(hookE);
-                
-                // Gancho interno
-                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW2, 0.02, GH2*0.8), hookMat2);
-                hookI.position.set(0, HINT2 + T - 0.01, (MF2/2 + PW2 + GH2*0.4));
-                clipGroup.add(hookI);
-                
-                clipGroup.rotation.y = rotY;
-                clipGroup.position.set(x, 0, z);
-                group.add(clipGroup);
+            baseM3Positions.forEach(({x, z}) => {
+                const m3h = new THREE.Mesh(new THREE.CylinderGeometry(m3BaseR, m3BaseR, T*3, 16), m3BaseMat);
+                m3h.position.set(x, T/2, z);
+                group.add(m3h);
             });
             
             // Marcação interna - "BASE" no topo (lado interno)
@@ -677,20 +641,22 @@
             
             // SLOTS divisórias REMOVIDOS — divisórias deslizam nos trilhos 3D
             
-            // SLOTS SNAP-FIT - 22×2mm para clips snap-fit (HORIZONTAL)
-            // PRETO = buraco/corte no MDF (o slot é um furo retangular)
-            // 22mm largura (X) × 2mm altura (Y)
-            const snapSlotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            // FUROS M3 Ø3.5mm para cantoneiras (TOPO + BASE)
+            // PRETO = buraco/corte no MDF (furo circular)
+            const m3SlotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const m3SlotR = 0.0175; // 1.75mm radius = Ø3.5mm
             [1.00, 1.73].forEach(x => {
-                // Slot superior (Y=220mm = 2.20)
-                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.02, T*2), snapSlotMat);
-                snapTop.position.set(x, T + 2.20, zPos);
-                group.add(snapTop);
+                // Furo M3 TOPO (Y=240mm = 2.40, a 10mm da borda superior)
+                const m3Top = new THREE.Mesh(new THREE.CylinderGeometry(m3SlotR, m3SlotR, T*3, 16), m3SlotMat);
+                m3Top.rotation.x = Math.PI/2;
+                m3Top.position.set(x, T + 2.40, zPos);
+                group.add(m3Top);
                 
-                // Slot inferior (Y=30mm = 0.30)
-                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.02, T*2), snapSlotMat);
-                snapBot.position.set(x, T + 0.30, zPos);
-                group.add(snapBot);
+                // Furo M3 BASE (Y=10mm = 0.10, a 10mm da borda inferior)
+                const m3Bot = new THREE.Mesh(new THREE.CylinderGeometry(m3SlotR, m3SlotR, T*3, 16), m3SlotMat);
+                m3Bot.rotation.x = Math.PI/2;
+                m3Bot.position.set(x, T + 0.10, zPos);
+                group.add(m3Bot);
             });
             
             // FUROS M2 para fixação dos trilhos (Ø2.5mm)
@@ -772,19 +738,21 @@
             labelEntrada.position.set(-0.02, T + S - 0.3, S/2);
             group.add(labelEntrada);
             
-            // SLOTS SNAP-FIT - 22×2mm para clips snap-fit (frontal)
-            // PRETO = buraco/corte no MDF
-            const snapSlotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            // FUROS M3 Ø3.5mm para cantoneiras (frontal)
+            // PRETO = buraco/corte no MDF (furo circular)
+            const m3FrontMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             [0.82, 1.62].forEach(z => {
-                // Slot superior (Y=220mm = 2.20)
-                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
-                snapTop.position.set(T/2, T + 2.20, z);
-                group.add(snapTop);
+                // Furo M3 TOPO (Y=240mm = 2.40)
+                const m3Top = new THREE.Mesh(new THREE.CylinderGeometry(0.0175, 0.0175, T*3, 16), m3FrontMat);
+                m3Top.rotation.z = Math.PI/2;
+                m3Top.position.set(T/2, T + 2.40, z);
+                group.add(m3Top);
                 
-                // Slot inferior (Y=30mm = 0.30)
-                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
-                snapBot.position.set(T/2, T + 0.30, z);
-                group.add(snapBot);
+                // Furo M3 BASE (Y=10mm = 0.10)
+                const m3Bot = new THREE.Mesh(new THREE.CylinderGeometry(0.0175, 0.0175, T*3, 16), m3FrontMat);
+                m3Bot.rotation.z = Math.PI/2;
+                m3Bot.position.set(T/2, T + 0.10, z);
+                group.add(m3Bot);
             });
             
             return group;
@@ -841,19 +809,21 @@
             labelSaida.position.set(S + 0.02, T + S - 0.3, S/2);
             group.add(labelSaida);
             
-            // SLOTS SNAP-FIT - 22×2mm para clips snap-fit (traseira)
-            // PRETO = buraco/corte no MDF
-            const snapSlotMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            // FUROS M3 Ø3.5mm para cantoneiras (traseira)
+            // PRETO = buraco/corte no MDF (furo circular)
+            const m3BackMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
             [0.82, 1.62].forEach(z => {
-                // Slot superior (Y=220mm = 2.20)
-                const snapTop = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
-                snapTop.position.set(S - T/2, T + 2.20, z);
-                group.add(snapTop);
+                // Furo M3 TOPO (Y=240mm = 2.40)
+                const m3Top = new THREE.Mesh(new THREE.CylinderGeometry(0.0175, 0.0175, T*3, 16), m3BackMat);
+                m3Top.rotation.z = Math.PI/2;
+                m3Top.position.set(S - T/2, T + 2.40, z);
+                group.add(m3Top);
                 
-                // Slot inferior (Y=30mm = 0.30)
-                const snapBot = new THREE.Mesh(new THREE.BoxGeometry(T*2, 0.02, 0.22), snapSlotMat);
-                snapBot.position.set(S - T/2, T + 0.30, z);
-                group.add(snapBot);
+                // Furo M3 BASE (Y=10mm = 0.10)
+                const m3Bot = new THREE.Mesh(new THREE.CylinderGeometry(0.0175, 0.0175, T*3, 16), m3BackMat);
+                m3Bot.rotation.z = Math.PI/2;
+                m3Bot.position.set(S - T/2, T + 0.10, z);
+                group.add(m3Bot);
             });
             
             return group;
@@ -1134,74 +1104,75 @@
             group.add(tampa);
             
             // ========================================
-            // SNAP-FIT CLIPS (substituem parafusos)
-            // 8 clips no topo: 2 por lateral + 2 por frontal/traseira
-            // Impressos em PLA/PETG (SNAP_TAMPA.scad)
-            // Perna externa 30mm, interna 24mm, gancho 1.2mm
+            // FUROS M3 Ø3.5mm NA TAMPA para cantoneiras
+            // 8 furos circulares (mesmas posições da base)
             // ========================================
-            const clipMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
+            const m3TampaMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const m3TampaR = 0.0175;
+            const tampaM3Pos = [
+                {x: 1.00, z: 0.10}, {x: 1.73, z: 0.10},
+                {x: 1.00, z: 2.40}, {x: 1.73, z: 2.40},
+                {x: 0.10, z: 0.85}, {x: 0.10, z: 1.65},
+                {x: 2.40, z: 0.85}, {x: 2.40, z: 1.65}
+            ];
+            tampaM3Pos.forEach(({x, z}) => {
+                const m3h = new THREE.Mesh(new THREE.CylinderGeometry(m3TampaR, m3TampaR, T*3, 16), m3TampaMat);
+                m3h.position.set(x, T + S + T/2, z);
+                group.add(m3h);
+            });
             
-            // Posições dos clips no topo (escala: 1u = 100mm)
-            // Laterais: X=1.00 e X=1.73 (centro dos painéis), Z=T/2 e Z=S-T/2
-            // Frontal/Traseira: Z=0.82 e Z=1.62, X=T/2 e X=S-T/2
-            const clipPositions = [
-                // Sobre lateral esquerda
-                {x: 1.00, z: T*0.5, rotY: 0},
-                {x: 1.73, z: T*0.5, rotY: 0},
-                // Sobre lateral direita
-                {x: 1.00, z: S - T*0.5, rotY: Math.PI},
-                {x: 1.73, z: S - T*0.5, rotY: Math.PI},
-                // Sobre frontal
-                {x: T*0.5, z: 0.82, rotY: Math.PI/2},
-                {x: T*0.5, z: 1.62, rotY: Math.PI/2},
-                // Sobre traseira
-                {x: S - T*0.5, z: 0.82, rotY: -Math.PI/2},
-                {x: S - T*0.5, z: 1.62, rotY: -Math.PI/2}
+            // ========================================
+            // CANTONEIRAS L-BRACKET (internas, ciano)
+            // Ficam no canto interno tampa × painel
+            // Só visíveis quando tampa está montada
+            // ========================================
+            const cantMat = new THREE.MeshPhongMaterial({ color: 0x00bcd4, transparent: true, opacity: 0.9 });
+            const cantScrewMat = new THREE.MeshPhongMaterial({ color: 0xff5722, metalness: 0.5 });
+            
+            const tampaCantPos = [
+                {x: 1.00, z: T, rotY: 0},
+                {x: 1.73, z: T, rotY: 0},
+                {x: 1.00, z: S - T, rotY: Math.PI},
+                {x: 1.73, z: S - T, rotY: Math.PI},
+                {x: T, z: 0.85, rotY: Math.PI/2},
+                {x: T, z: 1.65, rotY: Math.PI/2},
+                {x: S - T, z: 0.85, rotY: -Math.PI/2},
+                {x: S - T, z: 1.65, rotY: -Math.PI/2}
             ];
             
-            // Dimensões do clip (conforme SNAP_TAMPA.scad)
-            const CW = 0.20;       // largura clip 20mm
-            const PW = 0.02;       // parede 2mm
-            const MF = T + 0.003;  // MDF + folga
-            const HEXT = 0.30;     // perna externa 30mm
-            const HINT = 0.24;     // perna interna 24mm
-            const GH = 0.012;      // gancho 1.2mm
-            const BRIDGE = MF + 2*PW; // ponte total ~7.3mm
-            const hookMat = new THREE.MeshPhongMaterial({ color: 0xff5722 });
-            
-            clipPositions.forEach(({x, z, rotY}) => {
-                const clipGroup = new THREE.Group();
+            tampaCantPos.forEach(({x, z, rotY}) => {
+                const cg = new THREE.Group();
                 
-                // Ponte superior (sobre a borda da tampa)
-                const bridge = new THREE.Mesh(new THREE.BoxGeometry(CW, PW, BRIDGE), clipMat);
-                bridge.position.set(0, PW/2, 0);
-                clipGroup.add(bridge);
+                // Flange horizontal (sob a tampa, 20×15×3mm)
+                const hF = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.03, 0.15), cantMat);
+                hF.position.set(0, -0.015, 0.075);
+                cg.add(hF);
                 
-                // Perna externa (30mm, desce por fora da caixa)
-                const legE = new THREE.Mesh(new THREE.BoxGeometry(CW, HEXT, PW), clipMat);
-                legE.position.set(0, -HEXT/2, -(MF/2 + PW/2));
-                clipGroup.add(legE);
+                // Flange vertical (contra painel, 20×18×3mm, desce)
+                const vF = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.18, 0.03), cantMat);
+                vF.position.set(0, -0.09, 0.015);
+                cg.add(vF);
                 
-                // Perna interna (24mm, desce por dentro da caixa)
-                const legI = new THREE.Mesh(new THREE.BoxGeometry(CW, HINT, PW), clipMat);
-                legI.position.set(0, -HINT/2, (MF/2 + PW/2));
-                clipGroup.add(legI);
+                // Gusset
+                const gs = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.06, 0.06), cantMat.clone());
+                gs.material.opacity = 0.7;
+                gs.position.set(0, -0.06, 0.06);
+                cg.add(gs);
                 
-                // Gancho externo (laranja, encaixa no slot da lateral)
-                // Posição Y ajustada: gancho fica 30mm abaixo do topo da LATERAL (não da tampa)
-                // Clip está em T+S+T, slot está 30mm abaixo de T+S, então offset = -HEXT - T
-                const hookE = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.02, GH), hookMat);
-                hookE.position.set(0, -HEXT - T + 0.01, -(MF/2 + PW + GH/2));
-                clipGroup.add(hookE);
+                // Parafuso M3 vertical (pela tampa)
+                const sv = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.05, 8), cantScrewMat);
+                sv.position.set(0, 0.01, 0.075);
+                cg.add(sv);
                 
-                // Gancho interno (menor)
-                const hookI = new THREE.Mesh(new THREE.BoxGeometry(CW, 0.02, GH*0.8), hookMat);
-                hookI.position.set(0, -HINT - T + 0.01, (MF/2 + PW + GH*0.4));
-                clipGroup.add(hookI);
+                // Parafuso M3 horizontal (pelo painel)
+                const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.05, 8), cantScrewMat);
+                sh.rotation.x = Math.PI/2;
+                sh.position.set(0, -0.10, -0.01);
+                cg.add(sh);
                 
-                clipGroup.rotation.y = rotY;
-                clipGroup.position.set(x, T + S + T, z);
-                group.add(clipGroup);
+                cg.rotation.y = rotY;
+                cg.position.set(x, T + S, z);
+                group.add(cg);
             });
             
             // Marcação interna - "TAMPA" no lado de baixo (lado interno)

@@ -69,7 +69,7 @@ const OX=(PW-OW)/2, OY=(PH-OH)/2; // 22, 20
 // Filter
 const FW=OW+10, FH=OH+10, FT=10; // manta is cut ~210×210, overlaps 5mm
 // Clip params
-const CW=20, CBD=15, CBT=3, CAH=FT+PT, CAT=2, AAL=10, AAT=2;
+const CW=20, CBD=15, CBT=3, CAH=FT+PT, CAT=2.5, AAL=10, AAT=2;
 // M3
 const m3=[
     [12,80],[12,160],[232,80],[232,160],
@@ -144,68 +144,65 @@ function buildFilter(){
 function buildClips(){
     const cm=mat(0xe67e22,0.92);
     const sm=mat(0x888888,1);
+    const GS1=5,GS2=3;
 
     m3.forEach(([nx,ny])=>{
         const clipG=new THREE.Group();
         clipG.userData.t='clip';
 
-        // Determine clip orientation (which side of opening)
-        let rot=0;
-        const cx=nx,cy=ny;
-        // Left side clips: nx < OX → face right (+X)
-        // Right side clips: nx > OX+OW → face left (-X)
-        // Bottom clips: ny < OY → face up (+Y mapped to Z)
-        // Top clips: ny > OY+OH → face down
-
-        // Base (on MDF frame, flat)
+        // Base (horizontal on MDF frame)
         const base=new THREE.Mesh(new THREE.BoxGeometry(CW,CBT,CBD),cm);
         base.position.set(0,CBT/2,0);
         clipG.add(base);
 
-        // Arm (vertical, from inner edge of base)
-        const arm=new THREE.Mesh(new THREE.BoxGeometry(CW,CAH,CAT),cm);
-        arm.position.set(0,CBT+CAH/2,-CBD/2+CAT/2);
+        // Arm (vertical Z-profile, full height)
+        const armH=CBT+CAH;
+        const arm=new THREE.Mesh(new THREE.BoxGeometry(CW,armH,CAT),cm);
+        arm.position.set(0,armH/2,-CBD/2+CAT/2);
         clipG.add(arm);
 
-        // Aba (horizontal, over filter)
+        // Aba (hook over filter, extends -Z from arm top)
         const aba=new THREE.Mesh(new THREE.BoxGeometry(CW,AAT,AAL),cm);
-        aba.position.set(0,CBT+CAH-AAT/2,-CBD/2-AAL/2+CAT);
+        aba.position.set(0,armH-AAT/2,-CBD/2+CAT-AAL/2);
         clipG.add(aba);
 
-        // Gusset
-        const gg=new THREE.Mesh(new THREE.BoxGeometry(CW-6,4,4),cm);
-        gg.position.set(0,CBT+2,-CBD/2+CAT+1);
-        clipG.add(gg);
+        // Gusset base→arm (+Z side, triangular)
+        const gw=CW-4;
+        const sh1=new THREE.Shape();
+        sh1.moveTo(0,0);sh1.lineTo(GS1,0);sh1.lineTo(0,GS1);sh1.closePath();
+        const gm1=new THREE.Mesh(new THREE.ExtrudeGeometry(sh1,{depth:gw,bevelEnabled:false}),cm);
+        gm1.rotation.y=Math.PI/2;
+        gm1.position.set(gw/2,CBT,-CBD/2+CAT);
+        clipG.add(gm1);
+
+        // Gusset arm→aba (-Z side, triangular)
+        const g2=Math.min(GS2,armH>8?3:2);
+        const sh2=new THREE.Shape();
+        sh2.moveTo(0,0);sh2.lineTo(-g2,0);sh2.lineTo(0,-g2);sh2.closePath();
+        const gm2=new THREE.Mesh(new THREE.ExtrudeGeometry(sh2,{depth:gw,bevelEnabled:false}),cm);
+        gm2.rotation.y=Math.PI/2;
+        gm2.position.set(gw/2,armH-AAT,-CBD/2);
+        clipG.add(gm2);
 
         // M3 screw
         const scr=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,PT+CBT+2,12),sm);
         scr.position.set(0,-1,0);
         clipG.add(scr);
-        // Screw head
         const sh=new THREE.Mesh(new THREE.CylinderGeometry(3,3,2,12),sm);
         sh.position.set(0,CBT+1,0);
         clipG.add(sh);
 
-        // Position and orient clip
-        // The clip "inner edge" should face toward the opening
+        // Orient: aba (-Z local) faces toward opening
         if(nx<=OX){
-            // Left side → arm points right (+X toward opening)
             clipG.rotation.y=Math.PI/2;
-            clipG.position.set(cx,PT,cy);
         } else if(nx>=OX+OW){
-            // Right side → arm points left (-X)
             clipG.rotation.y=-Math.PI/2;
-            clipG.position.set(cx,PT,cy);
         } else if(ny<=OY){
-            // Bottom → arm points up (+Z)
             clipG.rotation.y=Math.PI;
-            clipG.position.set(cx,PT,cy);
         } else {
-            // Top → arm points down (-Z)
             clipG.rotation.y=0;
-            clipG.position.set(cx,PT,cy);
         }
-
+        clipG.position.set(nx,PT,ny);
         group.add(clipG);
     });
 }
