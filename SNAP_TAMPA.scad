@@ -1,12 +1,18 @@
 // ==========================================
 // SNAP-FIT CLIP PARA TAMPA E BASE - CAIXA DE FILTRAGEM
+// + CLIP RETENÇÃO FILTRO (PARAFUSO M3) PARA DIVISÓRIAS
 // Impressão 3D - PLA/PETG (Ender 3)
 // ==========================================
-// 16 clips: 8 tampa (topo) + 8 base (inferior)
-// Encaixam na tampa/base (3mm) e travam na borda lateral/frontal/traseira
-// Vedação com lábio flexível
-// Pé dobrado: altura 30mm (ext) / 24mm (int)
-// Requer slots 22×2mm cortados no MDF a 27mm da borda
+// SISTEMA HÍBRIDO:
+// - 16 clips snap-fit: 8 tampa (topo) + 8 base (inferior)
+//   Encaixam na tampa/base (3mm) e travam na borda lateral/frontal/traseira
+// - 28 clips retenção filtro (parafuso M3×10mm):
+//     8× Manta G3  (10mm espessura, braço 13mm)
+//     8× GM Cabine  (20mm espessura, braço 23mm)
+//     4× Wega        (10mm espessura, braço 13mm, só topo/base)
+//     8× HEPA        (25mm espessura, braço 28mm)
+//   Perfil Z: base parafusada no frame MDF → braço vertical →
+//   aba horizontal pressiona filtro contra a divisória
 // ==========================================
 
 // Parâmetros da caixa
@@ -322,6 +328,74 @@ module vedacao_divisoria_OLD() {
     }
 }
 
+// === CLIP RETENÇÃO FILTRO PARA DIVISÓRIAS (PARAFUSO M3) ===
+// Perfil Z: base parafusada → braço vertical → aba sobre o filtro
+// Braço vertical = espessura_filtro + MDF (3mm)
+// Parametrizado: cada filtro tem espessura diferente
+//
+// Qtd: 8+8+4+8 = 28 clips retenção total
+//
+// Posições M3 por divisória (coordenadas NC):
+//   Manta G3 (abertura 200×200mm, 8 clips):
+//     (12,80)(12,160)(232,80)(232,160)(88,10)(156,10)(88,230)(156,230)
+//   GM Cabine (abertura 212×200mm reduzida, 8 clips):
+//     (8,80)(8,160)(236,80)(236,160)(82,10)(162,10)(82,230)(162,230)
+//   Wega (abertura 223×160mm, 4 clips só topo/base):
+//     (82,20)(162,20)(82,220)(162,220)
+//   HEPA (abertura 100×130mm reduzida, 8 clips):
+//     (57,100)(57,140)(187,100)(187,140)(105,40)(139,40)(105,200)(139,200)
+
+// Parâmetros clip retenção filtro (comuns)
+ret_largura = 20;     // Largura do clip (mm)
+ret_base_comp = 15;   // Comprimento da base (sobre o frame MDF)
+ret_base_esp = 3;     // Espessura da base (sobre o MDF)
+ret_braco_esp = 2;    // Espessura do braço vertical
+ret_aba_comp = 10;    // Comprimento da aba (sobre o filtro)
+ret_aba_esp = 2;      // Espessura da aba de retenção
+ret_furo_d = 3.5;     // Diâmetro do furo M3 (com folga)
+
+// Módulo parametrizado — espessura_filtro determina altura do braço
+module clip_parafuso_filtro(espessura_filtro = 10) {
+    braco_alt = espessura_filtro + mdf;  // filtro + MDF 3mm
+    
+    difference() {
+        union() {
+            // Base horizontal (parafusada no frame MDF ao redor da abertura)
+            cube([ret_largura, ret_base_comp, ret_base_esp]);
+            
+            // Braço vertical (sobe da borda interna da base)
+            translate([0, 0, ret_base_esp])
+                cube([ret_largura, ret_braco_esp, braco_alt]);
+            
+            // Aba de retenção (se estende sobre o filtro, pressiona)
+            translate([0, 0, ret_base_esp + braco_alt - ret_aba_esp])
+                cube([ret_largura, ret_aba_comp, ret_aba_esp]);
+            
+            // Reforço (gusset entre base e braço)
+            hull() {
+                translate([2, ret_braco_esp, ret_base_esp])
+                    cube([ret_largura - 4, 4, 0.1]);
+                translate([2, ret_braco_esp, ret_base_esp])
+                    cube([ret_largura - 4, 0.1, 4]);
+            }
+        }
+        
+        // Furo para parafuso M3 (passante na base)
+        translate([ret_largura/2, ret_base_comp/2, -0.1])
+            cylinder(h = ret_base_esp + 0.2, d = ret_furo_d, $fn = 24);
+        
+        // Rebaixo para cabeça do parafuso (escareado)
+        translate([ret_largura/2, ret_base_comp/2, ret_base_esp - 1.5])
+            cylinder(h = 1.6, d1 = ret_furo_d, d2 = 6.5, $fn = 24);
+    }
+}
+
+// === MÓDULOS DE CONVENIÊNCIA POR TIPO DE FILTRO ===
+module clip_manta()  { clip_parafuso_filtro(10); }  // braço 13mm
+module clip_gm()     { clip_parafuso_filtro(20); }  // braço 23mm
+module clip_wega()   { clip_parafuso_filtro(10); }  // braço 13mm
+module clip_hepa()   { clip_parafuso_filtro(25); }  // braço 28mm
+
 // === RENDER ===
 // Clip individual (tampa/base - mesmo clip para ambos)
 snap_clip_tampa();
@@ -329,6 +403,16 @@ snap_clip_tampa();
 // Visualização: clip de canto (deslocado)
 translate([40, 0, 0])
     snap_clip_canto();
+
+// Visualização: clips retenção filtro por tipo (deslocados)
+translate([80, 0, 0])
+    clip_manta();   // braço 13mm (Manta G3 / Wega 10mm)
+
+translate([105, 0, 0])
+    clip_gm();      // braço 23mm (GM Cabine 20mm)
+
+translate([130, 0, 0])
+    clip_hepa();    // braço 28mm (HEPA 25mm)
 
 // Visualização: frame vedação divisória MONTADO (deslocado, escala 0.3)
 translate([0, 50, 0])
@@ -347,12 +431,17 @@ translate([0, 120, 0])
 // - Infill: 80-100%
 // - Walls: 3 perímetros mínimo
 // - Orientação: clip deitado, ponte para cima
-// - Qtd clips: 16 unidades (8 topo + 8 base)
+// - Qtd clips snap-fit: 16 unidades (8 topo + 8 base)
+// - Qtd clips retenção filtro: 28 unidades
+//     8× Manta (braço 13mm) + 8× GM (braço 23mm)
+//     4× Wega (braço 13mm) + 8× HEPA (braço 28mm)
+// - Parafusos: 28× M3×10mm + 28× porca M3
 // - Qtd vedação: 8 segmentos por divisória (opcional)
 //
 // LAYOUT IMPRESSÃO CLIPS (200×200mm):
-//   16 clips lado a lado (20mm × 30mm cada)
-//   4 fileiras × 4 colunas = ~100mm × 130mm ✓
+//   16 snap-fit + 28 retenção = 44 clips total
+//   Snap-fit: 4 fileiras × 4 colunas = ~92mm × 45mm
+//   Retenção: agrupados por altura (3 tamanhos diferentes)
 //
 // LAYOUT IMPRESSÃO VEDAÇÃO (200×200mm):
 //   8 segmentos (~122mm × 6mm cada)

@@ -1,5 +1,5 @@
 # 📦 CAIXA DE FILTRAGEM 250×250×250mm
-## ✅ VERSÃO FINAL CORRIGIDA - Encaixes Testados
+## ✅ VERSÃO 12.0 - Abertura Reduzida + Clips Parametrizados por Filtro
 
 ---
 
@@ -62,9 +62,9 @@
 | Peça | Corpo | Furo do Filtro | Espessura Filtro |
 |------|-------|----------------|------------------|
 | Manta G3 | 244×240mm | 200×200mm | **10mm** |
-| GM Cabine Bosch | 244×240mm | 223×210mm | **20mm** |
-| Wega Motor | 244×240mm | 220×160mm | **45mm** |
-| **FILTRO HEPA** | 244×240mm | **110×140mm** | **25mm** |
+| GM Cabine Bosch | 244×240mm | **212×200mm** (reduzida) | **20mm** |
+| Wega Motor | 244×240mm | **223×160mm** | **10mm** |
+| **FILTRO HEPA** | 244×240mm | **100×130mm** (reduzida) | **25mm** |
 | Tela Carvão (×2) | 244×240mm | Abertura 200×200mm + 16 furos M3 | — |
 
 ### Compartimento de Carvão Ativado:
@@ -78,6 +78,7 @@
 | Caixa montada | Quadro 200×200×37mm (4 bordas encaixadas ao redor da abertura) |
 | Abas conexão tela | 8 abas (10×3mm) encaixam em 8 slots nas telas, juntando 2 MDF |
 | Snap-fit (3D print) | 16 clips (8 topo + 8 base) – SNAP_TAMPA.scad |
+| Retenção filtro (3D print) | 28 clips paramétricos (8 Manta + 8 GM + 4 Wega + 8 HEPA) – SNAP_TAMPA.scad |
 
 ---
 
@@ -91,10 +92,10 @@
 | 4 | `04_TRASEIRA.nc` | 244×250mm com dentes + furo 150mm + snap-fit |
 | 5 | `05_TAMPA.nc` | 250×250mm placa lisa (fixação por snap-fit) |
 | 6 | `06_BASE.nc` | 250×250mm + 4 furos para pés de borracha |
-| 7 | `07_DIVISORIA_MANTA_G3.nc` | 1× placa + 16 slots para clips 3D |
-| 8 | `08_DIVISORIA_GM.nc` | 244×240mm + furo 223×210mm |
-| 9 | `09_DIVISORIA_WEGA.nc` | 244×240mm + furo 220×160mm |
-| 10 | `10_DIVISORIA_HEPA.nc` | 244×240mm + furo 110×140mm (HEPA) |
+| 7 | `07_DIVISORIA_MANTA_G3.nc` | 244×240mm + furo 200×200mm + 8 furos M3 Ø3.5mm |
+| 8 | `08_DIVISORIA_GM.nc` | 244×240mm + furo **212×200mm** + 8 furos M3 Ø3.5mm |
+| 9 | `09_DIVISORIA_WEGA.nc` | 244×240mm + furo **223×160mm** + **4** furos M3 Ø3.5mm |
+| 10 | `10_DIVISORIA_HEPA.nc` | 244×240mm + furo **100×130mm** + 8 furos M3 Ø3.5mm |
 | 11 | `11_GAVETA.nc` | 2× tela carvão 244×240mm (abertura 200×200, M3 + 8 slots quadro) |
 | 12 | `12_FLANGES.nc` | Entrada 70mm + Saída 150mm |
 | 13 | `13_CAIXA_CARVAO.nc` | 4× bordas MDF quadro carvão (ao redor abertura, c/ abas tela) |
@@ -213,7 +214,7 @@ PERFIL DO TRILHO (seção transversal):
 | 5A | Trilhos Wega A (46mm) | 2 | ~1h | 103×122mm ✓ |
 | 5B | Trilhos Wega B (46mm) | 2 | ~1h | 103×122mm ✓ |
 | 6 | Puxadores + Travas | 12 | ~45min | 200×33mm ✓ |
-| 7 | Snap Clips (tampa+base) | 16 | ~2h | 100×130mm ✓ |
+| 7 | Snap Clips + Retenção | 44 | ~5h30 | 184×135mm ✓ |
 | 8 | Vedação Divisória (8 seg) | 8 | ~1h30 | 130×65mm ✓ |
 | 9 | Flange 150mm | 1 | ~3h | 180×180mm ✓ |
 | 10 | Flange 70mm | 1 | ~1h30 | 100×100mm ✓ |
@@ -221,12 +222,26 @@ PERFIL DO TRILHO (seção transversal):
 
 **Arquivo:** `TRILHO_PRINT_LAYOUT.scad` — abrir no OpenSCAD, descomentar batch desejado, F6+F7 para exportar STL.
 
-### Snap-Fit (Tampa + Base):
+### Sistema Híbrido de Clips:
 ```
-16 clips impressos em PLA/PETG (8 topo + 8 base)
-Perna ext: 30mm | Perna int: 24mm | Gancho: 1.2mm
-Slots MDF: 22×2mm perfurados nos 4 painéis
-Posições: Y=220mm (topo) e Y=30mm (base)
+SNAP-FIT (fechar caixa - tampa + base):
+  16 clips impressos em PLA/PETG (8 topo + 8 base)
+  Perna ext: 30mm | Perna int: 24mm | Gancho: 1.2mm
+  Slots MDF: 22×2mm perfurados nos 4 painéis
+  Posições: Y=220mm (topo) e Y=30mm (base)
+
+RETENÇÃO FILTRO (fixar filtro na divisória - parafuso M3):
+  32 clips retenção impressos em PLA/PETG
+  8 por divisória × 4 divisórias (Manta G3, GM, Wega, HEPA)
+  Base: 20×15×3mm | Braço: 20×2×12mm | Aba: 20×10×2mm
+  8 furos M3 Ø3.5mm por divisória ao redor da abertura do filtro:
+    Manta G3: (12,80)(12,160)(232,80)(232,160)(88,10)(156,10)(88,230)(156,230)
+    GM Cabine: (5,80)(5,160)(239,80)(239,160)(82,7)(162,7)(82,232)(162,232)
+    Wega: (6,80)(6,160)(238,80)(238,160)(82,19)(162,19)(82,221)(162,221)
+    HEPA: (57,90)(57,150)(187,90)(187,150)(102,40)(142,40)(102,200)(142,200)
+  Fixação: parafuso M3×10mm + porca M3
+
+TOTAL: 48 clips (16 snap-fit + 32 retenção filtro)
 
 Vedação divisória (opcional):
   8 segmentos com encaixes dovetail (~122mm cada)
@@ -243,7 +258,7 @@ Vedação divisória (opcional):
 4. **Frontal** → Dentes nos slots das laterais
 5. **Traseira** → Igual ao frontal
 6. **Trilhos 3D** → Fixar nas laterais com cola CA + parafuso Allen M2×5mm (furos Ø2.5mm pré-cortados, 12/lateral)
-7. **Divisórias filtro** → Deslizar de cima pelos trilhos
+7. **Divisórias filtro** → Deslizar de cima pelos trilhos + fixar cada filtro com 8 clips retenção (M3×10mm) ao redor da abertura
 8. **Telas carvão (×2)** → Deslizar nos trilhos X=190 e X=230
 9. **Caixa carvão** → Encaixar 4 tiras + preencher com carvão
 10. **Tampa** → Encaixar com 16 clips snap-fit (sem parafusos)
@@ -286,6 +301,8 @@ Abra `TRILHO_3D.html` para:
 - 32× Parafuso M3 + arruela (16 por tela)
 - Cola PVA + Silicone
 - 16× Clips snap-fit impressos em PLA/PETG (SNAP_TAMPA.scad)
+- 32× Clips retenção filtro impressos em PLA/PETG (SNAP_TAMPA.scad)
+- 32× Parafuso M3×10mm + 32× porca M3 (fixação clips retenção nas divisórias)
 - 8× Clips manta G3 impressos em PLA/PETG (CLIP_MANTA_G3.scad)
 - 24× Trilhos deslizantes impressos em PLA/PETG (TRILHO_FILTRO.scad)
 - 6× Puxadores + 6× Travas impressos (TRILHO_FILTRO.scad)
@@ -296,5 +313,5 @@ Abra `TRILHO_3D.html` para:
 
 ---
 
-**Versão:** 9.4 — Layout impressão 3D particionado para mesa 200×200mm  
+**Versão:** 11.0 — Sistema híbrido clips (snap-fit tampa/base + retenção filtro parafuso divisórias)  
 **Data:** Fevereiro 2026

@@ -146,6 +146,7 @@
                 <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div>Dentes (macho)</div>
                 <div class="legend-item"><div class="legend-color" style="background:#1E90FF"></div>Trilhos 3D</div>
                 <div class="legend-item"><div class="legend-color" style="background:#00bcd4"></div>Snap-fit clips</div>
+                <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Clip retenção (parafuso)</div>
                 <div class="legend-item"><div class="legend-color" style="background:#ff5722"></div>Ganchos clip</div>
                 <div class="legend-item"><div class="legend-color" style="background:#A0522D"></div>Caixa carvão</div>
                 <div class="legend-item"><div class="legend-color" style="background:#9b59b6"></div>Peça atual</div>
@@ -162,7 +163,9 @@
             <tr><td class="label">Dentes:</td><td class="val">25mm largura</td></tr>
             <tr><td class="label">Slots:</td><td class="val">4×40mm</td></tr>
             <tr><td class="label">HEPA:</td><td class="val highlight">100×130mm (furo) ✓</td></tr>
-            <tr><td class="label">Wega:</td><td class="val highlight">200×140mm (furo) ✓</td></tr>
+            <tr><td class="label">Wega:</td><td class="val highlight">223×160mm (furo) ✓</td></tr>
+            <tr><td class="label">GM:</td><td class="val highlight">212×200mm (furo) ✓</td></tr>
+            <tr><td class="label">Clips:</td><td class="val">28 retenção</td></tr>
         </table>
     </div>
 
@@ -306,25 +309,25 @@
             },
             {
                 num: 7, title: "Divisória Manta G3", desc: "Deslize a divisória MANTA G3 pelos trilhos (de cima)",
-                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura. Posição X=50mm. Manta fixada com 8 clips 3D (snap-on na borda do furo). Troca rápida: puxa clips → remove manta → reencaixa.",
+                encaixe: "🔵 MANTA G3 - Pré-filtro 10mm espessura. Posição X=50mm. Manta fixada com 8 clips retenção (parafuso M3×10mm, 2 por lado ao redor do furo 200×200mm). Troca rápida: desparafusa clips → remove manta → reencaixa.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3'],
                 camera: { pos: [1.15, 2.5, 3.5], look: [0.50, 1.3, 1.25] }
             },
             {
                 num: 8, title: "Divisória GM Bosch", desc: "Deslize a divisória GM CABINE BOSCH pelos trilhos",
-                encaixe: "🟡 GM CABINE BOSCH - 223×210×20mm (furo 213×200mm). Filtro leve de papel. Fixado com 8 retentores 3D (CLIP_GM_CABINE.scad) — aba flexível faz pressão suave. Troca: levanta abas → remove filtro.",
+                encaixe: "🟡 GM CABINE BOSCH - 223×210×20mm (furo 212×200mm reduzido). Borda 5.5mm repousa no MDF. Fixado com 8 clips retenção (parafuso M3×10mm, braço 23mm). Troca: desparafusa clips → remove filtro.",
                 type: "info", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM'],
                 camera: { pos: [1.55, 2.5, 3.5], look: [0.75, 1.3, 1.25] }
             },
             {
                 num: 9, title: "Divisória Wega", desc: "Deslize a divisória WEGA (filtro motor) pelos trilhos",
-                encaixe: "🟢 WEGA MOTOR - 220×160×45mm (furo 200×140mm). Borda 10mm repousa no MDF. Fixado com 8 clips 3D (CLIP_WEGA.scad). Troca rápida: solta clips → remove filtro.",
+                encaixe: "🟢 WEGA MOTOR - 223×160×10mm espessura, borda 10mm (furo 223×160mm). SEM clips nas laterais (trilhos). 4 clips retenção SOMENTE topo/base (parafuso M3×10mm, braço 13mm). Troca rápida: desparafusa 4 clips.",
                 type: "warning", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega'],
                 camera: { pos: [1.95, 2.5, 3.5], look: [1.25, 1.3, 1.25] }
             },
             {
                 num: 10, title: "Divisória HEPA", desc: "Deslize a divisória FILTRO HEPA pelos trilhos",
-                encaixe: "🔷 FILTRO HEPA - 110×140×25mm (furo 100×130mm). Borda 5mm repousa no MDF. Fixado com 8 clips 3D (CLIP_HEPA.scad). Troca rápida: solta clips → remove filtro.",
+                encaixe: "🔷 FILTRO HEPA - 110×140×25mm (furo 100×130mm reduzido). Borda 5mm repousa no MDF. Fixado com 8 clips retenção (parafuso M3×10mm, braço 28mm). Troca: desparafusa clips → remove filtro.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
                 camera: { pos: [2.55, 2.5, 3.5], look: [1.55, 1.3, 1.25] }
             },
@@ -926,7 +929,7 @@
                     group.add(clipGroup);
                 });
             } else if (type === 'gm') {
-                fW = 2.13; fH = 2.0; fDepth = 0.20; fColor = 0xf1c40f; filterLabel = 'GM Bosch 20mm';
+                fW = 2.12; fH = 2.0; fDepth = 0.20; fColor = 0xf1c40f; filterLabel = 'GM Bosch 20mm';
                 
                 // 8 Clips retentores do filtro de cabine (pressão leve)
                 const clipMatGM = new THREE.MeshPhongMaterial({ color: 0xFF6600, transparent: true, opacity: 0.9 });
@@ -958,19 +961,18 @@
                     group.add(clipGroup);
                 });
             } else if (type === 'wega') {
-                fW = 2.0; fH = 1.4; fDepth = 0.45; fColor = 0x2ecc71; filterLabel = 'Wega 45mm';
+                fW = 2.23; fH = 1.60; fDepth = 0.10; fColor = 0x2ecc71; filterLabel = 'Wega 10mm';
                 
-                // 8 Clips de retenção do filtro Wega (snap-on)
+                // 4 Clips de retenção do filtro Wega (SÓ topo/base, SEM laterais)
                 const clipMatW = new THREE.MeshPhongMaterial({ color: 0xFF6600, transparent: true, opacity: 0.9 });
                 const clipPositionsW = [
+                    // Inferior (2 clips)
                     [-(fH/2 - 0.02), -0.40, 0],
                     [-(fH/2 - 0.02),  0.40, 0],
+                    // Superior (2 clips)
                     [ (fH/2 - 0.02), -0.40, Math.PI],
                     [ (fH/2 - 0.02),  0.40, Math.PI],
-                    [-0.40, -(fW/2 - 0.02), Math.PI/2],
-                    [ 0.40, -(fW/2 - 0.02), Math.PI/2],
-                    [-0.40,  (fW/2 - 0.02), -Math.PI/2],
-                    [ 0.40,  (fW/2 - 0.02), -Math.PI/2],
+                    // SEM laterais — trilhos passam ali, frame apenas 10.5mm
                 ];
                 const centerYW = T + S/2;
                 const centerZW = S/2;
@@ -1029,6 +1031,71 @@
             const hole = new THREE.Mesh(holeGeom, holeMat);
             hole.position.set(posX, T + S/2, S/2);
             group.add(hole);
+            
+            // === FUROS M3 Ø3.5mm + CLIPS RETENÇÃO FILTRO (PARAFUSO) ===
+            // 8 furos por divisória ao redor da abertura do filtro
+            // NC X (244mm) → scene Y, NC Y (240mm) → scene Z
+            const m3HoleMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const retClipMat = new THREE.MeshPhongMaterial({ color: 0x9b59b6, transparent: true, opacity: 0.9 });
+            
+            const plateBottomY = T + S/2 - W/2;  // bottom of plate in scene Y
+            const plateLeftZ = S/2 - Wz/2;        // left edge of plate in scene Z
+            
+            // M3 hole positions per type (around filter opening)
+            let m3Positions;
+            if (type === 'mantag3') {
+                m3Positions = [[12,80],[12,160],[232,80],[232,160],[88,10],[156,10],[88,230],[156,230]];
+            } else if (type === 'gm') {
+                m3Positions = [[8,80],[8,160],[236,80],[236,160],[82,10],[162,10],[82,230],[162,230]];
+            } else if (type === 'wega') {
+                m3Positions = [[82,20],[162,20],[82,220],[162,220]];
+            } else {
+                m3Positions = [[57,100],[57,140],[187,100],[187,140],[105,40],[139,40],[105,200],[139,200]];
+            }
+            
+            m3Positions.forEach(([ncX, ncY]) => {
+                const holeY = plateBottomY + ncX / 100;
+                const holeZ = plateLeftZ + ncY / 100;
+                
+                // M3 hole (black circle on plate)
+                const m3Hole = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.0175, 0.0175, T * 2.5, 16),
+                    m3HoleMat
+                );
+                m3Hole.rotation.z = Math.PI / 2;
+                m3Hole.position.set(posX, holeY, holeZ);
+                group.add(m3Hole);
+                
+                // Clip retenção filtro (purple, base + arm over filter)
+                const retGroup = new THREE.Group();
+                
+                // Base plate (sits on MDF face, 20×15×3mm)
+                const retBase = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.03, 0.15, 0.20),
+                    retClipMat
+                );
+                retGroup.add(retBase);
+                
+                // Arm (extends over filter opening, 20×10×2mm)
+                const retArm = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.12, 0.02, 0.20),
+                    retClipMat
+                );
+                retArm.position.set(-0.06, 0, 0);
+                retGroup.add(retArm);
+                
+                // M3 screw head indicator (small silver circle)
+                const screwHead = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.03, 0.03, 0.01, 12),
+                    new THREE.MeshPhongMaterial({ color: 0xaaaaaa, metalness: 0.7 })
+                );
+                screwHead.rotation.z = Math.PI / 2;
+                screwHead.position.set(0.02, 0, 0);
+                retGroup.add(screwHead);
+                
+                retGroup.position.set(posX - T/2 - 0.015, holeY, holeZ);
+                group.add(retGroup);
+            });
             
             const filterMat = new THREE.MeshPhongMaterial({ color: fColor, transparent: true, opacity: 0.5 });
             const filter = new THREE.Mesh(new THREE.BoxGeometry(fDepth, fH, fW), filterMat);

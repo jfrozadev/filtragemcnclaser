@@ -82,7 +82,7 @@
     
     <div id="panel">
         <h1>🔩 Sistema Snap-Fit</h1>
-        <div class="subtitle">Vedação sem parafusos — Impressão 3D (Ender 3)</div>
+        <div class="subtitle">Sistema híbrido: snap-fit (tampa/base) + clips retenção filtro parafuso (divisórias)</div>
         
         <div class="view-selector">
             <button class="active" id="btnFull" onclick="showView('full')">Caixa Completa</button>
@@ -94,8 +94,8 @@
         <div class="info-box" id="infoBox">
             <h3>📦 Visão Geral</h3>
             Caixa <span class="dim">250×250×250mm</span> com tampa fixada por
-            <span class="mat">16 clips snap-fit</span> (8 topo + 8 base) impressos em PLA/PETG na Ender 3.
-            Sem parafusos! Pernas de 30mm, ganchos travam automaticamente.
+            <span class="mat">16 clips snap-fit</span> (8 topo + 8 base) + <span class="dim">28 clips retenção filtro</span> (8 Manta + 8 GM + 4 Wega + 8 HEPA).
+            Snap-fit: pressão automática. Retenção: parafuso M3×10mm ao redor da abertura do filtro.
         </div>
         
         <div class="section">
@@ -536,8 +536,8 @@
                 case 'full':
                     infoBox.innerHTML = '<h3>📦 Visão Geral</h3>' +
                         'Caixa <span class="dim">250×250×250mm</span> com tampa fixada por ' +
-                        '<span class="mat">16 clips snap-fit</span> (8 topo + 8 base) em PLA/PETG na Ender 3.<br>' +
-                        'Sem parafusos! Pressione a tampa e os ganchos travam automaticamente.';
+                        '<span class="mat">16 clips snap-fit</span> (8 topo + 8 base) + <span class="dim">32 retenção</span> (divisórias).<br>' +
+                        'Snap-fit: pressão automática. Retenção: parafuso M3×10mm nos furos Ø3.5mm ao redor da abertura.';
                     setCam(30, -0.5, 0.4, S/2, MDF + S/2, S/2);
                     tampaOffset = 0;
                     document.getElementById('sldTampa').value = 100;
