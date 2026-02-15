@@ -4,7 +4,8 @@
 ; ==========================================
 ; CORTE: S900 | F200 | 4 PASSAGENS
 ; Furo 100x130mm (abertura reduzida para reter filtro HEPA)
-; Filtro: 110x140x25mm — sobra 5mm por lado no frame
+; Filtro: 110x140mm — borda 5mm largura × 2mm espessura
+; Corpo filtro 25mm profundidade (passa pelo furo)
 ; GRAVAÇÃO: "FILTRO HEPA" no canto superior
 ; 8 FUROS M3 Ø3.5mm para clips retenção filtro (parafuso)
 ; 2 por lado ao redor do furo 100×130mm

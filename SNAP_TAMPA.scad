@@ -10,7 +10,7 @@
 //     8× Manta G3  (10mm espessura, braço 13mm)
 //     8× GM Cabine  (20mm espessura, braço 23mm)
 //     4× Wega        (10mm espessura, braço 13mm, só topo/base)
-//     8× HEPA        (25mm espessura, braço 28mm)
+//     8× HEPA        (borda 2mm espessura, braço 5mm)
 //   Perfil Z: base parafusada no frame MDF → braço vertical →
 //   aba horizontal pressiona filtro contra a divisória
 // ==========================================
@@ -394,7 +394,7 @@ module clip_parafuso_filtro(espessura_filtro = 10) {
 module clip_manta()  { clip_parafuso_filtro(10); }  // braço 13mm
 module clip_gm()     { clip_parafuso_filtro(20); }  // braço 23mm
 module clip_wega()   { clip_parafuso_filtro(10); }  // braço 13mm
-module clip_hepa()   { clip_parafuso_filtro(25); }  // braço 28mm
+module clip_hepa()   { clip_parafuso_filtro(2); }   // braço 5mm (borda 2mm + MDF 3mm)
 
 // === RENDER ===
 // Clip individual (tampa/base - mesmo clip para ambos)
@@ -412,7 +412,7 @@ translate([105, 0, 0])
     clip_gm();      // braço 23mm (GM Cabine 20mm)
 
 translate([130, 0, 0])
-    clip_hepa();    // braço 28mm (HEPA 25mm)
+    clip_hepa();    // braço 5mm (HEPA borda 2mm)
 
 // Visualização: frame vedação divisória MONTADO (deslocado, escala 0.3)
 translate([0, 50, 0])
@@ -434,7 +434,7 @@ translate([0, 120, 0])
 // - Qtd clips snap-fit: 16 unidades (8 topo + 8 base)
 // - Qtd clips retenção filtro: 28 unidades
 //     8× Manta (braço 13mm) + 8× GM (braço 23mm)
-//     4× Wega (braço 13mm) + 8× HEPA (braço 28mm)
+//     4× Wega (braço 13mm) + 8× HEPA (braço 5mm)
 // - Parafusos: 28× M3×10mm + 28× porca M3
 // - Qtd vedação: 8 segmentos por divisória (opcional)
 //

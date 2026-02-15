@@ -64,7 +64,7 @@
 | Manta G3 | 244×240mm | 200×200mm | **10mm** |
 | GM Cabine Bosch | 244×240mm | **212×200mm** (reduzida) | **20mm** |
 | Wega Motor | 244×240mm | **223×160mm** | **10mm** |
-| **FILTRO HEPA** | 244×240mm | **100×130mm** (reduzida) | **25mm** |
+| **FILTRO HEPA** | 244×240mm | **100×130mm** (reduzida) | borda **2mm** esp. × 5mm larg. |
 | Tela Carvão (×2) | 244×240mm | Abertura 200×200mm + 16 furos M3 | — |
 
 ### Compartimento de Carvão Ativado:

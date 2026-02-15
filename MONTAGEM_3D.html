@@ -327,7 +327,7 @@
             },
             {
                 num: 10, title: "Divisória HEPA", desc: "Deslize a divisória FILTRO HEPA pelos trilhos",
-                encaixe: "🔷 FILTRO HEPA - 110×140×25mm (furo 100×130mm reduzido). Borda 5mm repousa no MDF. Fixado com 8 clips retenção (parafuso M3×10mm, braço 28mm). Troca: desparafusa clips → remove filtro.",
+                encaixe: "🔷 FILTRO HEPA - 110×140mm, borda 5mm × 2mm espessura (furo 100×130mm). Borda repousa no MDF. Fixado com 8 clips retenção (parafuso M3×10mm, braço 5mm). Troca: desparafusa clips → remove filtro.",
                 type: "success", parts: ['base', 'latEsq', 'latDir', 'frontal', 'traseira', 'trilhos', 'divMantaG3', 'divGM', 'divWega', 'divHepa'],
                 camera: { pos: [2.55, 2.5, 3.5], look: [1.55, 1.3, 1.25] }
             },
@@ -992,7 +992,7 @@
                     group.add(clipGroup);
                 });
             } else {
-                fW = 1.0; fH = 1.3; fDepth = 0.25; fColor = 0x3498db; filterLabel = 'HEPA 25mm';
+                fW = 1.0; fH = 1.3; fDepth = 0.25; fColor = 0x3498db; filterLabel = 'HEPA (borda 2mm)';
                 
                 // 8 Clips de retenção do filtro HEPA (snap-on)
                 const clipMatH = new THREE.MeshPhongMaterial({ color: 0xFF6600, transparent: true, opacity: 0.9 });

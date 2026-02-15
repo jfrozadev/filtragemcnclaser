@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clip Retenção — Wega</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:#1a1a2e;overflow:hidden}
+        #c{width:100vw;height:100vh}
+        #panel{position:absolute;top:15px;left:15px;background:rgba(255,255,255,.97);padding:18px;border-radius:12px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+        h1{font-size:1.1rem;color:#2c3e50;margin-bottom:4px}
+        .sub{font-size:.65rem;color:#7f8c8d;margin-bottom:12px}
+        .specs{background:#fff5f0;padding:12px;border-radius:8px;border-left:4px solid #e74c3c;font-size:.72rem;line-height:1.6;margin-bottom:12px}
+        .specs b{color:#e74c3c}
+        .note{background:#ffeaa7;padding:8px;border-radius:6px;font-size:.65rem;margin-bottom:10px;border-left:3px solid #f39c12}
+        .legend{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px}
+        .legend-item{display:flex;align-items:center;gap:6px;font-size:.62rem}
+        .lc{width:14px;height:14px;border-radius:3px}
+        .btns{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+        .btns button{padding:6px 10px;border:none;border-radius:4px;font-size:.65rem;cursor:pointer;background:#ecf0f1;color:#2c3e50}
+        .btns button:hover{background:#e74c3c;color:#fff}
+        label.chk{font-size:.65rem;display:flex;align-items:center;gap:4px;cursor:pointer;margin-top:6px}
+        #info{position:absolute;bottom:15px;left:15px;background:rgba(255,255,255,.9);padding:8px 14px;border-radius:6px;font-size:.7rem}
+    </style>
+</head>
+<body>
+<div id="c"></div>
+<div id="panel">
+    <h1>🔴 Wega — Clip de Retenção</h1>
+    <div class="sub">Divisória 244×240mm · Abertura 223×160mm · 4 clips M3</div>
+    <div class="specs">
+        <b>Filtro:</b> Wega automotivo<br>
+        <b>Espessura:</b> 10mm<br>
+        <b>Dimensão filtro:</b> ~223 × 160mm (borda 10mm)<br>
+        <b>Abertura MDF:</b> 223 × 160mm<br>
+        <b>Frame MDF:</b> 10.5mm lados, 40mm topo/base<br>
+        <b>Clips:</b> 4× retenção (braço 13mm) — <em>somente topo/base</em><br>
+        <b>Parafusos:</b> 4× M3×10mm + porca M3<br>
+        <b>Perfil clip:</b> base 20×15×3mm → braço 13mm → aba 10mm
+    </div>
+    <div class="note">⚠️ Sem clips laterais — frame de 10.5mm muito estreito. Filtro retido apenas por topo e base (4 clips).</div>
+    <div class="btns">
+        <button onclick="vw([300,200,300])">Perspectiva</button>
+        <button onclick="vw([0,0,350])">Frente</button>
+        <button onclick="vw([350,0,0])">Lado</button>
+        <button onclick="vw([0,350,0])">Topo</button>
+        <button onclick="vw([200,100,-200])">Trás</button>
+        <button onclick="vw([-150,120,150])">Detalhe Clip</button>
+    </div>
+    <label class="chk"><input type="checkbox" id="xp" onchange="explode()"> Explodir peças</label>
+    <label class="chk"><input type="checkbox" id="wf" onchange="wire()"> Wireframe</label>
+    <div class="legend">
+        <div class="legend-item"><div class="lc" style="background:#CD853F"></div>MDF 3mm</div>
+        <div class="legend-item"><div class="lc" style="background:#000"></div>Abertura</div>
+        <div class="legend-item"><div class="lc" style="background:#e74c3c"></div>Wega</div>
+        <div class="legend-item"><div class="lc" style="background:#e67e22"></div>Clip retenção</div>
+        <div class="legend-item"><div class="lc" style="background:#888"></div>Parafuso M3</div>
+    </div>
+</div>
+<div id="info">🖱️ Arrastar = Girar · Scroll = Zoom · Shift+Arrastar = Pan</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+let scene,camera,renderer,group;
+
+// Plate
+const PW=244, PH=240, PT=3;
+// Opening — Wega: 223×160
+const OW=223, OH=160;
+const OX=(PW-OW)/2, OY=(PH-OH)/2; // 10.5, 40
+// Filter — Wega ~223×160, 10mm thick with 10mm border
+const FW=223, FH=160, FT=10;
+// Clip params
+const CW=20, CBD=15, CBT=3, CAH=FT+PT, CAT=2, AAL=10, AAT=2;
+// M3 positions — ONLY 4 clips (top and bottom, no laterals)
+const m3=[
+    [82,20],[162,20],[82,220],[162,220]
+];
+
+init();animate();
+
+function init(){
+    scene=new THREE.Scene();
+    scene.background=new THREE.Color(0x2c3e50);
+    camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,1,2000);
+    camera.position.set(300,200,300);
+    renderer=new THREE.WebGLRenderer({antialias:true});
+    renderer.setSize(innerWidth,innerHeight);
+    renderer.shadowMap.enabled=true;
+    document.getElementById('c').appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff,0.5));
+    const dl=new THREE.DirectionalLight(0xffffff,0.7);dl.position.set(200,400,300);dl.castShadow=true;scene.add(dl);
+    const dl2=new THREE.DirectionalLight(0xffffff,0.3);dl2.position.set(-200,200,-100);scene.add(dl2);
+
+    const grid=new THREE.GridHelper(400,20,0x6c757d,0x495057);
+    grid.position.y=-5;scene.add(grid);
+
+    group=new THREE.Group();
+    scene.add(group);
+
+    buildPlate();
+    buildFilter();
+    buildClips();
+
+    // Mark where laterals would be (show the narrow frame)
+    markNarrowFrame();
+
+    group.position.set(-PW/2,0,-PH/2);
+
+    setupMouse();
+    window.onresize=()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)};
+}
+
+function mat(c,op){return new THREE.MeshPhongMaterial({color:c,transparent:op<1,opacity:op,side:THREE.DoubleSide})}
+
+function buildPlate(){
+    const m=mat(0xCD853F,0.9);
+    addBox(PW,OY,PT, PW/2,PT/2,OY/2, m,'plate');
+    addBox(PW,PH-OY-OH,PT, PW/2,PT/2,OY+OH+(PH-OY-OH)/2, m,'plate');
+    addBox(OX,OH,PT, OX/2,PT/2,OY+OH/2, m,'plate');
+    addBox(PW-OX-OW,OH,PT, OX+OW+(PW-OX-OW)/2,PT/2,OY+OH/2, m,'plate');
+    const hm=new THREE.MeshBasicMaterial({color:0x000000});
+    addBox(OW+2,OH+2,0.5, PW/2,PT/2,PH/2, hm,'plate');
+}
+
+function buildFilter(){
+    const fm=mat(0xe74c3c,0.5);
+    addBox(FW,FH,FT, PW/2,PT+FT/2,PH/2, fm,'filter');
+    const eg=new THREE.EdgesGeometry(new THREE.BoxGeometry(FW,FT,FH));
+    const el=new THREE.LineSegments(eg,new THREE.LineBasicMaterial({color:0xe74c3c}));
+    el.position.set(PW/2,PT+FT/2,PH/2);el.userData.t='filter';group.add(el);
+}
+
+function markNarrowFrame(){
+    // Show dimension indicators for the narrow lateral frame (10.5mm)
+    const wm=mat(0xf39c12,0.4);
+    // Left narrow frame highlight
+    addBox(OX,OH,1, OX/2,PT+1,OY+OH/2, wm,'mark');
+    // Right narrow frame highlight
+    addBox(PW-OX-OW,OH,1, OX+OW+(PW-OX-OW)/2,PT+1,OY+OH/2, wm,'mark');
+}
+
+function buildClips(){
+    const cm=mat(0xe67e22,0.92);
+    const sm=mat(0x888888,1);
+
+    m3.forEach(([nx,ny])=>{
+        const clipG=new THREE.Group();
+        clipG.userData.t='clip';
+
+        const base=new THREE.Mesh(new THREE.BoxGeometry(CW,CBT,CBD),cm);
+        base.position.set(0,CBT/2,0);
+        clipG.add(base);
+
+        const arm=new THREE.Mesh(new THREE.BoxGeometry(CW,CAH,CAT),cm);
+        arm.position.set(0,CBT+CAH/2,-CBD/2+CAT/2);
+        clipG.add(arm);
+
+        const aba=new THREE.Mesh(new THREE.BoxGeometry(CW,AAT,AAL),cm);
+        aba.position.set(0,CBT+CAH-AAT/2,-CBD/2-AAL/2+CAT);
+        clipG.add(aba);
+
+        const gg=new THREE.Mesh(new THREE.BoxGeometry(CW-6,4,4),cm);
+        gg.position.set(0,CBT+2,-CBD/2+CAT+1);
+        clipG.add(gg);
+
+        const scr=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,PT+CBT+2,12),sm);
+        scr.position.set(0,-1,0);
+        clipG.add(scr);
+        const sh=new THREE.Mesh(new THREE.CylinderGeometry(3,3,2,12),sm);
+        sh.position.set(0,CBT+1,0);
+        clipG.add(sh);
+
+        // All Wega clips are top/bottom only
+        if(ny<=OY){
+            clipG.rotation.y=Math.PI;
+        } else {
+            clipG.rotation.y=0;
+        }
+        clipG.position.set(nx,PT,ny);
+        group.add(clipG);
+    });
+}
+
+function addBox(w,h,d,x,y,z,m,tag){
+    const b=new THREE.Mesh(new THREE.BoxGeometry(w,d,h),m);
+    b.position.set(x,y,z);b.userData.t=tag;group.add(b);
+}
+
+function vw(p){
+    const s=camera.position.clone(),e=new THREE.Vector3(...p),t0=Date.now();
+    (function u(){const f=Math.min((Date.now()-t0)/500,1),q=1-Math.pow(1-f,3);
+    camera.position.lerpVectors(s,e,q);camera.lookAt(0,10,0);
+    if(f<1)requestAnimationFrame(u)})();
+}
+
+function explode(){
+    const on=document.getElementById('xp').checked;
+    group.children.forEach(c=>{
+        if(c.userData.t==='filter')c.position.y=PT+(FT/2)+(on?40:0);
+    });
+}
+
+function wire(){
+    const on=document.getElementById('wf').checked;
+    group.traverse(c=>{if(c.material)c.material.wireframe=on});
+}
+
+function setupMouse(){
+    let drag=false,px=0,py=0,sh=false;
+    const cv=renderer.domElement;
+    cv.onmousedown=e=>{drag=true;px=e.clientX;py=e.clientY;sh=e.shiftKey};
+    cv.onmousemove=e=>{
+        if(!drag)return;
+        const dx=e.clientX-px,dy=e.clientY-py;
+        if(e.shiftKey||sh){
+            const r=new THREE.Vector3(),u=new THREE.Vector3();
+            camera.getWorldDirection(u);r.crossVectors(u,camera.up).normalize();
+            u.crossVectors(r,camera.getWorldDirection(new THREE.Vector3())).normalize();
+            camera.position.addScaledVector(r,-dx*0.5);camera.position.addScaledVector(u,dy*0.5);
+        }else{
+            const pv=new THREE.Vector3(0,10,0);
+            camera.position.sub(pv);
+            const sp=new THREE.Spherical().setFromVector3(camera.position);
+            sp.theta-=dx*0.005;sp.phi=Math.max(0.1,Math.min(Math.PI-0.1,sp.phi-dy*0.005));
+            camera.position.setFromSpherical(sp).add(pv);camera.lookAt(pv);
+        }
+        px=e.clientX;py=e.clientY;
+    };
+    cv.onmouseup=cv.onmouseleave=()=>{drag=false;sh=false};
+    cv.onwheel=e=>{e.preventDefault();const d=new THREE.Vector3();camera.getWorldDirection(d);camera.position.addScaledVector(d,-e.deltaY*0.3)};
+}
+
+function animate(){requestAnimationFrame(animate);renderer.render(scene,camera)}
+</script>
+</body>
+</html>
